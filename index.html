@@ -153,10 +153,20 @@
   .box-drag.dragging .box-cell{cursor:grabbing;box-shadow:0 18px 40px rgba(0,0,0,.45);}
   .box-cell.drop-bounce{animation:boxDrop .34s ease;}
   .box-cell::after{content:'';position:absolute;top:-60%;right:-40%;width:85%;height:150%;background:var(--qg);opacity:.30;filter:blur(34px);border-radius:50%;pointer-events:none;z-index:0;}
-  .box-head{position:relative;z-index:1;display:block;width:100%;background:none;border:none;padding:4px 6px;margin:-4px -6px 10px;text-align:left;color:var(--text);border-radius:10px;transition:background var(--dur) var(--ease);}
+  .box-head{position:relative;z-index:1;display:block;width:calc(100% - 22px);background:none;border:none;padding:4px 6px;margin:-4px -6px 10px;text-align:left;color:var(--text);border-radius:10px;transition:background var(--dur) var(--ease);}
   .box-head:hover{background:var(--glass-strong);}
   .box-label{font-size:16px;font-weight:700;letter-spacing:-.01em;line-height:1.25;}
   .box-meta{font-size:11px;color:var(--text-3);margin-top:2px;}
+  .box-del{position:absolute;top:14px;right:14px;z-index:2;width:22px;height:22px;border-radius:50%;border:none;background:none;color:var(--text-3);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--dur) var(--ease),color var(--dur) var(--ease);padding:0;}
+  .box-cell:hover .box-del{opacity:1;}
+  .box-del:hover{color:var(--red);}
+  .box-add-cell{align-items:center;justify-content:center;border-style:dashed;cursor:default;}
+  .box-add-btn{background:none;border:none;color:var(--text-3);font-size:13px;font-weight:600;cursor:pointer;padding:10px 16px;transition:color var(--dur) var(--ease);}
+  .box-add-btn:hover{color:var(--text);}
+  .box-add-form{display:flex;flex-direction:column;gap:8px;width:100%;position:relative;z-index:1;}
+  .box-add-form input{background:var(--glass);border:1px solid var(--border);border-radius:var(--r-pill);color:var(--text);padding:8px 14px;font-size:13px;text-align:center;}
+  .box-add-form .add-row-line{display:flex;gap:6px;}
+  .box-add-form .add-row-line button{flex:1;}
   .box-tasks{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;}
   .box-task-row{display:flex;align-items:flex-start;gap:9px;min-width:0;cursor:grab;border-radius:7px;transition:opacity var(--dur) var(--ease);}
   .box-task-row.dragging-task{opacity:.35;}
@@ -554,10 +564,20 @@
   .auth-card input{width:100%;background:var(--glass);border:1px solid var(--border);border-radius:var(--r-pill);color:var(--text);padding:11px 16px;font-size:14px;margin-bottom:10px;box-sizing:border-box;text-align:center;}
   .auth-card .btn{width:100%;}
   .auth-status{font-size:12.5px;color:var(--text-3);margin-top:12px;min-height:16px;}
+  .btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+    background:#fff;color:#1f1f1f;border:1px solid var(--border);border-radius:var(--r-pill);
+    padding:11px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:14px;}
+  .btn-google:hover{background:#f4f4f4;}
+  .auth-divider{display:flex;align-items:center;gap:10px;color:var(--text-3);font-size:11.5px;margin-bottom:14px;}
+  .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+  .auth-tabs{display:flex;gap:6px;margin-bottom:12px;background:var(--glass);border-radius:var(--r-pill);padding:3px;}
+  .auth-tab{flex:1;background:none;border:none;color:var(--text-3);font-size:12.5px;font-weight:600;padding:7px 0;border-radius:var(--r-pill);cursor:pointer;transition:background var(--dur) var(--ease),color var(--dur) var(--ease);}
+  .auth-tab.active{background:var(--glass-strong);color:var(--text);}
 
   /* ---- 광고 슬롯 ---- */
   .ad-slot{margin:20px 0;min-height:90px;display:flex;align-items:center;justify-content:center;}
-  .ad-slot-placeholder{border:1px dashed var(--border);border-radius:var(--r-md);color:var(--text-3);font-size:12px;width:100%;}
+  .ad-slot-placeholder{border:1px dashed var(--border);border-radius:var(--r-md);color:var(--text-3);font-size:12px;width:100%;text-align:center;line-height:1.5;}
+  .ad-slot-sidebar{min-height:160px;margin:14px 0;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <!-- AdSense 승인 후: 아래 주석을 풀고 client=ca-pub-XXXXXXXXXXXXXXXX 를 실제 publisher ID로 바꿔줘.
@@ -593,27 +613,61 @@
     authSession = data.session;
     sb.auth.onAuthStateChange((_event, session)=>{ authSession = session; render(); });
   }
-  async function sendMagicLink(){
-    const input = document.getElementById('authEmailInput');
-    const email = input ? input.value.trim() : '';
-    if(!email){ authStatus = '이메일을 입력해줘.'; render(); return; }
-    authStatus = '로그인 링크를 보내는 중...';
-    render();
-    const { error } = await sb.auth.signInWithOtp({ email, options:{ emailRedirectTo: window.location.href } });
-    authStatus = error ? `실패 — ${error.message}` : `${email}로 로그인 링크를 보냈어. 메일함(스팸함도)을 확인해줘.`;
+  // Google 로그인은 Supabase 대시보드 Authentication → Providers → Google에서
+  // Client ID/Secret을 등록해야 실제로 동작함 (등록 전엔 눌러도 에러만 뜸)
+  async function signInGoogle(){
+    if(!sb) return;
+    await sb.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: window.location.href } });
+  }
+  function authFormValues(){
+    return {
+      email: (document.getElementById('authEmailInput')||{}).value?.trim() || '',
+      password: (document.getElementById('authPasswordInput')||{}).value || ''
+    };
+  }
+  async function signInEmail(){
+    const { email, password } = authFormValues();
+    if(!email || !password){ authStatus = '이메일과 비밀번호를 입력해줘.'; render(); return; }
+    authStatus = '로그인 중...'; render();
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    authStatus = error ? `실패 — ${error.message}` : '';
     render();
   }
+  async function signUpEmail(){
+    const { email, password } = authFormValues();
+    if(!email || !password){ authStatus = '이메일과 비밀번호를 입력해줘.'; render(); return; }
+    if(password.length < 6){ authStatus = '비밀번호는 6자 이상이어야 해.'; render(); return; }
+    authStatus = '가입 처리 중...'; render();
+    const { error } = await sb.auth.signUp({ email, password });
+    authStatus = error ? `실패 — ${error.message}` : '가입 완료! 확인 메일이 왔다면 링크를 눌러줘.';
+    render();
+  }
+  function submitAuthForm(){
+    if(state.authMode==='signup') signUpEmail(); else signInEmail();
+  }
+  function setAuthMode(mode){ state.authMode = mode; authStatus = ''; render(); }
   async function signOut(){
     if(sb) await sb.auth.signOut();
     authSession = null; render();
   }
   function renderAuthGate(){
+    const mode = state.authMode==='signup' ? 'signup' : 'signin';
     return `<div class="auth-gate">
       <div class="auth-card">
         <div class="auth-brand">City of Brain</div>
-        <div class="auth-desc">이메일을 입력하면 로그인 링크를 보내줄게. 비밀번호 없이 그 링크만 누르면 로그인 완료.</div>
+        <div class="auth-desc">로그인하면 할 일이 이 계정에 저장돼.</div>
+        <button class="btn-google" data-action="signInGoogle">
+          <svg width="17" height="17" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.87-3.04.87-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.73A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.19.28-1.73V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.06l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+          Google로 계속하기
+        </button>
+        <div class="auth-divider"><span>또는</span></div>
+        <div class="auth-tabs">
+          <button class="auth-tab ${mode==='signin'?'active':''}" data-action="setAuthMode" data-mode="signin">로그인</button>
+          <button class="auth-tab ${mode==='signup'?'active':''}" data-action="setAuthMode" data-mode="signup">회원가입</button>
+        </div>
         <input type="email" id="authEmailInput" placeholder="이메일 주소" autocomplete="email">
-        <button class="btn" data-action="sendMagicLink">로그인 링크 받기</button>
+        <input type="password" id="authPasswordInput" placeholder="비밀번호" autocomplete="${mode==='signup'?'new-password':'current-password'}">
+        <button class="btn" data-action="submitAuthForm">${mode==='signup'?'가입하기':'로그인'}</button>
         <div class="auth-status">${escapeHtml(authStatus)}</div>
       </div>
     </div>`;
@@ -624,11 +678,12 @@
      비어있는 동안은 자리만 차지하는 플레이스홀더를 보여준다. */
   const ADSENSE_PUBLISHER_ID = '';
   const ADSENSE_SLOT_ID = '';
-  function renderAdSlot(){
+  function renderAdSlot(place){
+    const cls = place==='sidebar' ? 'ad-slot ad-slot-sidebar' : 'ad-slot';
     if(!ADSENSE_PUBLISHER_ID || !ADSENSE_SLOT_ID){
-      return `<div class="ad-slot ad-slot-placeholder">광고 영역 (준비 중)</div>`;
+      return `<div class="${cls} ad-slot-placeholder">광고 영역<br>(준비 중)</div>`;
     }
-    return `<div class="ad-slot"><ins class="adsbygoogle" style="display:block;width:100%;"
+    return `<div class="${cls}"><ins class="adsbygoogle" style="display:block;width:100%;"
       data-ad-client="${ADSENSE_PUBLISHER_ID}" data-ad-slot="${ADSENSE_SLOT_ID}"
       data-ad-format="auto" data-full-width-responsive="true"></ins></div>`;
   }
@@ -648,7 +703,7 @@
   }
 
   function buildSkeleton(){
-    return { tasks:[], completed:[], assignments:[], ddays:[] };
+    return { tasks:[], completed:[], assignments:[], ddays:[], boxes:[] };
   }
 
   /* ============ 오늘 정보 ============ */
@@ -717,7 +772,7 @@
     quickAddBoxKey:null, quickAddCorner:'review',
     asgSortMode:'due',
     cityView:'main', cityInspectTarget:null, editingAssignment:null, editingTask:null,
-    ddayAddOpen:false,
+    ddayAddOpen:false, boxAddOpen:false, authMode:'signin',
     data:buildSkeleton()
   };
 
@@ -800,8 +855,10 @@
     app.innerHTML = html;
     // 3D 도시 캔버스는 #app 바깥에 살아있으므로 갈아엎은 뒤 제자리에 다시 끼워 넣는다
     if(cityVisible) mountCity3D(); else stopCityLoop();
+    // 렌더마다 사이드바/본문을 통째로 다시 그려서 <ins>가 매번 새 DOM으로 바뀌니,
+    // 광고 단위 하나당 한 번만 채워지는 게 맞다면 나중에 좀 더 정교한 트래킹이 필요할 수 있음
     if(ADSENSE_PUBLISHER_ID){
-      app.querySelectorAll('ins.adsbygoogle').forEach(()=>{
+      document.querySelectorAll('ins.adsbygoogle').forEach(()=>{
         try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){}
       });
     }
@@ -831,6 +888,7 @@
     return `<div class="sidebar glass">
       <div class="sidebar-brand" data-action="goView" data-view="home"><div class="mark"></div><b>City of Brain</b></div>
       <div class="nav-list">${items}</div>
+      ${renderAdSlot('sidebar')}
       <div class="sidebar-foot">
         <button class="nav-item" data-action="openSettings"><span class="nav-icon" style="--nc:rgba(255,255,255,.16)">${icon('settings')}</span><span class="label">설정</span></button>
       </div>
@@ -847,17 +905,41 @@
     return `<div class="topbar-mini"><button class="iconbtn" data-action="openSettings">${icon('settings')} 설정</button></div>`;
   }
 
-  /* ---- Home: 과목별 박스 ---- */
-  // 수학과/정보과학과/문과는 카테고리 단위 그대로 유지, 과학과만 지구과학/생명과학/화학/물리학 네 박스로 분할
-  const BOXES = [
-    { key:'kor',  label:'국어', qc:'var(--red)',    qg:'linear-gradient(135deg,var(--red),var(--orange))' },
-    { key:'math', label:'수학', qc:'var(--blue)',   qg:'linear-gradient(135deg,var(--blue),var(--indigo))' },
-    { key:'eng',  label:'영어', qc:'var(--purple)', qg:'linear-gradient(135deg,var(--purple),var(--pink))' },
-    { key:'soc',  label:'사회', qc:'var(--orange)', qg:'linear-gradient(135deg,var(--orange),var(--pink))' },
-    { key:'sci',  label:'과학', qc:'var(--teal)',   qg:'linear-gradient(135deg,var(--teal),var(--green))' },
-    { key:'etc',  label:'기타', qc:'var(--text-3)', qg:'linear-gradient(135deg,var(--text-3),var(--border-hi))' }
+  /* ---- Home: 유저가 직접 만드는 과목 박스 ----
+     처음엔 박스가 하나도 없다가, 유저가 필요한 과목/분야를 직접 이름 붙여서 추가해간다.
+     색은 고정 팔레트를 순서대로 배정해서 매번 시각적으로 구분되게 한다. */
+  const BOX_PALETTE = [
+    { qc:'var(--blue)',   qg:'linear-gradient(135deg,var(--blue),var(--indigo))' },
+    { qc:'var(--green)',  qg:'linear-gradient(135deg,var(--green),var(--teal))' },
+    { qc:'var(--orange)', qg:'linear-gradient(135deg,var(--orange),var(--pink))' },
+    { qc:'var(--purple)', qg:'linear-gradient(135deg,var(--purple),var(--pink))' },
+    { qc:'var(--teal)',   qg:'linear-gradient(135deg,var(--teal),var(--blue))' },
+    { qc:'var(--red)',    qg:'linear-gradient(135deg,var(--red),var(--orange))' },
+    { qc:'var(--indigo)', qg:'linear-gradient(135deg,var(--indigo),var(--purple))' },
+    { qc:'var(--pink)',   qg:'linear-gradient(135deg,var(--pink),var(--red))' }
   ];
-  const BOX_KEYS = new Set(BOXES.map(b=>b.key));
+  function boxes(){ return state.data.boxes; }
+  function findBox(key){ return state.data.boxes.find(b=>b.key===key) || null; }
+  function hasBox(key){ return !!findBox(key); }
+  function addBox(label){
+    label = (label||'').trim(); if(!label) return;
+    const color = BOX_PALETTE[state.data.boxes.length % BOX_PALETTE.length];
+    state.data.boxes.push({key:genId(), label, qc:color.qc, qg:color.qg});
+    state.boxAddOpen = false;
+    persist(); render();
+  }
+  function deleteBox(key){
+    if(!confirm('이 박스를 지우면 여기 달려있던 할 일들은 "미분류"로 남아. 지울까?')) return;
+    state.data.boxes = state.data.boxes.filter(b=>b.key!==key);
+    state.data.tasks.forEach(t=>{ if(t.boxKey===key) t.boxKey=null; });
+    state.data.completed.forEach(t=>{ if(t.boxKey===key) t.boxKey=null; });
+    persist(); render();
+  }
+  function toggleBoxAdd(){ state.boxAddOpen = !state.boxAddOpen; render(); }
+  function submitAddBox(){
+    const input = document.getElementById('newBoxName');
+    addBox(input ? input.value : '');
+  }
 
   // 박스마다 살짝 다르게 떠다니도록 key 기반으로 고정된 값을 뽑음 (매 렌더마다 안 바뀌게)
   function hashStr(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h*31 + s.charCodeAt(i))|0; } return Math.abs(h); }
@@ -894,9 +976,9 @@
   function weekBoxCompletionCounts(){
     const weekStart = mondayOf(now).getTime();
     const counts = {};
-    BOXES.forEach(b=>{ counts[b.key] = 0; });
+    boxes().forEach(b=>{ counts[b.key] = 0; });
     state.data.completed.forEach(it=>{
-      if(BOX_KEYS.has(it.boxKey) && it.completedAt>=weekStart) counts[it.boxKey]++;
+      if(hasBox(it.boxKey) && it.completedAt>=weekStart) counts[it.boxKey]++;
     });
     return counts;
   }
@@ -904,7 +986,7 @@
     const counts = weekBoxCompletionCounts();
     const total = Object.values(counts).reduce((a,b)=>a+b,0);
     if(total<4) return ''; // 활동이 너무 적으면(주 초반 등) 비교 자체가 의미 없음
-    const neglected = BOXES.filter(b=>counts[b.key]===0);
+    const neglected = boxes().filter(b=>counts[b.key]===0);
     if(neglected.length===0) return '';
     const hasLowTagged = state.data.assignments.some(a=>!a.done && a.priority==='low');
     const extra = hasLowTagged ? ' 가성비 "하"로 태그해둔 과제가 있다면 그것 때문에 아예 손 놓은 건 아닌지 확인해봐.' : '';
@@ -971,7 +1053,7 @@
       const sel = t && t.type==='assignment' && t.id===a.id;
       return `<option value="assignment:${a.id}" ${sel?'selected':''}>${escapeHtml(a.title)}</option>`;
     }).join('');
-    const boxGroups = BOXES.map(box=>{
+    const boxGroups = boxes().map(box=>{
       const items = boxTaskItems(box);
       if(items.length===0) return '';
       const opts = items.map(q=>{
@@ -1065,7 +1147,7 @@
   function renderHome(){
     const name = getStudentName();
 
-    const boxHtml = BOXES.map(box=>{
+    const boxHtml = boxes().map(box=>{
       const all = boxTaskItems(box);
       const tasksHtml = all.length===0
         ? `<div class="box-empty">할 일 없음</div>`
@@ -1075,6 +1157,7 @@
       return `<div class="box-drag" data-boxkey="${box.key}" style="transform:translate(${off.x}px,${off.y}px);">
         <div class="box-float" style="--float-dur:${fv.dur}s;--float-delay:${fv.delay}s;">
           <div class="box-cell" style="--qc:${box.qc};--qg:${box.qg}">
+            <button class="box-del" title="박스 삭제" data-action="deleteBox" data-key="${box.key}">${icon('trash')}</button>
             <button class="box-head" data-action="openQuickAdd" data-boxkey="${box.key}">
               <div class="box-label">${box.label}</div>
               <div class="box-meta">${all.length>0?`${all.length}개`:'할 일 추가'}</div>
@@ -1083,7 +1166,15 @@
           </div>
         </div>
       </div>`;
-    }).join('');
+    }).join('') + `<div class="box-cell box-add-cell">
+        ${state.boxAddOpen ? `<div class="box-add-form">
+          <input type="text" id="newBoxName" placeholder="과목/분야 이름 (예: 수학)" autofocus>
+          <div class="add-row-line">
+            <button class="btn" data-action="submitAddBox">추가</button>
+            <button class="btn-outline" data-action="toggleBoxAdd">취소</button>
+          </div>
+        </div>` : `<button class="box-add-btn" data-action="toggleBoxAdd">+ 박스 추가</button>`}
+      </div>`;
 
     const allPending = state.data.assignments.filter(a=>!a.done).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
     const pending = allPending.slice(0,3);
@@ -1107,9 +1198,7 @@
       <div class="section">
         <div class="section-head"><div class="section-title">임박한 과제</div><button class="section-link" data-action="goView" data-view="assignments">전체 보기</button></div>
         ${asgHtml}
-      </div>
-
-      ${renderAdSlot()}`;
+      </div>`;
 
     // 데스크탑에서만 오른쪽에 살아있는 도시를 띄운다 (좁은 화면에선 3D를 아예 안 받음)
     if(!isWideScreen()) return `<div class="fade-in">${left}</div>`;
@@ -1179,7 +1268,7 @@
         <div class="task-edit-line">
           <select class="add-input" id="taskEditBox">
             <option value="">과목 미지정</option>
-            ${BOXES.map(b=>`<option value="${b.key}" ${item.boxKey===b.key?'selected':''}>${escapeHtml(b.label)}</option>`).join('')}
+            ${boxes().map(b=>`<option value="${b.key}" ${item.boxKey===b.key?'selected':''}>${escapeHtml(b.label)}</option>`).join('')}
           </select>
           <select class="add-input" id="taskEditCorner">
             <option value="review" ${item.corner==='review'?'selected':''}>수업 과제</option>
@@ -1197,7 +1286,7 @@
     if(isEditingTask(item.id)) return taskEditRowHtml(item);
     const days = itemStaleDays(item);
     const stale = days>=4;
-    const box = BOX_KEYS.has(item.boxKey) ? BOXES.find(b=>b.key===item.boxKey) : null;
+    const box = hasBox(item.boxKey) ? findBox(item.boxKey) : null;
     return `<div class="task-row ${stale?'stale':''}">
       <button class="task-check" data-action="completeTask" data-id="${item.id}">${icon('check')}</button>
       <div class="task-body">
@@ -1210,7 +1299,7 @@
     </div>`;
   }
   function addRowHtml(corner){
-    const boxOptionsHtml = BOXES.map(b=>`<option value="${b.key}">${b.label}</option>`).join('');
+    const boxOptionsHtml = boxes().map(b=>`<option value="${b.key}">${b.label}</option>`).join('');
     return `<div class="add-row">
       <select class="add-input" id="taskAddBox-${corner}" style="flex:0 0 128px;">
         <option value="">과목 미지정</option>
@@ -1316,7 +1405,7 @@
      새 데이터를 저장하지 않음 — 수업 과제(teachers[key].review)와 자율학습(teachers[key].self + personal.tasks)을
      그대로 읽어서 시각화만 새로 하는 뷰 레이어. 완료 처리도 기존 completeItem/completePersonalTask를 그대로 씀. */
   function citySubjectColor(item){
-    const box = item.boxKey && BOX_KEYS.has(item.boxKey) ? BOXES.find(b=>b.key===item.boxKey) : null;
+    const box = item.boxKey && hasBox(item.boxKey) ? findBox(item.boxKey) : null;
     return box ? box.qc : 'var(--text-3)';
   }
   // 차(수업 과제): 3단계 — 막힘/정체 컨셉은 빼고 정상→연기→고장으로 단순화
@@ -1980,7 +2069,7 @@
   function showCityTip(cz, ev){
     if(!CITY3D.tip) return;
     const isCar = cz.vehicle==='car';
-    const tag = cz.item.boxKey && BOX_KEYS.has(cz.item.boxKey) ? BOXES.find(b=>b.key===cz.item.boxKey).label : '미분류';
+    const tag = cz.item.boxKey && hasBox(cz.item.boxKey) ? findBox(cz.item.boxKey).label : '미분류';
     const stageLabel = isCar
       ? ['정상 주행 중','연기가 나는 중','완전히 고장남'][cz.stage]
       : ['평온함','굴뚝에서 연기','집에 불이 남','집이 무너짐'][cz.stage];
@@ -2099,7 +2188,7 @@
     const stageLabel = isCar
       ? ['정상 주행 중이야','연기가 나고 있어','완전히 고장났어'][stage]
       : ['평온해','굴뚝에서 연기가 나','집에 불이 났어','집이 무너졌어'][stage];
-    const box = item.boxKey && BOX_KEYS.has(item.boxKey) ? BOXES.find(b=>b.key===item.boxKey) : null;
+    const box = item.boxKey && hasBox(item.boxKey) ? findBox(item.boxKey) : null;
     const tag = box ? box.label : '미분류';
     return `<div class="modal-overlay" data-action="closeModal">
       <div class="modal" style="max-width:360px;">
@@ -2117,7 +2206,7 @@
     const weeksHtml = weeks.length===0 ? `<div class="empty">아직 졸업한 시민이 없어.</div>` : weeks.map(w=>{
       const label = fmtShortDate(toISODate(new Date(w.weekStart)));
       const rows = w.items.map(entry=>{
-        const box = entry.item.boxKey && BOX_KEYS.has(entry.item.boxKey) ? BOXES.find(b=>b.key===entry.item.boxKey) : null;
+        const box = entry.item.boxKey && hasBox(entry.item.boxKey) ? findBox(entry.item.boxKey) : null;
         const tag = box ? box.label : '미분류';
         return `<div class="city-grad-row">
           <span class="city-grad-icon" style="--fc:${entry.color};">${icon(entry.vehicle==='car'?'car':'house')}</span>
@@ -2163,7 +2252,7 @@
 
   function renderQuickAddModal(){
     const boxKey = state.quickAddBoxKey;
-    const box = BOXES.find(b=>b.key===boxKey);
+    const box = findBox(boxKey);
     if(!box) return '';
     const corner = state.quickAddCorner;
     const tabs = ['review','self'].map(c=>`<button class="corner-tab ${corner===c?'active':''}" data-action="setQuickAddCorner" data-corner="${c}">${CORNER_LABELS[c]}</button>`).join('');
@@ -2253,7 +2342,7 @@
   /* ============ 액션: 할 일 ============ */
   function addTask(text, boxKey, corner){
     text = (text||'').trim(); if(!text) return;
-    state.data.tasks.push({id:genId(), text, boxKey: BOX_KEYS.has(boxKey) ? boxKey : null,
+    state.data.tasks.push({id:genId(), text, boxKey: hasBox(boxKey) ? boxKey : null,
                            corner: corner==='review' ? 'review' : 'self', createdAt:Date.now()});
     persist(); render();
   }
@@ -2264,7 +2353,7 @@
     const it = state.data.tasks.find(x=>x.id===id); if(!it) return;
     it.text = text;
     const bs = document.getElementById('taskEditBox');
-    if(bs) it.boxKey = BOX_KEYS.has(bs.value) ? bs.value : null;
+    if(bs) it.boxKey = hasBox(bs.value) ? bs.value : null;
     const cs = document.getElementById('taskEditCorner');
     if(cs) it.corner = cs.value==='review' ? 'review' : 'self';
     state.editingTask = null;
@@ -2370,7 +2459,8 @@
           tasks: parsed.tasks || [],
           completed: parsed.completed || [],
           assignments: parsed.assignments || [],
-          ddays: parsed.ddays || []
+          ddays: parsed.ddays || [],
+          boxes: parsed.boxes || []
         };
         persist(); render();
       }catch(err){ alert('파일을 읽지 못했어. JSON 형식이 맞는지 확인해줘.'); }
@@ -2503,6 +2593,9 @@
       case 'deleteDday': deleteDday(el.dataset.id); break;
       case 'toggleDdayHidden': toggleDdayHidden(el.dataset.id); break;
       case 'toggleDdayAdd': toggleDdayAdd(); break;
+      case 'toggleBoxAdd': toggleBoxAdd(); break;
+      case 'submitAddBox': submitAddBox(); break;
+      case 'deleteBox': deleteBox(el.dataset.key); break;
       case 'toggleAssignment': {
         const id = el.dataset.id;
         const a = state.data.assignments.find(x=>x.id===id);
@@ -2533,7 +2626,9 @@
       case 'swReset': swReset(); break;
       case 'swCompleteLinked': swCompleteLinked(); break;
       case 'saveStudentName': saveStudentName(); break;
-      case 'sendMagicLink': sendMagicLink(); break;
+      case 'signInGoogle': signInGoogle(); break;
+      case 'setAuthMode': setAuthMode(el.dataset.mode); break;
+      case 'submitAuthForm': submitAuthForm(); break;
       case 'signOut': signOut(); break;
       case 'copyTemplate': {
         const t = getTemplates().find(x=>x.id===el.dataset.id);
@@ -2572,8 +2667,10 @@
       if(ed) saveTaskEdit(ed.id);
       return;
     }
-    if(e.target.id==='authEmailInput'){
-      sendMagicLink();
+    if(e.target.id==='newBoxName'){
+      submitAddBox();
+    } else if(e.target.id==='authEmailInput' || e.target.id==='authPasswordInput'){
+      submitAuthForm();
     } else if(e.target.id==='quickAddInput'){
       addTask(e.target.value, e.target.dataset.boxkey, e.target.dataset.corner);
     } else if(e.target.classList.contains('add-input') && e.target.dataset.corner){
@@ -2627,7 +2724,8 @@
         tasks: saved.tasks || [],
         completed: saved.completed || [],
         assignments: saved.assignments || [],
-        ddays: saved.ddays || []
+        ddays: saved.ddays || [],
+        boxes: saved.boxes || []
       };
     }
     // 세션 확인은 비동기로 흘려보냄 — 네트워크가 느리거나 막혀도 첫 화면은 바로 그려짐.
