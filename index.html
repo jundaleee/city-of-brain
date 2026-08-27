@@ -544,7 +544,25 @@
 
   .fade-in{animation:fadeIn 220ms var(--ease);}
   @keyframes fadeIn{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:none;}}
+
+  /* ---- 로그인 ---- */
+  .auth-gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .auth-card{width:100%;max-width:380px;background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
+    border:1px solid var(--border);border-top-color:var(--border-hi);border-radius:var(--r-lg);padding:32px 28px;text-align:center;}
+  .auth-brand{font-size:20px;font-weight:800;margin-bottom:6px;}
+  .auth-desc{font-size:13px;color:var(--text-3);margin-bottom:20px;line-height:1.5;}
+  .auth-card input{width:100%;background:var(--glass);border:1px solid var(--border);border-radius:var(--r-pill);color:var(--text);padding:11px 16px;font-size:14px;margin-bottom:10px;box-sizing:border-box;text-align:center;}
+  .auth-card .btn{width:100%;}
+  .auth-status{font-size:12.5px;color:var(--text-3);margin-top:12px;min-height:16px;}
+
+  /* ---- 광고 슬롯 ---- */
+  .ad-slot{margin:20px 0;min-height:90px;display:flex;align-items:center;justify-content:center;}
+  .ad-slot-placeholder{border:1px dashed var(--border);border-radius:var(--r-md);color:var(--text-3);font-size:12px;width:100%;}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- AdSense 승인 후: 아래 주석을 풀고 client=ca-pub-XXXXXXXXXXXXXXXX 를 실제 publisher ID로 바꿔줘.
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+-->
 </head>
 <body>
 <div class="app-shell" id="shell">
@@ -558,7 +576,63 @@
 (function(){
   "use strict";
 
-  /* ============ 과목/교사 구조 ============ */
+  /* ============ 로그인 (Supabase) ============
+     아래 두 값이 채워지기 전까지는 로그인 없이 게스트 모드로 그냥 동작한다.
+     supabase.com에서 프로젝트를 만든 뒤 Project Settings → API에서 값을 복사해 넣으면
+     그 순간부터 이메일 매직 링크 로그인 화면이 켜진다. */
+  const SUPABASE_URL = 'https://emgsydavlzdzfkbsihpx.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtZ3N5ZGF2bHpkemZrYnNpaHB4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3ODY0ODIsImV4cCI6MjEwMzM2MjQ4Mn0.EoeaLGX94bIETQh14zPjnMW6sP5b3JFh3JyiUCZlSuE';
+  // window.supabase가 없으면(CDN 로드 실패 등) 앱 전체가 죽지 않고 게스트 모드로 내려가야 함
+  const sb = (SUPABASE_URL.indexOf('https://')===0 && SUPABASE_ANON_KEY && window.supabase)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+  let authSession = null;
+  let authStatus = '';
+  async function initAuth(){
+    if(!sb) return;
+    const { data } = await sb.auth.getSession();
+    authSession = data.session;
+    sb.auth.onAuthStateChange((_event, session)=>{ authSession = session; render(); });
+  }
+  async function sendMagicLink(){
+    const input = document.getElementById('authEmailInput');
+    const email = input ? input.value.trim() : '';
+    if(!email){ authStatus = '이메일을 입력해줘.'; render(); return; }
+    authStatus = '로그인 링크를 보내는 중...';
+    render();
+    const { error } = await sb.auth.signInWithOtp({ email, options:{ emailRedirectTo: window.location.href } });
+    authStatus = error ? `실패 — ${error.message}` : `${email}로 로그인 링크를 보냈어. 메일함(스팸함도)을 확인해줘.`;
+    render();
+  }
+  async function signOut(){
+    if(sb) await sb.auth.signOut();
+    authSession = null; render();
+  }
+  function renderAuthGate(){
+    return `<div class="auth-gate">
+      <div class="auth-card">
+        <div class="auth-brand">City of Brain</div>
+        <div class="auth-desc">이메일을 입력하면 로그인 링크를 보내줄게. 비밀번호 없이 그 링크만 누르면 로그인 완료.</div>
+        <input type="email" id="authEmailInput" placeholder="이메일 주소" autocomplete="email">
+        <button class="btn" data-action="sendMagicLink">로그인 링크 받기</button>
+        <div class="auth-status">${escapeHtml(authStatus)}</div>
+      </div>
+    </div>`;
+  }
+
+  /* ============ 광고 배너 ============
+     AdSense 승인 후 아래 두 값(ca-pub-... / 광고 단위 슬롯 ID)을 채우면 실제 광고로 바뀐다.
+     비어있는 동안은 자리만 차지하는 플레이스홀더를 보여준다. */
+  const ADSENSE_PUBLISHER_ID = '';
+  const ADSENSE_SLOT_ID = '';
+  function renderAdSlot(){
+    if(!ADSENSE_PUBLISHER_ID || !ADSENSE_SLOT_ID){
+      return `<div class="ad-slot ad-slot-placeholder">광고 영역 (준비 중)</div>`;
+    }
+    return `<div class="ad-slot"><ins class="adsbygoogle" style="display:block;width:100%;"
+      data-ad-client="${ADSENSE_PUBLISHER_ID}" data-ad-slot="${ADSENSE_SLOT_ID}"
+      data-ad-format="auto" data-full-width-responsive="true"></ins></div>`;
+  }
+
   const DAYNAME = ['일','월','화','수','목','금','토'];
   const CORNER_LABELS = {review:'수업 과제', self:'자율학습'};
 
@@ -699,10 +773,18 @@
   function render(){
     const sidebarSlot = document.getElementById('sidebarSlot');
     const bottomNavSlot = document.getElementById('bottomNavSlot');
+    const app = document.getElementById('app');
+    if(sb && !authSession){
+      sidebarSlot.innerHTML = '';
+      bottomNavSlot.innerHTML = '';
+      app.classList.remove('wide');
+      app.innerHTML = renderAuthGate();
+      stopCityLoop();
+      return;
+    }
     sidebarSlot.innerHTML = renderSidebar();
     bottomNavSlot.innerHTML = renderBottomNav();
 
-    const app = document.getElementById('app');
     const viewChanged = state.view !== lastRenderedView;
     lastRenderedView = state.view;
     let html = renderTopbarMini();
@@ -718,6 +800,11 @@
     app.innerHTML = html;
     // 3D 도시 캔버스는 #app 바깥에 살아있으므로 갈아엎은 뒤 제자리에 다시 끼워 넣는다
     if(cityVisible) mountCity3D(); else stopCityLoop();
+    if(ADSENSE_PUBLISHER_ID){
+      app.querySelectorAll('ins.adsbygoogle').forEach(()=>{
+        try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){}
+      });
+    }
     if(!viewChanged){
       // 클릭할 때마다 화면 전체가 깜빡이는 것 방지 — 실제로 다른 화면으로 이동할 때만 페이드인
       const fadeEl = app.querySelector('.fade-in');
@@ -1020,7 +1107,9 @@
       <div class="section">
         <div class="section-head"><div class="section-title">임박한 과제</div><button class="section-link" data-action="goView" data-view="assignments">전체 보기</button></div>
         ${asgHtml}
-      </div>`;
+      </div>
+
+      ${renderAdSlot()}`;
 
     // 데스크탑에서만 오른쪽에 살아있는 도시를 띄운다 (좁은 화면에선 3D를 아예 안 받음)
     if(!isWideScreen()) return `<div class="fade-in">${left}</div>`;
@@ -2117,6 +2206,14 @@
       <div class="modal">
         <div class="modal-head"><h2>설정</h2><button class="modal-close" data-action="closeModal">${icon('close')}</button></div>
         <div class="modal-body">
+          ${sb && authSession ? `<div class="settings-group">
+            <h3>계정</h3>
+            <div class="desc">${escapeHtml(authSession.user.email||'')} 로 로그인됨</div>
+            <div class="settings-actions">
+              <button class="btn-outline" data-action="signOut">로그아웃</button>
+            </div>
+          </div>` : ''}
+
           <div class="settings-group">
             <h3>이름</h3>
             <div class="desc">홈 화면 인사말에 쓰여. (예: "좋은 아침이야, 준혁")</div>
@@ -2436,6 +2533,8 @@
       case 'swReset': swReset(); break;
       case 'swCompleteLinked': swCompleteLinked(); break;
       case 'saveStudentName': saveStudentName(); break;
+      case 'sendMagicLink': sendMagicLink(); break;
+      case 'signOut': signOut(); break;
       case 'copyTemplate': {
         const t = getTemplates().find(x=>x.id===el.dataset.id);
         if(t){
@@ -2473,7 +2572,9 @@
       if(ed) saveTaskEdit(ed.id);
       return;
     }
-    if(e.target.id==='quickAddInput'){
+    if(e.target.id==='authEmailInput'){
+      sendMagicLink();
+    } else if(e.target.id==='quickAddInput'){
       addTask(e.target.value, e.target.dataset.boxkey, e.target.dataset.corner);
     } else if(e.target.classList.contains('add-input') && e.target.dataset.corner){
       addTask(e.target.value, document.getElementById('taskAddBox-'+e.target.dataset.corner)?.value, e.target.dataset.corner);
@@ -2529,7 +2630,10 @@
         ddays: saved.ddays || []
       };
     }
+    // 세션 확인은 비동기로 흘려보냄 — 네트워크가 느리거나 막혀도 첫 화면은 바로 그려짐.
+    // sb가 있으면 세션 확인 전까지는 기본적으로 로그인 게이트가 보이고, 확인되면 initAuth가 다시 그려줌
     render();
+    initAuth();
   })();
 
 })();
