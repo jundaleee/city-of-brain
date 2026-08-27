@@ -464,6 +464,7 @@
   .settings-group .desc b{color:var(--text-2);}
   .settings-group input[type=password],.settings-group input[type=text]{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:var(--r-pill);color:var(--text);padding:10px 15px;font-size:13px;margin-bottom:10px;}
   .settings-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .settings-group input[type="email"],.settings-group input[type="password"]{width:100%;box-sizing:border-box;background:var(--glass);border:1px solid var(--border);border-radius:var(--r-pill);color:var(--text);padding:9px 14px;font-size:13px;margin-bottom:8px;}
   .settings-status{font-size:11.5px;color:var(--green);margin-left:2px;}
   .settings-status.err{color:var(--orange);}
   .rotation-row{margin-bottom:14px;}
@@ -607,14 +608,44 @@
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
   let authSession = null;
   let authStatus = '';
+  // sb가 있으면 처음부터 "확인 중" 상태로 시작해야, initAuth()가 끝나기 전에 첫 렌더가
+  // 로그인 폼을 잠깐 반짝였다 사라지는 일 없이 곧장 로딩 화면부터 보여줄 수 있다
+  let authChecking = !!sb;
+  let authAnonError = '';       // 익명 로그인 자체가 막혀있으면(설정 안 함) 로그인 화면으로 폴백
+  let linkStatus = '';
   async function initAuth(){
     if(!sb) return;
+    authChecking = true;
     // 리스너를 먼저 걸어야 함 — getSession()을 먼저 기다리면 그 사이에 Google 리다이렉트로
     // 막 로그인된 이벤트가 지나가버려서 로그인 화면에 계속 머무는 경우가 생김
     sb.auth.onAuthStateChange((_event, session)=>{ authSession = session; render(); });
     const { data } = await sb.auth.getSession();
-    authSession = data.session;
+    if(data.session){
+      authSession = data.session;
+    } else {
+      // 로그인 화면을 띄우기 전에 먼저 익명 계정으로 조용히 시작해본다 —
+      // Supabase 대시보드에서 Anonymous Sign-ins를 켜둬야 동작함
+      const { data: anon, error } = await sb.auth.signInAnonymously();
+      if(error) authAnonError = error.message;
+      else authSession = anon.session;
+    }
+    authChecking = false;
     render();
+  }
+  function isAnon(){ return !!(authSession && authSession.user && authSession.user.is_anonymous); }
+  async function linkEmail(){
+    const email = (document.getElementById('linkEmailInput')||{}).value?.trim() || '';
+    const password = (document.getElementById('linkPasswordInput')||{}).value || '';
+    if(!email || !password){ linkStatus = '이메일과 비밀번호를 입력해줘.'; render(); return; }
+    linkStatus = '연결하는 중...'; render();
+    const { error } = await sb.auth.updateUser({ email, password });
+    linkStatus = error ? `실패 — ${error.message}` : '연결됐어! 확인 메일이 왔다면 링크를 눌러줘.';
+    render();
+  }
+  async function linkGoogle(){
+    if(!sb) return;
+    const { error } = await sb.auth.linkIdentity({ provider:'google', options:{ redirectTo: window.location.href } });
+    if(error){ linkStatus = `실패 — ${error.message}`; render(); }
   }
   // Google 로그인은 Supabase 대시보드 Authentication → Providers → Google에서
   // Client ID/Secret을 등록해야 실제로 동작함 (등록 전엔 눌러도 에러만 뜸)
@@ -653,12 +684,16 @@
     if(sb) await sb.auth.signOut();
     authSession = null; render();
   }
+  function renderAuthLoading(){
+    return `<div class="auth-gate"><div class="auth-card"><div class="auth-brand">City of Brain</div><div class="auth-desc">불러오는 중...</div></div></div>`;
+  }
   function renderAuthGate(){
     const mode = state.authMode==='signup' ? 'signup' : 'signin';
     return `<div class="auth-gate">
       <div class="auth-card">
         <div class="auth-brand">City of Brain</div>
         <div class="auth-desc">로그인하면 할 일이 이 계정에 저장돼.</div>
+        ${authAnonError ? `<div class="auth-status" style="margin-bottom:14px;">자동 시작에 실패했어(${escapeHtml(authAnonError)}) — 아래로 직접 로그인해줘.</div>` : ''}
         <button class="btn-google" data-action="signInGoogle">
           <svg width="17" height="17" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.87-3.04.87-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.73A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.19.28-1.73V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.06l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
           Google로 계속하기
@@ -832,11 +867,11 @@
     const sidebarSlot = document.getElementById('sidebarSlot');
     const bottomNavSlot = document.getElementById('bottomNavSlot');
     const app = document.getElementById('app');
-    if(sb && !authSession){
+    if(sb && (authChecking || !authSession)){
       sidebarSlot.innerHTML = '';
       bottomNavSlot.innerHTML = '';
       app.classList.remove('wide');
-      app.innerHTML = renderAuthGate();
+      app.innerHTML = authChecking ? renderAuthLoading() : renderAuthGate();
       stopCityLoop();
       return;
     }
@@ -2298,7 +2333,21 @@
       <div class="modal">
         <div class="modal-head"><h2>설정</h2><button class="modal-close" data-action="closeModal">${icon('close')}</button></div>
         <div class="modal-body">
-          ${sb && authSession ? `<div class="settings-group">
+          ${sb && authSession && isAnon() ? `<div class="settings-group">
+            <h3>계정</h3>
+            <div class="desc">지금은 이 기기에만 저장된 임시 계정이야. 이메일이나 Google을 연결하면 다른 기기에서도 로그인해서 같은 데이터를 볼 수 있어.</div>
+            <button class="btn-google" data-action="linkGoogle">
+              <svg width="17" height="17" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.87-3.04.87-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.73A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.19.28-1.73V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.06l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+              Google 계정으로 저장
+            </button>
+            <div class="auth-divider"><span>또는</span></div>
+            <input type="email" id="linkEmailInput" placeholder="이메일 주소" autocomplete="email">
+            <input type="password" id="linkPasswordInput" placeholder="비밀번호" autocomplete="new-password">
+            <div class="settings-actions">
+              <button class="btn-outline" data-action="linkEmail">이메일로 계정 저장</button>
+              <span class="settings-status">${escapeHtml(linkStatus)}</span>
+            </div>
+          </div>` : sb && authSession ? `<div class="settings-group">
             <h3>계정</h3>
             <div class="desc">${escapeHtml(authSession.user.email||'')} 로 로그인됨</div>
             <div class="settings-actions">
@@ -2633,6 +2682,8 @@
       case 'setAuthMode': setAuthMode(el.dataset.mode); break;
       case 'submitAuthForm': submitAuthForm(); break;
       case 'signOut': signOut(); break;
+      case 'linkEmail': linkEmail(); break;
+      case 'linkGoogle': linkGoogle(); break;
       case 'copyTemplate': {
         const t = getTemplates().find(x=>x.id===el.dataset.id);
         if(t){
