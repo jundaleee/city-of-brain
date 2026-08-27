@@ -609,9 +609,12 @@
   let authStatus = '';
   async function initAuth(){
     if(!sb) return;
+    // 리스너를 먼저 걸어야 함 — getSession()을 먼저 기다리면 그 사이에 Google 리다이렉트로
+    // 막 로그인된 이벤트가 지나가버려서 로그인 화면에 계속 머무는 경우가 생김
+    sb.auth.onAuthStateChange((_event, session)=>{ authSession = session; render(); });
     const { data } = await sb.auth.getSession();
     authSession = data.session;
-    sb.auth.onAuthStateChange((_event, session)=>{ authSession = session; render(); });
+    render();
   }
   // Google 로그인은 Supabase 대시보드 Authentication → Providers → Google에서
   // Client ID/Secret을 등록해야 실제로 동작함 (등록 전엔 눌러도 에러만 뜸)
