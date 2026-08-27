@@ -84,6 +84,8 @@
   .nav-item .label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .beta-pill{font-size:8.5px;font-weight:700;letter-spacing:.03em;color:var(--teal);background:rgba(100,210,255,.16);border:1px solid rgba(100,210,255,.35);border-radius:5px;padding:1.5px 4px;margin-left:auto;flex-shrink:0;}
   .sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);}
+  .footer-link{display:block;width:100%;background:none;border:none;color:var(--text-3);font-size:11px;text-align:left;padding:8px 12px;cursor:pointer;font-family:var(--sans);}
+  .footer-link:hover{color:var(--text-2);}
 
   .bottom-nav{display:none;}
   .main{flex:1;min-width:0;}
@@ -907,6 +909,7 @@
     else if(state.modal==='completed') document.body.insertAdjacentHTML('beforeend', renderCompletedModal());
     else if(state.modal==='quickAdd') document.body.insertAdjacentHTML('beforeend', renderQuickAddModal());
     else if(state.modal==='cityInspect') document.body.insertAdjacentHTML('beforeend', renderCityInspectModal());
+    else if(state.modal==='privacy') document.body.insertAdjacentHTML('beforeend', renderPrivacyModal());
 
     const nameInput = document.getElementById('studentNameInput');
     if(nameInput) nameInput.value = getStudentName();
@@ -925,6 +928,7 @@
       ${renderAdSlot('sidebar')}
       <div class="sidebar-foot">
         <button class="nav-item" data-action="openSettings"><span class="nav-icon" style="--nc:rgba(255,255,255,.16)">${icon('settings')}</span><span class="label">설정</span></button>
+        <button class="footer-link" data-action="openPrivacy">개인정보처리방침</button>
       </div>
     </div>`;
   }
@@ -2312,6 +2316,29 @@
     </div>`;
   }
 
+  /* ---- 개인정보처리방침 (애드센스 심사용 최소 고지) ---- */
+  function renderPrivacyModal(){
+    return `<div class="modal-overlay" data-action="closeModal">
+      <div class="modal">
+        <div class="modal-head"><h2>개인정보처리방침</h2><button class="modal-close" data-action="closeModal">${icon('close')}</button></div>
+        <div class="modal-body">
+          <div class="settings-group">
+            <h3>수집하는 정보</h3>
+            <div class="desc">Google 로그인을 사용하면 이메일 주소가 저장되고, 여기에 입력한 할 일·과목 데이터가 계정에 연결돼서 저장돼. 로그인하지 않으면 아무것도 서버에 저장되지 않고 이 브라우저에만 남아.</div>
+          </div>
+          <div class="settings-group">
+            <h3>광고 (Google AdSense)</h3>
+            <div class="desc">이 사이트는 Google AdSense로 광고를 표시할 수 있어. Google은 광고 개인화를 위해 쿠키를 사용할 수 있고, 광고 설정은 <a href="https://adssettings.google.com/" target="_blank" rel="noopener">Google 광고 설정</a>에서 직접 끄거나 조정할 수 있어.</div>
+          </div>
+          <div class="settings-group">
+            <h3>제3자 제공</h3>
+            <div class="desc">여기서 수집한 정보를 광고/분석 목적 외의 다른 곳에 팔거나 공유하지 않아.</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
   /* ---- Settings ---- */
   function renderSettingsModal(){
     const templates = getTemplates();
@@ -2619,6 +2646,7 @@
         break;
       }
       case 'openSettings': state.modal='settings'; render(); break;
+      case 'openPrivacy': state.modal='privacy'; render(); break;
       case 'closeModal': state.modal=null; render(); break;
       case 'exportData': exportData(); break;
       case 'importTrigger': document.getElementById('importFile').click(); break;
