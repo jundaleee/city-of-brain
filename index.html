@@ -613,26 +613,56 @@
   let authChecking = !!sb;
   let authAnonError = '';       // 익명 로그인 자체가 막혀있으면(설정 안 함) 로그인 화면으로 폴백
   let linkStatus = '';
+  // 계정이 바뀔 때만(로그인/로그아웃/다른 계정 전환) 클라우드와 동기화하고, 토큰 갱신 같은
+  // 부수적인 auth 이벤트에서는 다시 끌어오지 않기 위해 마지막으로 동기화한 사용자 id를 기억해둠
+  let lastSyncedUserId = null;
+  async function handleAuthChange(session){
+    if(!sb) return;
+    if(!session){
+      authSession = null;
+      lastSyncedUserId = null;
+      // 로그아웃하면 이 브라우저의 데이터는 그 계정 것이었으니 화면에서 지운다 —
+      // 실제 데이터는 클라우드에 남아있고, 다시 로그인하면 pullCloudData가 복원해줌
+      state.data = buildSkeleton();
+      persistLocal();
+      authChecking = false;
+      render();
+      return;
+    }
+    authSession = session;
+    if(session.user.id === lastSyncedUserId){
+      authChecking = false;
+      render();
+      return;
+    }
+    authChecking = true;
+    render();
+    await pullCloudData(session.user.id);
+    lastSyncedUserId = session.user.id;
+    authChecking = false;
+    render();
+  }
   async function initAuth(){
     if(!sb) return;
     authChecking = true;
     // 리스너를 먼저 걸어야 함 — getSession()을 먼저 기다리면 그 사이에 Google 리다이렉트로
     // 막 로그인된 이벤트가 지나가버려서 로그인 화면에 계속 머무는 경우가 생김
-    sb.auth.onAuthStateChange((_event, session)=>{ authSession = session; render(); });
+    sb.auth.onAuthStateChange((_event, session)=>{ handleAuthChange(session); });
     const { data } = await sb.auth.getSession();
     if(data.session){
-      authSession = data.session;
+      await handleAuthChange(data.session);
     } else {
       // 로그인 화면을 띄우기 전에 먼저 익명 계정으로 조용히 시작해본다 —
       // Supabase 대시보드에서 Anonymous Sign-ins를 켜둬야 동작함
       const { data: anon, error } = await sb.auth.signInAnonymously();
-      if(error) authAnonError = error.message;
-      else authSession = anon.session;
+      if(error){ authAnonError = error.message; authChecking = false; render(); }
+      else await handleAuthChange(anon.session);
     }
-    authChecking = false;
-    render();
   }
   function isAnon(){ return !!(authSession && authSession.user && authSession.user.is_anonymous); }
+  // 이미 계정이 있는데 이 기기가 새 익명 계정으로 시작해버렸을 때, 그 임시 계정을 버리고
+  // 로그인 화면으로 돌아가 기존 계정으로 들어갈 수 있게 해주는 통로
+  function switchAccount(){ signOut(); }
   async function linkEmail(){
     const email = (document.getElementById('linkEmailInput')||{}).value?.trim() || '';
     const password = (document.getElementById('linkPasswordInput')||{}).value || '';
@@ -681,10 +711,9 @@
   }
   function setAuthMode(mode){ state.authMode = mode; authStatus = ''; render(); }
   async function signOut(){
-    if(sb) await sb.auth.signOut();
-    authSession = null;
     state.modal = null;
-    render();
+    if(sb) await sb.auth.signOut();
+    await handleAuthChange(null);
   }
   function renderAuthLoading(){
     return `<div class="auth-gate"><div class="auth-card"><div class="auth-brand">City of Brain</div><div class="auth-desc">불러오는 중...</div></div></div>`;
@@ -779,10 +808,51 @@
       return raw ? JSON.parse(raw) : null;
     }catch(e){ return null; }
   }
-  function persist(){
+  function persistLocal(){
     if(!storageOK) return;
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data)); }
     catch(e){ storageOK = false; render(); }
+  }
+  function persist(){
+    persistLocal();
+    scheduleCloudPush();
+  }
+  // 데이터는 계정(user_id)에 묶여서 Supabase의 app_data 테이블에 저장됨.
+  // 로컬 저장은 오프라인/즉시 반응용 캐시일 뿐이고, 로그인 상태에서는 이 클라우드 사본이 진짜다.
+  let cloudPushTimer = null;
+  function scheduleCloudPush(){
+    if(!sb || !authSession) return;
+    clearTimeout(cloudPushTimer);
+    cloudPushTimer = setTimeout(pushCloudData, 600);
+  }
+  async function pushCloudData(){
+    if(!sb || !authSession) return;
+    try{
+      await sb.from('app_data').upsert({
+        user_id: authSession.user.id,
+        data: state.data,
+        updated_at: new Date().toISOString()
+      });
+    }catch(e){ /* 네트워크 문제 등 — 로컬 사본은 이미 안전하게 저장돼 있음 */ }
+  }
+  async function pullCloudData(userId){
+    if(!sb) return;
+    try{
+      const { data, error } = await sb.from('app_data').select('data').eq('user_id', userId).maybeSingle();
+      if(!error && data && data.data){
+        state.data = {
+          tasks: data.data.tasks || [],
+          completed: data.data.completed || [],
+          assignments: data.data.assignments || [],
+          ddays: data.data.ddays || [],
+          boxes: data.data.boxes || []
+        };
+        persistLocal();
+      } else {
+        // 이 계정으로 처음 동기화하는 것 — 지금 갖고 있는 데이터를 클라우드에 올려둔다
+        await pushCloudData();
+      }
+    }catch(e){ /* 네트워크 문제면 일단 로컬 데이터로 계속 진행 */ }
   }
   function getStudentName(){ try{ return localStorage.getItem(STUDENT_NAME_KEY) || ''; }catch(e){ return ''; } }
   function setStudentName(name){
@@ -2350,6 +2420,9 @@
               <button class="btn-outline" data-action="linkEmail">이메일로 계정 저장</button>
               <span class="settings-status">${escapeHtml(linkStatus)}</span>
             </div>
+            <div class="settings-actions">
+              <button class="btn-outline" data-action="switchAccount">이미 계정이 있어 — 다른 계정으로 로그인</button>
+            </div>
           </div>` : sb && authSession ? `<div class="settings-group">
             <h3>계정</h3>
             <div class="desc">${escapeHtml(authSession.user.email||'')} 로 로그인됨</div>
@@ -2685,6 +2758,7 @@
       case 'setAuthMode': setAuthMode(el.dataset.mode); break;
       case 'submitAuthForm': submitAuthForm(); break;
       case 'signOut': signOut(); break;
+      case 'switchAccount': switchAccount(); break;
       case 'linkEmail': linkEmail(); break;
       case 'linkGoogle': linkGoogle(); break;
       case 'copyTemplate': {
