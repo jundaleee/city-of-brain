@@ -82,7 +82,6 @@
   .nav-item:hover{background:var(--glass);color:var(--text);}
   .nav-item.active{background:var(--glass-strong);color:var(--text);font-weight:600;}
   .nav-item .label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .beta-pill{font-size:8.5px;font-weight:700;letter-spacing:.03em;color:var(--teal);background:rgba(100,210,255,.16);border:1px solid rgba(100,210,255,.35);border-radius:5px;padding:1.5px 4px;margin-left:auto;flex-shrink:0;}
   .sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);}
   .footer-link{display:block;width:100%;background:none;border:none;color:var(--text-3);font-size:11px;text-align:left;padding:8px 12px;cursor:pointer;font-family:var(--sans);}
   .footer-link:hover{color:var(--text-2);}
@@ -514,7 +513,8 @@
   .home-city{position:sticky;top:24px;}
   .home-city-head{display:flex;align-items:center;justify-content:space-between;gap:10px;
     margin-bottom:10px;font-size:13px;font-weight:600;color:var(--text-2);}
-  .home-city-head .beta-pill{margin-left:4px;}
+  .home-city-head .city-title{font-size:16px;font-weight:800;letter-spacing:-.01em;}
+  .city-title{background:linear-gradient(90deg,var(--blue),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent;}
   @media(max-width:1179px){ .home-split{display:block;} .home-city{display:none;} }
   .city3d-canvas canvas{display:block;width:100%;height:100%;touch-action:none;}
   .city3d-tip{position:absolute;z-index:4;max-width:250px;pointer-events:none;
@@ -540,7 +540,7 @@
   .city-inspect-meta{font-size:12.5px;color:var(--text-3);margin-bottom:16px;}
   .city-fix-flourish{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 0;font-size:13px;color:var(--text-2);}
   .city-fix-icon{color:var(--blue);animation:cityFixDrive 700ms ease-in-out;}
-  .city-fix-flourish.fire .city-fix-icon{color:var(--red);}
+  .city-fix-flourish.rest .city-fix-icon{color:var(--green);}
   .city-fix-icon svg{width:40px;height:40px;}
   @keyframes cityFixDrive{0%{transform:translateX(-40px);opacity:0;}30%{opacity:1;}100%{transform:translateX(40px);opacity:0;}}
 
@@ -678,7 +678,7 @@
   function renderAdSlot(place){
     const cls = place==='sidebar' ? 'ad-slot ad-slot-sidebar' : 'ad-slot';
     if(!ADSENSE_PUBLISHER_ID || !ADSENSE_SLOT_ID){
-      return `<div class="${cls} ad-slot-placeholder">광고 영역<br>(준비 중)</div>`;
+      return `<div class="${cls} ad-slot-placeholder"></div>`;
     }
     return `<div class="${cls}"><ins class="adsbygoogle" style="display:block;width:100%;"
       data-ad-client="${ADSENSE_PUBLISHER_ID}" data-ad-slot="${ADSENSE_SLOT_ID}"
@@ -699,8 +699,29 @@
     return x;
   }
 
+  // 과목 박스 색은 고정 팔레트를 순서대로 배정해서 매번 시각적으로 구분되게 한다
+  const BOX_PALETTE = [
+    { qc:'var(--blue)',   qg:'linear-gradient(135deg,var(--blue),var(--indigo))' },
+    { qc:'var(--green)',  qg:'linear-gradient(135deg,var(--green),var(--teal))' },
+    { qc:'var(--orange)', qg:'linear-gradient(135deg,var(--orange),var(--pink))' },
+    { qc:'var(--purple)', qg:'linear-gradient(135deg,var(--purple),var(--pink))' },
+    { qc:'var(--teal)',   qg:'linear-gradient(135deg,var(--teal),var(--blue))' },
+    { qc:'var(--red)',    qg:'linear-gradient(135deg,var(--red),var(--orange))' },
+    { qc:'var(--indigo)', qg:'linear-gradient(135deg,var(--indigo),var(--purple))' },
+    { qc:'var(--pink)',   qg:'linear-gradient(135deg,var(--pink),var(--red))' }
+  ];
+  // 처음 시작하거나 로그아웃해서 텅 빈 상태가 되면, 빈 화면 대신 예시 하나를 보여줘서
+  // "아 이렇게 쓰는 거구나"를 바로 알 수 있게 함 (수업 과제/자율학습 둘 다 하나씩)
   function buildSkeleton(){
-    return { tasks:[], completed:[], assignments:[], ddays:[], boxes:[] };
+    const demoBoxKey = genId();
+    return {
+      tasks: [
+        { id:genId(), text:'준달수학 100번까지 풀기', boxKey:demoBoxKey, corner:'self', createdAt:Date.now() },
+        { id:genId(), text:'다음 수업 개념 정리하기', boxKey:demoBoxKey, corner:'review', createdAt:Date.now() }
+      ],
+      completed: [], assignments: [], ddays: [],
+      boxes: [ { key:demoBoxKey, label:'수학', qc:BOX_PALETTE[0].qc, qg:BOX_PALETTE[0].qg } ]
+    };
   }
 
   /* ============ 오늘 정보 ============ */
@@ -713,9 +734,9 @@
   const todayISO = toISODate(now);
   function greetingWord(){
     const h = now.getHours();
-    if(h<11) return '좋은 아침이야';
-    if(h<17) return '좋은 오후야';
-    return '좋은 저녁이야';
+    if(h<11) return '좋은 아침이에요';
+    if(h<17) return '좋은 오후예요';
+    return '좋은 저녁이에요';
   }
 
   /* ============ 저장소 ============ */
@@ -846,6 +867,7 @@
       pencil:'<path d="M4 16v-2.5L13.5 4l2.5 2.5L6.5 16H4z"/><path d="M12 5.5 14.5 8"/>',
       car:'<path d="M3 13h14M4 13v-2.5L5.5 7h9L16 10.5V13"/><circle cx="6.5" cy="13.3" r="1.3"/><circle cx="13.5" cy="13.3" r="1.3"/>',
       house:'<path d="M3.5 9.5 10 4l6.5 5.5"/><path d="M5 8.7V16h10V8.7"/><rect x="8.3" y="11.5" width="3.4" height="3.4"/>',
+      person:'<circle cx="10" cy="6" r="2.6"/><path d="M4.5 16.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/>',
       truck:'<path d="M2 13.5h8V7.5H5L2 10.5v3z"/><path d="M10 13.5h6v-4h-2.5l-1-2H10v6z"/><circle cx="5.5" cy="15" r="1.4"/><circle cx="14" cy="15" r="1.4"/>',
       smoke:'<path d="M6 14c-1-2 1-2.5 0-4.5M10 14c-1-2 1-2.5 0-4.5M14 14c-1-2 1-2.5 0-4.5"/>',
       fire:'<path d="M10 3c0 2-2.5 3-2.5 5.5a2.5 2.5 0 0 0 5 0c0-1.5-1-2-1-3.2 0 1.7 1.5 2.2 1.5 4a3 3 0 1 1-6 0C6.5 6 10 5 10 3z"/>',
@@ -858,7 +880,7 @@
     {view:'home', label:'홈', icon:'home', color:'var(--blue)'},
     {view:'tasks', label:'할 일', icon:'tasks', color:'var(--green)'},
     {view:'assignments', label:'과제', icon:'assignments', color:'var(--orange)'},
-    {view:'city', label:'도시', icon:'city', color:'var(--teal)', beta:true}
+    {view:'city', label:'도시', icon:'city', color:'var(--teal)'}
   ];
 
   /* ============ 렌더 ============ */
@@ -873,7 +895,7 @@
     const viewChanged = state.view !== lastRenderedView;
     lastRenderedView = state.view;
     let html = renderTopbarMini();
-    if(!storageOK) html += `<div class="empty" style="color:var(--danger);">이 브라우저에서는 로컬 저장이 안 돼(시크릿 모드이거나 저장 공간이 꽉 찼을 수 있어). 작업 후 꼭 설정에서 내보내기로 백업해줘.</div>`;
+    if(!storageOK) html += `<div class="empty" style="color:var(--danger);">이 브라우저에서는 로컬 저장이 안 돼요(시크릿 모드이거나 저장 공간이 꽉 찼을 수 있어요). 작업 후 꼭 설정에서 내보내기로 백업해주세요.</div>`;
     if(state.view==='home') html += renderHome();
     else if(state.view==='tasks') html += renderTasksPage();
     else if(state.view==='assignments') html += renderAssignmentsPage();
@@ -914,7 +936,7 @@
   function renderSidebar(){
     const items = NAV_ITEMS.map(n=>`
       <button class="nav-item ${state.view===n.view?'active':''}" data-action="goView" data-view="${n.view}">
-        <span class="nav-icon" style="--nc:${n.color}">${icon(n.icon)}</span><span class="label">${n.label}</span>${n.beta?`<span class="beta-pill">BETA</span>`:''}
+        <span class="nav-icon" style="--nc:${n.color}">${icon(n.icon)}</span><span class="label">${n.label}</span>
       </button>`).join('');
     return `<div class="sidebar glass">
       <div class="sidebar-brand" data-action="goView" data-view="home"><div class="mark"></div><b>City of Brain</b></div>
@@ -941,16 +963,6 @@
   /* ---- Home: 유저가 직접 만드는 과목 박스 ----
      처음엔 박스가 하나도 없다가, 유저가 필요한 과목/분야를 직접 이름 붙여서 추가해간다.
      색은 고정 팔레트를 순서대로 배정해서 매번 시각적으로 구분되게 한다. */
-  const BOX_PALETTE = [
-    { qc:'var(--blue)',   qg:'linear-gradient(135deg,var(--blue),var(--indigo))' },
-    { qc:'var(--green)',  qg:'linear-gradient(135deg,var(--green),var(--teal))' },
-    { qc:'var(--orange)', qg:'linear-gradient(135deg,var(--orange),var(--pink))' },
-    { qc:'var(--purple)', qg:'linear-gradient(135deg,var(--purple),var(--pink))' },
-    { qc:'var(--teal)',   qg:'linear-gradient(135deg,var(--teal),var(--blue))' },
-    { qc:'var(--red)',    qg:'linear-gradient(135deg,var(--red),var(--orange))' },
-    { qc:'var(--indigo)', qg:'linear-gradient(135deg,var(--indigo),var(--purple))' },
-    { qc:'var(--pink)',   qg:'linear-gradient(135deg,var(--pink),var(--red))' }
-  ];
   function boxes(){ return state.data.boxes; }
   function findBox(key){ return state.data.boxes.find(b=>b.key===key) || null; }
   function hasBox(key){ return !!findBox(key); }
@@ -962,7 +974,7 @@
     persist(); render();
   }
   function deleteBox(key){
-    if(!confirm('이 과목을 지우면 여기 달려있던 할 일들은 "미분류"로 남아. 지울까?')) return;
+    if(!confirm('이 과목을 지우면 여기 달려있던 할 일들은 "미분류"로 남아요. 지울까요?')) return;
     state.data.boxes = state.data.boxes.filter(b=>b.key!==key);
     state.data.tasks.forEach(t=>{ if(t.boxKey===key) t.boxKey=null; });
     state.data.completed.forEach(t=>{ if(t.boxKey===key) t.boxKey=null; });
@@ -1022,8 +1034,8 @@
     const neglected = boxes().filter(b=>counts[b.key]===0);
     if(neglected.length===0) return '';
     const hasLowTagged = state.data.assignments.some(a=>!a.done && a.priority==='low');
-    const extra = hasLowTagged ? ' 가성비 "하"로 태그해둔 과제가 있다면 그것 때문에 아예 손 놓은 건 아닌지 확인해봐.' : '';
-    return `<div class="balance-warn">이번 주 <b>${neglected.map(b=>escapeHtml(b.label)).join(', ')}</b> 완료한 게 하나도 없어 — 다른 과목엔 몰려있는데 여긴 비어있어.${extra}</div>`;
+    const extra = hasLowTagged ? ' 가성비 "하"로 태그해둔 과제가 있다면 그것 때문에 아예 손 놓은 건 아닌지 확인해보세요.' : '';
+    return `<div class="balance-warn">이번 주 <b>${neglected.map(b=>escapeHtml(b.label)).join(', ')}</b> 완료한 게 하나도 없어요 — 다른 과목엔 몰려있는데 여긴 비어있어요.${extra}</div>`;
   }
 
   /* ---- 스톱워치: 항목에 연결해서 얼마나 붙잡고 있었는지 재는 용도 ---- */
@@ -1097,7 +1109,7 @@
     }).join('');
 
     return `<div class="pomo-card">
-      <div class="pomo-drop-hint">여기에 놓으면 스톱워치에 연결돼</div>
+      <div class="pomo-drop-hint">여기에 놓으면 스톱워치에 연결돼요</div>
       <div class="pomo-ring ${sw.running?'running':''}" id="swRing">
         <div class="pomo-display" id="swDisplay">${swFormat(sw.elapsedSec)}</div>
       </div>
@@ -1146,7 +1158,7 @@
   function renderDdayCard(){
     const list = (state.data.ddays||[]).slice().sort((a,b)=>a.date.localeCompare(b.date));
     const rowsHtml = list.length===0
-      ? `<div class="empty dday-empty">등록된 디데이가 없어.</div>`
+      ? `<div class="empty dday-empty">등록된 디데이가 없어요.</div>`
       : list.map(d=>{
         const dueMid = new Date(d.date+'T00:00:00').getTime();
         const dLeft = Math.round((dueMid-todayMid)/86400000);
@@ -1212,7 +1224,7 @@
     const allPending = state.data.assignments.filter(a=>!a.done).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
     const pending = allPending.slice(0,3);
     const asgHtml = pending.length===0
-      ? `<div class="empty">등록된 과제가 없어.</div>`
+      ? `<div class="empty">등록된 과제가 없어요.</div>`
       : pending.map(a=>assignmentRowHtml(a,false)).join('');
 
     const left = `
@@ -1239,7 +1251,7 @@
       <div class="home-main">${left}</div>
       <aside class="home-city">
         <div class="home-city-head">
-          <span>도시 <span class="beta-pill">BETA</span></span>
+          <span class="city-title">City of Brain</span>
           <button class="section-link" data-action="goView" data-view="city">크게 보기</button>
         </div>
         <div id="city3dSlot" class="city-slot-home"></div>
@@ -1325,7 +1337,7 @@
       <div class="task-body">
         ${box?`<div class="task-tag">${escapeHtml(box.label)}</div>`:''}
         <div class="task-text">${escapeHtml(item.text)}</div>
-        ${stale?`<div class="task-stale-badge">${days}일째 그대로 — 서둘러줘</div>`:''}
+        ${stale?`<div class="task-stale-badge">${days}일째 그대로 — 서둘러주세요</div>`:''}
       </div>
       <button class="task-del" title="수정" data-action="editTask" data-id="${item.id}">${icon('pencil')}</button>
       <button class="task-del" title="삭제" data-action="deleteTask" data-id="${item.id}">${icon('trash')}</button>
@@ -1346,8 +1358,8 @@
     const review = state.data.tasks.filter(t=>t.corner==='review').sort((a,b)=>itemStaleDays(b)-itemStaleDays(a));
     const self = state.data.tasks.filter(t=>t.corner==='self').sort((a,b)=>b.createdAt-a.createdAt);
 
-    const reviewHtml = review.length===0 ? `<div class="empty">수업 과제가 없어.</div>` : review.map(taskRowHtml).join('');
-    const selfHtml = self.length===0 ? `<div class="empty">자율학습 항목이 없어.</div>` : self.map(taskRowHtml).join('');
+    const reviewHtml = review.length===0 ? `<div class="empty">수업 과제가 없어요.</div>` : review.map(taskRowHtml).join('');
+    const selfHtml = self.length===0 ? `<div class="empty">자율학습 항목이 없어요.</div>` : self.map(taskRowHtml).join('');
 
     return `<div class="fade-in">
       <div class="page-head"><h1>할 일</h1></div>
@@ -1430,7 +1442,7 @@
         <button class="corner-tab ${state.asgSortMode==='due'?'active':''}" data-action="setAsgSortMode" data-mode="due">마감일순</button>
         <button class="corner-tab ${state.asgSortMode==='priority'?'active':''}" data-action="setAsgSortMode" data-mode="priority">가성비순</button>
       </div>`:''}
-      ${sorted.length===0?`<div class="empty">등록된 과제가 없어.</div>`:rows}
+      ${sorted.length===0?`<div class="empty">등록된 과제가 없어요.</div>`:rows}
     </div>`;
   }
 
@@ -1447,12 +1459,12 @@
     if(days>=4) return 1;  // 연기
     return 0;               // 정상 주행
   }
-  // 집(자율학습): 4단계 — 평온→연기→화재→붕괴
-  function houseDecayStage(days){
-    if(days>=15) return 3; // 붕괴
-    if(days>=10) return 2; // 화재
-    if(days>=4) return 1;  // 연기
-    return 0;               // 평온
+  // 사람(자율학습): 4단계 — 평범→지침→많이 지침→쓰러짐
+  function humanFatigueStage(days){
+    if(days>=15) return 3; // 쓰러짐
+    if(days>=10) return 2; // 많이 지침
+    if(days>=4) return 1;  // 지침
+    return 0;               // 평범
   }
   // 연기 단계(1단계)에 들어선 뒤로도 4~7일째에 걸쳐 연기가 점점 짙어지게 — 하루 만에
   // 뚝 나타났다 그대로 머무는 대신 방치가 길어질수록 눈에 띄게 다급해 보인다
@@ -1460,22 +1472,31 @@
   function collectCityCitizens(){
     return state.data.tasks.map(item=>{
       const days = itemStaleDays(item);
-      const vehicle = item.corner==='review' ? 'car' : 'house';
-      const stage = vehicle==='car' ? carDecayStage(days) : houseDecayStage(days);
+      const vehicle = item.corner==='review' ? 'car' : 'human';
+      const stage = vehicle==='car' ? carDecayStage(days) : humanFatigueStage(days);
       return {vehicle, corner:item.corner, item, days, stage, smoke:smokeLevel(days), color:citySubjectColor(item)};
     });
+  }
+  // 도시 발전도 — 개별 항목이 아니라 지금까지 완료한 전체 개수로 랜드마크 건물이 단계별로 커짐
+  function cityLandmarkLevel(){
+    const n = state.data.completed.length;
+    if(n>=50) return 4;
+    if(n>=25) return 3;
+    if(n>=10) return 2;
+    if(n>=3) return 1;
+    return 0;
   }
   function collectGraduatingThisWeek(){
     const weekStart = mondayOf(now).getTime();
     return state.data.completed
       .filter(it=>it.completedAt>=weekStart)
-      .map(it=>({vehicle: it.corner==='review'?'car':'house', corner:it.corner, item:it, color:citySubjectColor(it)}));
+      .map(it=>({vehicle: it.corner==='review'?'car':'human', corner:it.corner, item:it, color:citySubjectColor(it)}));
   }
   function collectGraduationArchive(){
     const groups = {};
     state.data.completed.forEach(it=>{
       const wk = mondayOf(new Date(it.completedAt)).getTime();
-      (groups[wk] = groups[wk] || []).push({vehicle: it.corner==='review'?'car':'house', corner:it.corner, item:it, color:citySubjectColor(it)});
+      (groups[wk] = groups[wk] || []).push({vehicle: it.corner==='review'?'car':'human', corner:it.corner, item:it, color:citySubjectColor(it)});
     });
     return Object.keys(groups).map(Number).sort((a,b)=>b-a)
       .map(wk=>({weekStart:wk, items:groups[wk].sort((a,b)=>b.item.completedAt-a.item.completedAt)}));
@@ -1530,7 +1551,7 @@
   function citySignature(){
     const cz = collectCityCitizens();
     // smoke는 같은 단계 안에서도 날마다 짙어지는 연기 세기라 signature에 넣어야 갱신됨
-    return cz.map(c=>c.item.id+':'+c.stage+':'+c.smoke+':'+c.vehicle).sort().join('|');
+    return cz.map(c=>c.item.id+':'+c.stage+':'+c.smoke+':'+c.vehicle).sort().join('|') + '|LM:' + cityLandmarkLevel();
   }
   function setCityStatus(msg){
     if(CITY3D.statusEl) CITY3D.statusEl.textContent = msg || '';
@@ -1680,8 +1701,8 @@
 
     const citizens = collectCityCitizens();
     const cars = citizens.filter(c=>c.vehicle==='car');
-    const houses = citizens.filter(c=>c.vehicle==='house');
-    const N = isoGridDim(houses.length);
+    const humans = citizens.filter(c=>c.vehicle==='human');
+    const N = isoGridDim(humans.length + 1); // +1: 도시 발전도를 보여주는 랜드마크 건물 자리
     const half = (N-1)/2;
     const wx = i => (i-half)*CITY_TILE;
     const span = (N+1)*CITY_TILE;
@@ -1793,39 +1814,57 @@
     plots.sort((a,b)=>hashStr('plot'+a.c+'x'+a.r)-hashStr('plot'+b.c+'x'+b.r));
 
     const used = new Set();
-    houses.forEach((cz,i)=>{
-      const cell = plots[i % plots.length];
-      used.add(cell.c+'x'+cell.r);
-      const holder = new T.Group();
-      holder.position.set(wx(cell.c), 0, wx(cell.r));
-      holder.rotation.y = (hashStr(cz.item.id+'rot')%4) * Math.PI/2;
-      g.add(holder);
 
+    // 랜드마크 — 개별 할 일이 아니라 지금까지 완료한 전체 개수로 단계별로 커지는
+    // 도시 중심 건물. 첫 번째 구획을 항상 이 자리로 예약해둔다.
+    const landmarkCell = plots[0];
+    used.add(landmarkCell.c+'x'+landmarkCell.r);
+    {
+      const lvl = cityLandmarkLevel();
+      const lmHex = cssVarHex('var(--teal)');
+      const LM_W = [0.55, 0.75, 0.92, 1.08, 1.28];
+      const LM_H = [0.55, 0.9, 1.3, 1.75, 2.3];
+      const holder = new T.Group();
+      holder.position.set(wx(landmarkCell.c), 0, wx(landmarkCell.r));
+      g.add(holder);
+      const b = spawn(CITY_BUILDINGS[(lvl*3) % CITY_BUILDINGS.length]);
+      if(b){ fitBuilding(b, CITY_TILE*LM_W[lvl], CITY_TILE*LM_H[lvl]); recolor(b, '#ffcf6b', 'tint', 0.18+lvl*0.06); holder.add(b); }
+      addGlow(holder, lmHex, CITY_TILE*(1.4+lvl*0.3));
+      addRing(holder, lmHex, CITY_TILE*(0.5+lvl*0.08));
+      addBeacon(holder, lmHex, CITY_TILE*0.5+lvl*0.4);
+    }
+
+    // 사람(자율학습) — 자기 구획 안을 좁게 서성이다가, 완전히 지치면 그 자리에 멈춰 선다
+    humans.forEach((cz,i)=>{
+      const cell = plots[(1+i) % plots.length];
+      used.add(cell.c+'x'+cell.r);
+      const home = new T.Vector3(wx(cell.c), 0, wx(cell.r));
       const hex = cssVarHex(cz.color);
-      if(cz.stage===3){
-        // 붕괴 — 건물을 납작하게 누르고 어둡게, 주변에 잔해
-        const b = spawn(CITY_BUILDINGS[hashStr(cz.item.id)%CITY_BUILDINGS.length]);
-        if(b){ fitBuilding(b, CITY_TILE*0.74, CITY_TILE*0.7); b.scale.y *= 0.24; recolor(b, null, 'dark'); holder.add(b); }
-        ['debris-plate','debris-door','debris-tire'].forEach((d,k)=>{
-          const o = spawn(d); if(!o) return;
-          fitMax(o, CITY_TILE*0.13);
-          o.position.set(Math.cos(k*2.1)*0.85, o.position.y, Math.sin(k*2.1)*0.85);
-          o.rotation.y = k*1.7; recolor(o, null, 'dark'); holder.add(o);
-        });
-      } else {
-        const b = spawn(CITY_BUILDINGS[hashStr(cz.item.id)%CITY_BUILDINGS.length]);
-        if(b){ fitBuilding(b, CITY_TILE*0.78, CITY_TILE*0.72); recolor(b, hex, 'tint', 0.34); holder.add(b); }
-        if(cz.stage===1) addHazard(holder, 'smoke', 2.6, hex, 0.4+cz.smoke*0.2);
-        if(cz.stage===2){ addHazard(holder, 'fire', 2.2, hex); addHazard(holder, 'smoke', 3.4, hex); }
-      }
-      addGlow(holder, hex, CITY_TILE*1.5);
-      addRing(holder, hex, CITY_TILE*0.52);
-      addBeacon(holder, hex, cz.stage===3 ? 1.6 : 3.6);
+      const o = spawn(CITY_CHARS[hashStr(cz.item.id+'human') % CITY_CHARS.length]);
+      if(!o) return;
+      const rig = poseCharacter(o);
+      fitH(o, CITY_TILE*0.42);
+      const collapsed = cz.stage===3;
+      if(collapsed) recolor(o, null, 'dark');
+      const holder = new T.Group();
+      holder.position.copy(home);
+      holder.rotation.y = (hashStr(cz.item.id+'rot')%4) * Math.PI/2;
+      holder.add(o);
+      g.add(holder);
+      addGlow(holder, hex, CITY_TILE*1.1);
+      addRing(holder, hex, CITY_TILE*0.36);
+      addBeacon(holder, hex, collapsed ? 1.3 : 2.2);
+      if(cz.stage===1 || cz.stage===2) addHazard(holder, 'smoke', 1.7, hex, 0.4+cz.smoke*0.2);
       pick(cz, holder);
+      if(!collapsed){
+        CITY3D.peds.push({obj:holder, rig, t:0, dur:4+Math.random()*4,
+          from:home.clone(), to:home.clone(), home:home.clone(), range:0.9,
+          bob: Math.random()*6.28});
+      }
     });
 
-    // 빈 구획엔 건물을 세우지 않는다 — 집은 할 일 하나당 하나. 대신 가끔 나무만 심어서
-    // 허전하지 않게 하고, 어느 집이 진짜 할 일인지 헷갈리지 않게 한다.
+    // 빈 구획엔 건물을 세우지 않는다 — 사람은 할 일 하나당 한 명. 대신 가끔 나무만 심어서
+    // 허전하지 않게 하고, 어느 자리가 진짜 할 일인지 헷갈리지 않게 한다.
     plots.forEach(p=>{
       if(used.has(p.c+'x'+p.r)) return;
       const hs = hashStr('f'+p.c+'_'+p.r);
@@ -2105,7 +2144,7 @@
     const tag = cz.item.boxKey && hasBox(cz.item.boxKey) ? findBox(cz.item.boxKey).label : '미분류';
     const stageLabel = isCar
       ? ['정상 주행 중','연기가 나는 중','완전히 고장남'][cz.stage]
-      : ['평온함','굴뚝에서 연기','집에 불이 남','집이 무너짐'][cz.stage];
+      : ['평범하게 지내는 중','조금 지침','많이 지침','완전히 지쳐 쓰러짐'][cz.stage];
     CITY3D.tip.innerHTML = `<div class="ct-tag">${escapeHtml(tag)} · ${isCar?'수업 과제':'자율학습'}</div>`
       + `<div class="ct-text">${escapeHtml(cz.item.text)}</div>`
       + `<div class="ct-meta">${cz.days}일째 · ${stageLabel}</div>`;
@@ -2201,11 +2240,11 @@
     const citizens = collectCityCitizens();
     const graduating = collectGraduatingThisWeek();
     return `<div class="fade-in">
-      <div class="page-head"><h1>도시 <span class="beta-pill" style="margin-left:6px;">BETA</span></h1><button class="iconbtn" data-action="goCityArchive">${icon('external')} 졸업 앨범</button></div>
-      <div class="empty" style="padding:0 0 14px;">수업 과제는 도로를 달리는 자동차, 자율학습은 집에 사는 시민이야. 방치하면 연기가 나고 결국 불이 붙어.</div>
-      ${graduating.length>0?`<div class="city-graduating">🎓 이번 주 졸업 예정 ${graduating.length}명 — 다음 주 월요일에 졸업 앨범으로 넘어가</div>`:''}
+      <div class="page-head"><h1 class="city-title">City of Brain</h1><button class="iconbtn" data-action="goCityArchive">${icon('external')} 졸업 앨범</button></div>
+      <div class="empty" style="padding:0 0 14px;">수업 과제는 도로를 달리는 자동차, 자율학습은 도시를 돌아다니는 시민이에요. 방치하면 지쳐가다가 결국 쓰러져요. 할 일을 계속 완료하면 도시 한가운데 건물이 단계별로 커져요.</div>
+      ${graduating.length>0?`<div class="city-graduating">🎓 이번 주 졸업 예정 ${graduating.length}명 — 다음 주 월요일에 졸업 앨범으로 넘어가요</div>`:''}
       <div id="city3dSlot" class="city-slot-full"></div>
-      ${citizens.length===0?`<div class="empty">아직 시민이 없어 — 할 일 탭에서 수업 과제나 자율학습을 추가하면 도시에 나타나.</div>`:''}
+      ${citizens.length===0?`<div class="empty">아직 시민이 없어요 — 할 일 탭에서 수업 과제나 자율학습을 추가하면 도시에 나타나요.</div>`:''}
     </div>`;
   }
   function findCityItem(target){
@@ -2217,15 +2256,15 @@
     if(!item) return '';
     const isCar = item.corner==='review';
     const days = itemStaleDays(item);
-    const stage = isCar ? carDecayStage(days) : houseDecayStage(days);
+    const stage = isCar ? carDecayStage(days) : humanFatigueStage(days);
     const stageLabel = isCar
-      ? ['정상 주행 중이야','연기가 나고 있어','완전히 고장났어'][stage]
-      : ['평온해','굴뚝에서 연기가 나','집에 불이 났어','집이 무너졌어'][stage];
+      ? ['정상 주행 중이에요','연기가 나고 있어요','완전히 고장났어요'][stage]
+      : ['평범하게 지내고 있어요','조금 지쳤어요','많이 지쳤어요','완전히 지쳐 쓰러졌어요'][stage];
     const box = item.boxKey && hasBox(item.boxKey) ? findBox(item.boxKey) : null;
     const tag = box ? box.label : '미분류';
     return `<div class="modal-overlay" data-action="closeModal">
       <div class="modal" style="max-width:360px;">
-        <div class="modal-head"><h2>${isCar?icon('car'):icon('house')} ${escapeHtml(tag)}</h2><button class="modal-close" data-action="closeModal">${icon('close')}</button></div>
+        <div class="modal-head"><h2>${isCar?icon('car'):icon('person')} ${escapeHtml(tag)}</h2><button class="modal-close" data-action="closeModal">${icon('close')}</button></div>
         <div class="modal-body">
           <div class="city-inspect-text">${escapeHtml(item.text)}</div>
           <div class="city-inspect-meta">등록한 지 ${days}일째 · ${stageLabel}</div>
@@ -2236,13 +2275,13 @@
   }
   function renderGraduationArchive(){
     const weeks = collectGraduationArchive();
-    const weeksHtml = weeks.length===0 ? `<div class="empty">아직 졸업한 시민이 없어.</div>` : weeks.map(w=>{
+    const weeksHtml = weeks.length===0 ? `<div class="empty">아직 졸업한 시민이 없어요.</div>` : weeks.map(w=>{
       const label = fmtShortDate(toISODate(new Date(w.weekStart)));
       const rows = w.items.map(entry=>{
         const box = entry.item.boxKey && hasBox(entry.item.boxKey) ? findBox(entry.item.boxKey) : null;
         const tag = box ? box.label : '미분류';
         return `<div class="city-grad-row">
-          <span class="city-grad-icon" style="--fc:${entry.color};">${icon(entry.vehicle==='car'?'car':'house')}</span>
+          <span class="city-grad-icon" style="--fc:${entry.color};">${icon(entry.vehicle==='car'?'car':'person')}</span>
           <div class="city-grad-body"><div class="city-grad-tag">${escapeHtml(tag)}</div><div class="city-grad-text">${escapeHtml(entry.item.text)}</div></div>
           <button class="city-grad-del" title="졸업 취소하고 기록 지우기" data-action="deletePermanent" data-id="${entry.item.id}">${icon('trash')}</button>
         </div>`;
@@ -2278,7 +2317,7 @@
     return `<div class="modal-overlay" data-action="closeModal">
       <div class="modal completed-modal">
         <div class="modal-head"><h2>완료 목록</h2><button class="modal-close" data-action="closeModal">${icon('close')}</button></div>
-        <div class="modal-body">${state.data.completed.length===0?`<div class="empty">아직 완료한 항목이 없어.</div>`:groups}</div>
+        <div class="modal-body">${state.data.completed.length===0?`<div class="empty">아직 완료한 항목이 없어요.</div>`:groups}</div>
       </div>
     </div>`;
   }
@@ -2290,7 +2329,7 @@
     const corner = state.quickAddCorner;
     const tabs = ['review','self'].map(c=>`<button class="corner-tab ${corner===c?'active':''}" data-action="setQuickAddCorner" data-corner="${c}">${CORNER_LABELS[c]}</button>`).join('');
     const recent = state.data.tasks.filter(t=>t.boxKey===boxKey && t.corner===corner).sort((a,b)=>b.createdAt-a.createdAt).slice(0,4);
-    const recentHtml = recent.length===0 ? `<div class="empty" style="padding:10px 0;">아직 항목이 없어.</div>` : recent.map(it=>`
+    const recentHtml = recent.length===0 ? `<div class="empty" style="padding:10px 0;">아직 항목이 없어요.</div>` : recent.map(it=>`
       <div class="task-row">
         <button class="task-check" data-action="completeTask" data-id="${it.id}">${icon('check')}</button>
         <div class="task-body"><div class="task-text">${escapeHtml(it.text)}</div></div>
@@ -2319,15 +2358,15 @@
         <div class="modal-body">
           <div class="settings-group">
             <h3>수집하는 정보</h3>
-            <div class="desc">Google 로그인을 사용하면 이메일 주소가 저장되고, 여기에 입력한 할 일·과목 데이터가 계정에 연결돼서 저장돼. 로그인하지 않으면 아무것도 서버에 저장되지 않고 이 브라우저에만 남아.</div>
+            <div class="desc">Google 로그인을 사용하면 이메일 주소가 저장되고, 여기에 입력한 할 일·과목 데이터가 계정에 연결돼서 저장돼요. 로그인하지 않으면 아무것도 서버에 저장되지 않고 이 브라우저에만 남아요.</div>
           </div>
           <div class="settings-group">
             <h3>광고 (Google AdSense)</h3>
-            <div class="desc">이 사이트는 Google AdSense로 광고를 표시할 수 있어. Google은 광고 개인화를 위해 쿠키를 사용할 수 있고, 광고 설정은 <a href="https://adssettings.google.com/" target="_blank" rel="noopener">Google 광고 설정</a>에서 직접 끄거나 조정할 수 있어.</div>
+            <div class="desc">이 사이트는 Google AdSense로 광고를 표시할 수 있어요. Google은 광고 개인화를 위해 쿠키를 사용할 수 있고, 광고 설정은 <a href="https://adssettings.google.com/" target="_blank" rel="noopener">Google 광고 설정</a>에서 직접 끄거나 조정할 수 있어요.</div>
           </div>
           <div class="settings-group">
             <h3>제3자 제공</h3>
-            <div class="desc">여기서 수집한 정보를 광고/분석 목적 외의 다른 곳에 팔거나 공유하지 않아.</div>
+            <div class="desc">여기서 수집한 정보를 광고/분석 목적 외의 다른 곳에 팔거나 공유하지 않아요.</div>
           </div>
         </div>
       </div>
@@ -2359,7 +2398,7 @@
             </div>
           </div>` : `<div class="settings-group">
             <h3>계정</h3>
-            <div class="desc">로그인 안 해도 이 기기에는 계속 저장돼. Google로 로그인하면 다른 기기에서도 같은 목록을 볼 수 있어.</div>
+            <div class="desc">로그인 안 해도 이 기기에는 계속 저장돼요. Google로 로그인하면 다른 기기에서도 같은 목록을 볼 수 있어요.</div>
             <button class="btn-google" data-action="signInGoogle">
               <svg width="17" height="17" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.87-3.04.87-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.73A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.19.28-1.73V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.06l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
               Google로 로그인
@@ -2368,7 +2407,7 @@
 
           <div class="settings-group">
             <h3>이름</h3>
-            <div class="desc">홈 화면 인사말에 쓰여. (예: "좋은 아침이야, 준혁")</div>
+            <div class="desc">홈 화면 인사말에 쓰여요. (예: "좋은 아침이에요, 준혁")</div>
             <input type="text" id="studentNameInput" placeholder="이름">
             <div class="settings-actions">
               <button class="btn-outline" data-action="saveStudentName">저장</button>
@@ -2377,7 +2416,7 @@
 
           <div class="settings-group">
             <h3>보고서 템플릿</h3>
-            <div class="desc">자주 쓰는 보고서 뼈대나 기본 코드를 저장해두고 "복사" 버튼으로 바로 클립보드에 복사해서 붙여넣을 수 있어. 여기서 자유롭게 수정·추가·삭제해줘 (이 브라우저에만 저장, 내보내기 백업에는 포함 안 됨).</div>
+            <div class="desc">자주 쓰는 보고서 뼈대나 기본 코드를 저장해두고 "복사" 버튼으로 바로 클립보드에 복사해서 붙여넣을 수 있어요. 여기서 자유롭게 수정·추가·삭제해주세요 (이 브라우저에만 저장, 내보내기 백업에는 포함 안 됨).</div>
             ${tplRows}
             <div class="add-row">
               <input type="text" class="add-input" id="newTplName" placeholder="새 템플릿 이름 (예: 정보 수행평가)">
@@ -2387,7 +2426,7 @@
 
           <div class="settings-group">
             <h3>데이터</h3>
-            <div class="desc">정기적으로 내보내기 백업을 해두는 걸 추천해.</div>
+            <div class="desc">정기적으로 내보내기 백업을 해두는 걸 추천해요.</div>
             <div class="settings-actions">
               <button class="btn-outline" data-action="exportData">내보내기</button>
               <button class="btn-outline" data-action="importTrigger">가져오기</button>
@@ -2494,9 +2533,9 @@
     const isCar = item.corner==='review';
     const modalBody = document.querySelector('.modal-body');
     if(modalBody){
-      modalBody.innerHTML = `<div class="city-fix-flourish ${isCar?'repair':'fire'}">
-        <span class="city-fix-icon">${icon('truck')}</span>
-        <div>${isCar?'수리차가 와서 고쳐주고 있어...':'소방차가 와서 불을 끄고 있어...'}</div>
+      modalBody.innerHTML = `<div class="city-fix-flourish ${isCar?'repair':'rest'}">
+        <span class="city-fix-icon">${icon(isCar?'truck':'person')}</span>
+        <div>${isCar?'수리차가 와서 고쳐주고 있어요...':'푹 쉬고 다시 기운을 차리고 있어요...'}</div>
       </div>`;
     }
     setTimeout(()=>{
@@ -2526,7 +2565,7 @@
           boxes: parsed.boxes || []
         };
         persist(); render();
-      }catch(err){ alert('파일을 읽지 못했어. JSON 형식이 맞는지 확인해줘.'); }
+      }catch(err){ alert('파일을 읽지 못했어요. JSON 형식이 맞는지 확인해주세요.'); }
     };
     reader.readAsText(file);
   }
