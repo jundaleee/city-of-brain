@@ -682,7 +682,9 @@
   function setAuthMode(mode){ state.authMode = mode; authStatus = ''; render(); }
   async function signOut(){
     if(sb) await sb.auth.signOut();
-    authSession = null; render();
+    authSession = null;
+    state.modal = null;
+    render();
   }
   function renderAuthLoading(){
     return `<div class="auth-gate"><div class="auth-card"><div class="auth-brand">City of Brain</div><div class="auth-desc">불러오는 중...</div></div></div>`;
@@ -872,6 +874,7 @@
       bottomNavSlot.innerHTML = '';
       app.classList.remove('wide');
       app.innerHTML = authChecking ? renderAuthLoading() : renderAuthGate();
+      document.querySelectorAll('.modal-overlay').forEach(el=>el.remove());
       stopCityLoop();
       return;
     }
