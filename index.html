@@ -86,6 +86,10 @@
   .sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);}
   .footer-link{display:block;width:100%;background:none;border:none;color:var(--text-3);font-size:11px;text-align:left;padding:8px 12px;cursor:pointer;font-family:var(--sans);}
   .footer-link:hover{color:var(--text-2);}
+  .sidebar-auth-status{font-size:11px;color:var(--text-3);padding:0 12px 10px;}
+  .sidebar-account{padding:0 12px 10px;}
+  .sidebar-account-email{font-size:11px;color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px;}
+  .sidebar-foot .sidebar-login-btn{margin:0 0 10px;padding:9px 14px;font-size:12.5px;}
 
   .bottom-nav{display:none;}
   .main{flex:1;min-width:0;}
@@ -184,11 +188,18 @@
   }
 
   /* ---- 디데이 + 스톱워치를 가로로 절반씩 ---- */
-  .dday-sw-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch;margin-bottom:20px;}
+  .dday-sw-row{
+    display:grid;grid-template-columns:1fr 1fr;align-items:stretch;margin-bottom:20px;
+    background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
+    border:1px solid var(--border);border-top-color:var(--border-hi);border-radius:var(--r-lg);overflow:hidden;
+  }
   .dday-sw-row > *{min-width:0;}
-  .dday-sw-row .dday-card{margin-bottom:0;}
-  .dday-sw-row .pomo-card{margin-bottom:0;height:100%;}
-  @media (max-width:720px){ .dday-sw-row{grid-template-columns:1fr;} }
+  .dday-sw-row .dday-card{margin-bottom:0;background:none;border:none;border-radius:0;box-shadow:none;border-right:1px solid var(--border);}
+  .dday-sw-row .pomo-card{margin-bottom:0;height:100%;background:none;border:none;border-radius:0;box-shadow:none;}
+  @media (max-width:720px){
+    .dday-sw-row{grid-template-columns:1fr;}
+    .dday-sw-row .dday-card{border-right:none;border-bottom:1px solid var(--border);}
+  }
 
   /* ---- 디데이 ---- */
   .dday-card{
@@ -556,11 +567,6 @@
   @keyframes fadeIn{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:none;}}
 
   /* ---- 로그인 ---- */
-  .auth-gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
-  .auth-card{width:100%;max-width:380px;background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
-    border:1px solid var(--border);border-top-color:var(--border-hi);border-radius:var(--r-lg);padding:32px 28px;text-align:center;}
-  .auth-brand{font-size:20px;font-weight:800;margin-bottom:6px;}
-  .auth-desc{font-size:13px;color:var(--text-3);margin-bottom:20px;line-height:1.5;}
   .btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
     background:#fff;color:#1f1f1f;border:1px solid var(--border);border-radius:var(--r-pill);
     padding:11px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:14px;}
@@ -569,7 +575,7 @@
   /* ---- 광고 슬롯 ---- */
   .ad-slot{margin:20px 0;min-height:90px;display:flex;align-items:center;justify-content:center;}
   .ad-slot-placeholder{border:1px dashed var(--border);border-radius:var(--r-md);color:var(--text-3);font-size:12px;width:100%;text-align:center;line-height:1.5;}
-  .ad-slot-sidebar{min-height:160px;margin:14px 0;}
+  .ad-slot-sidebar{min-height:500px;margin:14px 0;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3167268253626557" crossorigin="anonymous"></script>
@@ -649,20 +655,19 @@
     if(sb) await sb.auth.signOut();
     await handleAuthChange(null);
   }
-  function renderAuthLoading(){
-    return `<div class="auth-gate"><div class="auth-card"><div class="auth-brand">City of Brain</div><div class="auth-desc">불러오는 중...</div></div></div>`;
-  }
-  function renderAuthGate(){
-    return `<div class="auth-gate">
-      <div class="auth-card">
-        <div class="auth-brand">City of Brain</div>
-        <div class="auth-desc">Google로 로그인하면 할 일이 그 계정에 저장되고, 다른 기기에서도 같은 목록을 볼 수 있어.</div>
-        <button class="btn-google" data-action="signInGoogle">
-          <svg width="17" height="17" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.87-3.04.87-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.73A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.19.28-1.73V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.06l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
-          Google로 로그인
-        </button>
-      </div>
+  // 로그인은 강제 게이트가 아니라 사이드바/설정에 있는 버튼으로 선택하는 부가 기능임 —
+  // 로그인 안 해도 이 브라우저에 바로 저장되고, 로그인하면 그 계정 클라우드로도 동기화됨
+  function renderSidebarAuth(){
+    if(!sb) return '';
+    if(authChecking) return `<div class="sidebar-auth-status">계정 확인 중...</div>`;
+    if(authSession) return `<div class="sidebar-account">
+      <div class="sidebar-account-email">${escapeHtml(authSession.user.email||'')}</div>
+      <button class="footer-link" style="padding:2px 0;" data-action="signOut">로그아웃</button>
     </div>`;
+    return `<button class="btn-google sidebar-login-btn" data-action="signInGoogle">
+      <svg width="15" height="15" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.87-3.04.87-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.73A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.19.28-1.73V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.06l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+      로그인해서 저장
+    </button>`;
   }
 
   /* ============ 광고 배너 ============
@@ -862,15 +867,6 @@
     const sidebarSlot = document.getElementById('sidebarSlot');
     const bottomNavSlot = document.getElementById('bottomNavSlot');
     const app = document.getElementById('app');
-    if(sb && (authChecking || !authSession)){
-      sidebarSlot.innerHTML = '';
-      bottomNavSlot.innerHTML = '';
-      app.classList.remove('wide');
-      app.innerHTML = authChecking ? renderAuthLoading() : renderAuthGate();
-      document.querySelectorAll('.modal-overlay').forEach(el=>el.remove());
-      stopCityLoop();
-      return;
-    }
     sidebarSlot.innerHTML = renderSidebar();
     bottomNavSlot.innerHTML = renderBottomNav();
 
@@ -925,6 +921,7 @@
       <div class="nav-list">${items}</div>
       ${renderAdSlot('sidebar')}
       <div class="sidebar-foot">
+        ${renderSidebarAuth()}
         <button class="nav-item" data-action="openSettings"><span class="nav-icon" style="--nc:rgba(255,255,255,.16)">${icon('settings')}</span><span class="label">설정</span></button>
         <button class="footer-link" data-action="openPrivacy">개인정보처리방침</button>
       </div>
@@ -965,7 +962,7 @@
     persist(); render();
   }
   function deleteBox(key){
-    if(!confirm('이 박스를 지우면 여기 달려있던 할 일들은 "미분류"로 남아. 지울까?')) return;
+    if(!confirm('이 과목을 지우면 여기 달려있던 할 일들은 "미분류"로 남아. 지울까?')) return;
     state.data.boxes = state.data.boxes.filter(b=>b.key!==key);
     state.data.tasks.forEach(t=>{ if(t.boxKey===key) t.boxKey=null; });
     state.data.completed.forEach(t=>{ if(t.boxKey===key) t.boxKey=null; });
@@ -1193,7 +1190,7 @@
       return `<div class="box-drag" data-boxkey="${box.key}" style="transform:translate(${off.x}px,${off.y}px);">
         <div class="box-float" style="--float-dur:${fv.dur}s;--float-delay:${fv.delay}s;">
           <div class="box-cell" style="--qc:${box.qc};--qg:${box.qg}">
-            <button class="box-del" title="박스 삭제" data-action="deleteBox" data-key="${box.key}">${icon('trash')}</button>
+            <button class="box-del" title="과목 삭제" data-action="deleteBox" data-key="${box.key}">${icon('trash')}</button>
             <button class="box-head" data-action="openQuickAdd" data-boxkey="${box.key}">
               <div class="box-label">${box.label}</div>
               <div class="box-meta">${all.length>0?`${all.length}개`:'할 일 추가'}</div>
@@ -1209,7 +1206,7 @@
             <button class="btn" data-action="submitAddBox">추가</button>
             <button class="btn-outline" data-action="toggleBoxAdd">취소</button>
           </div>
-        </div>` : `<button class="box-add-btn" data-action="toggleBoxAdd">+ 박스 추가</button>`}
+        </div>` : `<button class="box-add-btn" data-action="toggleBoxAdd">+ 과목 추가</button>`}
       </div>`;
 
     const allPending = state.data.assignments.filter(a=>!a.done).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
@@ -2354,13 +2351,20 @@
       <div class="modal">
         <div class="modal-head"><h2>설정</h2><button class="modal-close" data-action="closeModal">${icon('close')}</button></div>
         <div class="modal-body">
-          ${sb && authSession ? `<div class="settings-group">
+          ${!sb ? '' : authSession ? `<div class="settings-group">
             <h3>계정</h3>
             <div class="desc">${escapeHtml(authSession.user.email||'')} 로 로그인됨</div>
             <div class="settings-actions">
               <button class="btn-outline" data-action="signOut">로그아웃</button>
             </div>
-          </div>` : ''}
+          </div>` : `<div class="settings-group">
+            <h3>계정</h3>
+            <div class="desc">로그인 안 해도 이 기기에는 계속 저장돼. Google로 로그인하면 다른 기기에서도 같은 목록을 볼 수 있어.</div>
+            <button class="btn-google" data-action="signInGoogle">
+              <svg width="17" height="17" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.87-3.04.87-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.73A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.19.28-1.73V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.06l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+              Google로 로그인
+            </button>
+          </div>`}
 
           <div class="settings-group">
             <h3>이름</h3>
