@@ -17,6 +17,10 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
 <style>
   :root{
+    /* 라이트 모드가 없는 앱이라, 브라우저가 대신 그리는 요소(select 팝업 목록, 날짜
+       picker, 스크롤바)도 다크로 맞춰야 함 — 안 그러면 select를 열었을 때 목록만
+       흰 배경으로 튀는 문제가 생김. */
+    color-scheme: dark;
     --bg:#0B0B0E;
     --glass:rgba(255,255,255,.08); --glass-strong:rgba(255,255,255,.15); --glass-press:rgba(255,255,255,.2);
     --border:rgba(255,255,255,.13); --border-strong:rgba(255,255,255,.22); --border-hi:rgba(255,255,255,.36);
@@ -94,8 +98,18 @@
   .main{flex:1;min-width:0;}
   .main-inner{max-width:720px;margin:0 auto;padding:40px 32px 110px;}
   .main-inner.wide{max-width:1560px;}
+  /* 홈→할일→과제→아카이브→도시가 화면 전환 없이 하나로 이어지는 스크롤 화면.
+     각 섹션이 자기 폭을 갖도록 바깥 컨테이너의 max-width는 풀고, 섹션마다 다시 좁혀
+     중앙 정렬한다(도시 섹션만 더 넓게 튀어나올 수 있도록). */
+  .main-inner.chain-mode{max-width:none;padding-left:0;padding-right:0;}
+  .scroll-sec{max-width:720px;margin:0 auto;padding:0 32px;scroll-margin-top:20px;}
+  .scroll-sec+.scroll-sec{margin-top:72px;}
+  .scroll-sec.sec-city{max-width:1560px;}
 
   .topbar-mini{display:flex;justify-content:flex-end;margin-bottom:10px;}
+  .notif-badge{display:inline-flex;align-items:center;justify-content:center;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:var(--red);color:#fff;font-size:9.5px;font-weight:700;}
+  .notif-row{font-size:13px;line-height:1.6;padding:9px 0;border-bottom:1px solid var(--border);}
+  .notif-row:last-child{border-bottom:none;}
   .iconbtn{background:var(--glass);border:1px solid var(--border);color:var(--text-2);font-size:12.5px;padding:7px 14px;border-radius:var(--r-pill);display:inline-flex;align-items:center;gap:6px;transition:all var(--dur) var(--ease);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));}
   .iconbtn:hover{color:var(--text);border-color:var(--border-strong);background:var(--glass-strong);}
 
@@ -106,6 +120,8 @@
     .nav-item{justify-content:center;padding:8px;}
     .nav-item .label{display:none;}
     .main-inner{padding:34px 22px 110px;}
+    .main-inner.chain-mode{padding-left:0;padding-right:0;}
+    .scroll-sec{padding:0 22px;}
   }
   @media(max-width:639px){
     .app-shell{display:block;}
@@ -115,6 +131,9 @@
     .bottom-nav .nav-icon{width:26px;height:26px;}
     .bottom-nav .nav-item .label{display:block;font-size:9.5px;}
     .main-inner{padding:24px 16px 110px;max-width:100%;}
+    .main-inner.chain-mode{padding-left:0;padding-right:0;}
+    .scroll-sec{padding:0 16px;max-width:100%;}
+    .scroll-sec.sec-city{max-width:100%;}
   }
 
   /* ---- page header ---- */
@@ -185,6 +204,26 @@
   .box-tasks{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;}
   .box-task-row{display:flex;align-items:flex-start;gap:9px;min-width:0;cursor:grab;border-radius:7px;transition:opacity var(--dur) var(--ease);}
   .box-task-row.dragging-task{opacity:.35;}
+  /* ---- 홈 할 일 카드를 길게 눌렀다 끌어서 지우기 ---- */
+  .task-trash{
+    position:fixed;right:22px;bottom:22px;width:60px;height:60px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;z-index:65;
+    background:rgba(20,22,28,.9);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
+    border:1px solid var(--border-strong);color:var(--text-2);
+    opacity:0;transform:scale(.7);pointer-events:none;
+    box-shadow:0 12px 28px rgba(0,0,0,.4);
+    transition:opacity 200ms var(--ease),transform 200ms var(--ease),background 150ms var(--ease),border-color 150ms var(--ease),color 150ms var(--ease);
+  }
+  .task-trash svg{width:24px;height:24px;}
+  .task-trash.visible{opacity:1;transform:scale(1);pointer-events:auto;}
+  .task-trash.drag-over{background:var(--glass-press);border-color:var(--border-hi);color:var(--text);transform:scale(1.18);}
+  @keyframes taskTrashPop{0%{transform:scale(1.18);}50%{transform:scale(.85);}100%{transform:scale(0);opacity:0;}}
+  .task-trash.deleted{animation:taskTrashPop 320ms var(--ease) forwards;}
+  .box-task-row.longpress-armed{transform:translateY(-7px) scale(1.045);z-index:20;position:relative;
+    background:var(--glass-strong);box-shadow:0 16px 34px rgba(0,0,0,.5);}
+  .box-cell:has(.box-task-row.longpress-armed){overflow:visible;}
+  .box-cell:has(.box-task-row.longpress-armed)::after{opacity:0;}
+  @media(max-width:639px){ .task-trash{right:16px;bottom:calc(80px + env(safe-area-inset-bottom));} }
   .box-task-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border-strong);flex-shrink:0;margin-top:1px;background:var(--glass);display:flex;align-items:center;justify-content:center;padding:0;transition:border-color var(--dur) var(--ease);}
   .box-task-check svg{width:11px;height:11px;opacity:0;transform:scale(.4);}
   .box-task-check:hover{border-color:var(--qc,var(--blue));}
@@ -342,7 +381,36 @@
   .sync-health{font-size:12px;color:var(--text-3);padding:0 0 14px;}
   .sync-health.warn{color:var(--orange);font-weight:600;}
 
-  .balance-warn{font-size:12.5px;color:var(--orange);font-weight:600;line-height:1.55;background:var(--glass);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));border:1px solid var(--border);border-radius:var(--r-md);padding:11px 15px;margin-bottom:28px;}
+
+  /* ---- 아카이브 ---- */
+  .arc-subject-row{margin-bottom:16px;}
+  .arc-subject-head{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;margin-bottom:6px;}
+  .arc-subject-head span{font-size:11.5px;color:var(--text-3);}
+  .arc-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--glass-strong);}
+  .arc-bar-seg{height:100%;}
+  .arc-bar-empty{font-size:11.5px;color:var(--text-3);}
+  .arc-log-row{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
+  .arc-log-row:last-child{border-bottom:none;}
+  .arc-log-date{color:var(--text-3);flex-shrink:0;width:34px;}
+  .arc-log-subject{color:var(--text-2);flex-shrink:0;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .arc-log-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .arc-log-rating{color:var(--text-3);flex-shrink:0;font-size:11px;}
+
+  /* ---- 완료 후기 — 화면을 덮지 않고 구석에 뜨는 대화창(오버레이 없음) ---- */
+  .btn[disabled]{opacity:.4;cursor:not-allowed;}
+  .feedback-dock{position:fixed;right:18px;bottom:18px;width:340px;max-width:calc(100vw - 36px);z-index:70;
+    background:rgba(20,22,28,.92);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
+    border:1px solid var(--border-strong);border-top-color:var(--border-hi);border-radius:var(--r-lg);
+    box-shadow:0 18px 48px rgba(0,0,0,.55);animation:dockIn 260ms var(--ease);}
+  @keyframes dockIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+  .feedback-dock-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px 8px;font-size:13.5px;}
+  .feedback-dock-body{padding:0 14px 14px;max-height:min(70vh,520px);overflow-y:auto;}
+  .feedback-ratings{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .feedback-ratings .btn-outline.is-selected{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .feedback-dock-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;}
+  .feedback-hint{font-size:11.5px;color:var(--text-3);line-height:1.55;margin-bottom:10px;}
+  .feedback-explain-label{font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:4px;}
+  @media(max-width:639px){ .feedback-dock{right:12px;left:12px;bottom:calc(76px + env(safe-area-inset-bottom));width:auto;} }
 
   /* ---- D-day 역산 타임라인 ---- */
   .dday-legend{font-size:11.5px;color:var(--text-3);margin:0 14px 6px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
@@ -509,6 +577,14 @@
   /* ---- 도시 (City, beta) ---- */
   .recall-note{font-size:12px;color:var(--text-3);margin-bottom:10px;line-height:1.55;}
   .city-graduating{font-size:12.5px;color:var(--teal);background:rgba(100,210,255,.1);border:1px solid rgba(100,210,255,.3);border-radius:var(--r-md);padding:9px 13px;margin-bottom:18px;}
+  .city-growth{background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
+    border:1px solid var(--border);border-radius:var(--r-md);padding:13px 16px;margin-bottom:16px;}
+  .city-growth-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px;}
+  .city-growth-head b{font-size:14px;font-weight:600;}
+  .city-growth-head span{font-size:11.5px;color:var(--text-3);}
+  .city-growth-track{height:5px;border-radius:3px;background:var(--glass-strong);overflow:hidden;}
+  .city-growth-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--green));transition:width 600ms var(--ease);}
+  .city-growth-sub{font-size:11.5px;color:var(--text-3);line-height:1.55;margin-top:8px;}
   /* 검은 유리 상자 안에 도시가 들어있는 느낌 */
   .city3d{position:relative;width:100%;height:100%;border-radius:var(--r-lg);overflow:hidden;
     border:1px solid var(--border);border-top-color:var(--border-hi);
@@ -526,6 +602,7 @@
   .home-city-head .city-title{font-size:16px;font-weight:800;letter-spacing:-.01em;}
   .city-title{background:linear-gradient(90deg,var(--blue),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent;}
   @media(max-width:1179px){ .home-split{display:block;} .home-city{display:none;} }
+  .scroll-sec.sec-home-wide{max-width:1560px;}
   .city3d-canvas canvas{display:block;width:100%;height:100%;touch-action:none;}
   .city3d-tip{position:absolute;z-index:4;max-width:250px;pointer-events:none;
     background:rgba(20,22,28,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
@@ -596,6 +673,7 @@
   <main class="main"><div class="main-inner" id="app"></div></main>
 </div>
 <div id="bottomNavSlot"></div>
+<div class="task-trash" id="taskTrashZone" aria-hidden="true"></div>
 <input type="file" id="importFile" accept="application/json" style="display:none">
 
 <script>
@@ -721,7 +799,7 @@
     { qc:'var(--pink)',   qg:'linear-gradient(135deg,var(--pink),var(--red))' }
   ];
   function buildSkeleton(){
-    return { tasks:[], completed:[], assignments:[], ddays:[], boxes:[] };
+    return { tasks:[], completed:[], assignments:[], ddays:[], boxes:[], archiveLog:[] };
   }
 
   /* ============ 오늘 정보 ============ */
@@ -794,7 +872,8 @@
           completed: data.data.completed || [],
           assignments: data.data.assignments || [],
           ddays: data.data.ddays || [],
-          boxes: data.data.boxes || []
+          boxes: data.data.boxes || [],
+          archiveLog: data.data.archiveLog || []
         };
         persistLocal();
       } else {
@@ -827,11 +906,12 @@
 
   /* ============ 상태 ============ */
   const state = {
-    view:'home', modal:null,
+    view:'home', modal:null, activeSection:null,
     quickAddBoxKey:null, quickAddCorner:'review',
     asgSortMode:'due',
     cityView:'main', cityInspectTarget:null, editingAssignment:null, editingTask:null,
     ddayAddOpen:false, boxAddOpen:false,
+    feedbackTargetId:null, feedbackSelectedRating:null,
     data:buildSkeleton()
   };
 
@@ -871,7 +951,9 @@
       truck:'<path d="M2 13.5h8V7.5H5L2 10.5v3z"/><path d="M10 13.5h6v-4h-2.5l-1-2H10v6z"/><circle cx="5.5" cy="15" r="1.4"/><circle cx="14" cy="15" r="1.4"/>',
       smoke:'<path d="M6 14c-1-2 1-2.5 0-4.5M10 14c-1-2 1-2.5 0-4.5M14 14c-1-2 1-2.5 0-4.5"/>',
       fire:'<path d="M10 3c0 2-2.5 3-2.5 5.5a2.5 2.5 0 0 0 5 0c0-1.5-1-2-1-3.2 0 1.7 1.5 2.2 1.5 4a3 3 0 1 1-6 0C6.5 6 10 5 10 3z"/>',
-      wrench:'<path d="M13.2 4.2a1.8 1.8 0 1 0 2.3 2.3l1.8 1.8-1.1 1.1-1.8-1.8a1.8 1.8 0 0 0-1.2-3.4z"/><path d="M4.5 15.5 11 9"/>'
+      wrench:'<path d="M13.2 4.2a1.8 1.8 0 1 0 2.3 2.3l1.8 1.8-1.1 1.1-1.8-1.8a1.8 1.8 0 0 0-1.2-3.4z"/><path d="M4.5 15.5 11 9"/>',
+      archive:'<rect x="3" y="4" width="14" height="3.5" rx="1"/><path d="M4 7.5V15a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7.5"/><path d="M8.2 11h3.6"/>',
+      bell:'<path d="M6 8.5a4 4 0 0 1 8 0c0 3 1 4 1.5 4.5H4.5C5 12.5 6 11.5 6 8.5z"/><path d="M8.3 15.5a1.9 1.9 0 0 0 3.4 0"/>'
     }[name] || '';
     return `<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
   }
@@ -880,33 +962,92 @@
     {view:'home', label:'홈', icon:'home', color:'var(--blue)'},
     {view:'tasks', label:'할 일', icon:'tasks', color:'var(--green)'},
     {view:'assignments', label:'과제', icon:'assignments', color:'var(--orange)'},
+    {view:'archive', label:'아카이브', icon:'archive', color:'var(--pink)'},
     {view:'city', label:'도시', icon:'city', color:'var(--teal)'}
   ];
 
-  /* ============ 렌더 ============ */
+  /* ============ 렌더 ============
+     홈→할일→과제→아카이브→도시 전체가 화면 전환 없이 한 장의 긴 페이지처럼 이어져서
+     그려진다(애플 홈페이지처럼). 실제 브라우저 스크롤만 쓰고, 지금 보고 있는 섹션은
+     스크롤 위치를 직접 계산해서 판단한다(가짜로 탭을 갈아치우지 않음). */
+  const SCROLL_CHAIN = ['home','tasks','assignments','archive','city'];
+  const SCROLL_TRIGGER_LINE = 140; // 뷰포트 위에서 이 지점을 넘어간 섹션을 "지금 보는 중"으로 간주
   let lastRenderedView = null; // 같은 화면 안에서 다시 그릴 땐(체크박스 클릭 등) fade-in을 안 태우려고 추적
+  let chainModeActive = false;
+  let pendingScrollTarget = null;
+  function renderChainSection(v){
+    switch(v){
+      case 'home': return renderHome();
+      case 'tasks': return renderTasksPage();
+      case 'assignments': return renderAssignmentsPage();
+      case 'archive': return renderArchivePage();
+      case 'city': return renderCityPage();
+      default: return '';
+    }
+  }
+  function captureFeedbackDraft(){
+    const el = document.getElementById('feedbackNoteInput');
+    const dock = document.querySelector('.feedback-dock');
+    if(!el || !el.value) return null;
+    return {target: dock ? dock.dataset.target : '', text: el.value};
+  }
+  function restoreFeedbackDraft(draft){
+    if(!draft) return;
+    const el = document.getElementById('feedbackNoteInput');
+    const dock = document.querySelector('.feedback-dock');
+    if(!el || !dock) return;
+    if(dock.dataset.target !== draft.target) return; // 다른 항목의 대화창이면 비워둔다
+    el.value = draft.text;
+  }
+  // 모달·대화창만 여닫는 경우엔 본문 전체를 다시 그릴 이유가 없다(측정상 전체 렌더가
+  // 훨씬 비싸므로). 본문 데이터가 바뀌는 액션에는 절대 쓰지 말 것 — 화면이 안 바뀜.
+  function renderOverlaysOnly(){
+    const feedbackDraft = captureFeedbackDraft();
+    document.querySelectorAll('.modal-overlay, .feedback-dock').forEach(el=>el.remove());
+    if(state.modal==='settings') document.body.insertAdjacentHTML('beforeend', renderSettingsModal());
+    else if(state.modal==='completed') document.body.insertAdjacentHTML('beforeend', renderCompletedModal());
+    else if(state.modal==='quickAdd') document.body.insertAdjacentHTML('beforeend', renderQuickAddModal());
+    else if(state.modal==='cityInspect') document.body.insertAdjacentHTML('beforeend', renderCityInspectModal());
+    else if(state.modal==='privacy') document.body.insertAdjacentHTML('beforeend', renderPrivacyModal());
+    else if(state.modal==='notifications') document.body.insertAdjacentHTML('beforeend', renderNotificationsModal());
+    if(state.feedbackTargetId) document.body.insertAdjacentHTML('beforeend', renderCompletionFeedbackModal());
+    restoreFeedbackDraft(feedbackDraft);
+    const nameInput = document.getElementById('studentNameInput');
+    if(nameInput) nameInput.value = getStudentName();
+    applyA11yLabels();
+  }
   function render(){
     const sidebarSlot = document.getElementById('sidebarSlot');
     const bottomNavSlot = document.getElementById('bottomNavSlot');
-    const app = document.getElementById('app');
+
+    const wasChainMode = chainModeActive;
+    chainModeActive = SCROLL_CHAIN.includes(state.view);
+
+    // 체크박스 클릭 등 데이터만 바뀐 리렌더에서 화면이 훌쩍 뛰지 않도록,
+    // 지금 보던 섹션 기준 상대 스크롤 오프셋을 미리 재두었다가 다시 그린 뒤 그대로 복원한다
+    let restoreOffset = null;
+    if(chainModeActive && wasChainMode && state.activeSection){
+      const curEl = document.getElementById('sec-'+state.activeSection);
+      if(curEl) restoreOffset = {id: state.activeSection, rel: window.scrollY - curEl.offsetTop};
+    }
+    const feedbackDraft = captureFeedbackDraft();
+
     sidebarSlot.innerHTML = renderSidebar();
     bottomNavSlot.innerHTML = renderBottomNav();
 
+    const app = document.getElementById('app');
     const viewChanged = state.view !== lastRenderedView;
     lastRenderedView = state.view;
     let html = renderTopbarMini();
     if(!storageOK) html += `<div class="empty" style="color:var(--danger);">이 브라우저에서는 로컬 저장이 안 돼요(시크릿 모드이거나 저장 공간이 꽉 찼을 수 있어요). 작업 후 꼭 설정에서 내보내기로 백업해주세요.</div>`;
-    if(state.view==='home') html += renderHome();
-    else if(state.view==='tasks') html += renderTasksPage();
-    else if(state.view==='assignments') html += renderAssignmentsPage();
-    else if(state.view==='city') html += renderCityPage();
-    // 도시가 보이는 화면에선 본문 폭 제한을 풀어서 넓게 쓴다
-    const cityVisible = (state.view==='city' && state.cityView!=='archive')
-                     || (state.view==='home' && isWideScreen());
-    app.classList.toggle('wide', cityVisible);
+    html += SCROLL_CHAIN.map(v=>{
+      const wideCls = v==='city' ? ' sec-city' : (v==='home' && isWideScreen() ? ' sec-home-wide' : '');
+      return `<section class="scroll-sec${wideCls}" id="sec-${v}">${renderChainSection(v)}</section>`;
+    }).join('');
+    app.classList.toggle('chain-mode', chainModeActive);
     app.innerHTML = html;
     // 3D 도시 캔버스는 #app 바깥에 살아있으므로 갈아엎은 뒤 제자리에 다시 끼워 넣는다
-    if(cityVisible) mountCity3D(); else stopCityLoop();
+    mountCity3D();
     // 렌더마다 사이드바/본문을 통째로 다시 그려서 <ins>가 매번 새 DOM으로 바뀌니,
     // 광고 단위 하나당 한 번만 채워지는 게 맞다면 나중에 좀 더 정교한 트래킹이 필요할 수 있음
     if(ADSENSE_PUBLISHER_ID){
@@ -914,28 +1055,103 @@
         try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){}
       });
     }
-    if(!viewChanged){
+    if(wasChainMode){
+      // 스크롤 화면 안에서 데이터만 바뀐 리렌더 — 페이드인 재생 없이 그대로 유지
+      app.querySelectorAll('.fade-in').forEach(el=>el.classList.remove('fade-in'));
+    } else if(!viewChanged){
       // 클릭할 때마다 화면 전체가 깜빡이는 것 방지 — 실제로 다른 화면으로 이동할 때만 페이드인
       const fadeEl = app.querySelector('.fade-in');
       if(fadeEl) fadeEl.classList.remove('fade-in');
     }
 
-    document.querySelectorAll('.modal-overlay').forEach(el=>el.remove());
+    document.querySelectorAll('.modal-overlay, .feedback-dock').forEach(el=>el.remove());
     if(state.modal==='settings') document.body.insertAdjacentHTML('beforeend', renderSettingsModal());
     else if(state.modal==='completed') document.body.insertAdjacentHTML('beforeend', renderCompletedModal());
     else if(state.modal==='quickAdd') document.body.insertAdjacentHTML('beforeend', renderQuickAddModal());
     else if(state.modal==='cityInspect') document.body.insertAdjacentHTML('beforeend', renderCityInspectModal());
     else if(state.modal==='privacy') document.body.insertAdjacentHTML('beforeend', renderPrivacyModal());
+    else if(state.modal==='notifications') document.body.insertAdjacentHTML('beforeend', renderNotificationsModal());
+    if(state.feedbackTargetId) document.body.insertAdjacentHTML('beforeend', renderCompletionFeedbackModal());
+    restoreFeedbackDraft(feedbackDraft);
 
     const nameInput = document.getElementById('studentNameInput');
     if(nameInput) nameInput.value = getStudentName();
     const quickAddInput = document.getElementById('quickAddInput');
     if(quickAddInput) quickAddInput.focus();
+    applyA11yLabels();
+
+    // 스크롤 위치 이동/복원은 DOM이 실제로 반영된 뒤(레이아웃 계산 가능해진 뒤)에 처리
+    if(pendingScrollTarget){
+      const sec = document.getElementById('sec-'+pendingScrollTarget);
+      if(sec) window.scrollTo(0, sec.offsetTop);
+      pendingScrollTarget = null;
+    } else if(restoreOffset){
+      const sec = document.getElementById('sec-'+restoreOffset.id);
+      if(sec) window.scrollTo(0, sec.offsetTop + restoreOffset.rel);
+    } else if(!wasChainMode){
+      window.scrollTo(0, 0); // 첫 진입 시 맨 위(홈)부터
+    }
+    updateActiveSectionFromScroll();
+    updateNavActiveClasses();
+  }
+
+  // 지금 뷰포트 위쪽 트리거 라인을 넘어간 마지막 섹션을 "활성 섹션"으로 판단한다.
+  function updateActiveSectionFromScroll(){
+    if(!chainModeActive) return;
+    let best = null;
+    for(const v of SCROLL_CHAIN){
+      const el = document.getElementById('sec-'+v);
+      if(!el) continue;
+      if(el.getBoundingClientRect().top <= SCROLL_TRIGGER_LINE) best = v; else break;
+    }
+    if(!best) best = SCROLL_CHAIN[0];
+    if(best !== state.activeSection){
+      const prev = state.activeSection;
+      state.activeSection = best;
+      state.view = best;
+      updateNavActiveClasses();
+      // 홈 미리보기 ↔ 도시 섹션 사이를 넘나들 때만 캔버스를 다시 옮겨 끼운다(둘 다 슬롯을 가짐)
+      if(best==='home' || best==='city' || prev==='home' || prev==='city') mountCity3D();
+    }
+    if(best==='city' || best==='home') startCityLoop(); else stopCityLoop();
+  }
+  function updateNavActiveClasses(){
+    const activeKey = chainModeActive ? state.activeSection : state.view;
+    document.querySelectorAll('.nav-item[data-view]').forEach(btn=>{
+      btn.classList.toggle('active', btn.dataset.view === activeKey);
+    });
+  }
+  let chainScrollTicking = false;
+  function onChainScroll(){
+    if(!chainModeActive || chainScrollTicking) return;
+    chainScrollTicking = true;
+    requestAnimationFrame(()=>{ chainScrollTicking = false; updateActiveSectionFromScroll(); });
+  }
+  window.addEventListener('scroll', onChainScroll, {passive:true});
+
+  /* 아이콘만 있는 버튼은 스크린리더에서 그냥 "버튼"으로 읽힌다. title이 있는 건
+     aria-label로 옮기고, 체크/닫기처럼 title이 없는 것들만 이름을 지어준다. */
+  const A11Y_FALLBACK = [
+    ['.modal-close', '닫기'],
+    ['.task-check, .box-task-check, .asg-check', '완료 처리'],
+    ['[data-action="openNotifications"]', '알림'],
+    ['[data-action="openSettings"]', '설정']
+  ];
+  function applyA11yLabels(){
+    A11Y_FALLBACK.forEach(([sel, label])=>{
+      document.querySelectorAll(sel).forEach(el=>{
+        if(!el.getAttribute('aria-label') && !el.getAttribute('title')) el.setAttribute('aria-label', label);
+      });
+    });
+    document.querySelectorAll('button[title]:not([aria-label])').forEach(b=>{
+      b.setAttribute('aria-label', b.getAttribute('title'));
+    });
   }
 
   function renderSidebar(){
+    const activeKey = chainModeActive ? state.activeSection : state.view;
     const items = NAV_ITEMS.map(n=>`
-      <button class="nav-item ${state.view===n.view?'active':''}" data-action="goView" data-view="${n.view}">
+      <button class="nav-item ${activeKey===n.view?'active':''}" data-action="goView" data-view="${n.view}">
         <span class="nav-icon" style="--nc:${n.color}">${icon(n.icon)}</span><span class="label">${n.label}</span>
       </button>`).join('');
     return `<div class="sidebar glass">
@@ -950,14 +1166,52 @@
     </div>`;
   }
   function renderBottomNav(){
+    const activeKey = chainModeActive ? state.activeSection : state.view;
     const items = NAV_ITEMS.map(n=>`
-      <button class="nav-item ${state.view===n.view?'active':''}" data-action="goView" data-view="${n.view}">
+      <button class="nav-item ${activeKey===n.view?'active':''}" data-action="goView" data-view="${n.view}">
         <span class="nav-icon" style="--nc:${n.color}">${icon(n.icon)}</span><span class="label">${n.label}</span>
       </button>`).join('');
     return `<div class="bottom-nav glass">${items}</div>`;
   }
+  function computeNotifications(){
+    const list = [];
+    (state.data.ddays||[]).forEach(d=>{
+      if(d.hidden) return;
+      const dueMid = new Date(d.date+'T00:00:00').getTime();
+      const daysLeft = Math.round((dueMid-todayMid)/86400000);
+      if(daysLeft===7) list.push(`"${d.name}" 디데이가 일주일 남았어요 (D-7)`);
+    });
+    (state.data.assignments||[]).filter(a=>!a.done).forEach(a=>{
+      const dueMid = new Date(a.dueDate+'T00:00:00').getTime();
+      const daysLeft = Math.round((dueMid-todayMid)/86400000);
+      if(daysLeft===3) list.push(`"${a.title}" 마감이 3일 남았어요`);
+      if(daysLeft===1) list.push(`"${a.title}" 마감이 내일이에요`);
+    });
+    return list;
+  }
   function renderTopbarMini(){
-    return `<div class="topbar-mini"><button class="iconbtn" data-action="openSettings">${icon('settings')} 설정</button></div>`;
+    const n = computeNotifications().length;
+    return `<div class="topbar-mini"><button class="iconbtn" data-action="openNotifications">${icon('bell')}${n>0?`<span class="notif-badge">${n}</span>`:''}</button></div>`;
+  }
+  function renderNotificationsModal(){
+    const notes = computeNotifications();
+    const notesHtml = notes.length===0 ? `<div class="empty">지금은 알림이 없어요.</div>` : notes.map(n=>`<div class="notif-row">${escapeHtml(n)}</div>`).join('');
+    return `<div class="modal-overlay" data-action="closeModal">
+      <div class="modal" style="max-width:380px;">
+        <div class="modal-head"><h2>알림</h2><button class="modal-close" data-action="closeModal">${icon('close')}</button></div>
+        <div class="modal-body">
+          ${lastCompletion?`<div class="settings-group">
+            <h3>마지막 완료 취소</h3>
+            <div class="desc">"${escapeHtml(lastCompletion.text)}" 방금 끝낸 걸 잘못 눌렀으면 되돌릴 수 있어요.</div>
+            <button class="btn-outline" data-action="undoLastCompletion">되돌리기</button>
+          </div>`:''}
+          <div class="settings-group">
+            <h3>다가오는 일정</h3>
+            ${notesHtml}
+          </div>
+        </div>
+      </div>
+    </div>`;
   }
 
   /* ---- Home: 유저가 직접 만드는 과목 박스 ----
@@ -1016,30 +1270,48 @@
     </div>`;
   }
 
-  // 과목별 학습 시간을 재는 기능이 없어서(체크 여부만 있음), "이번 주 완료 개수"를 시간 대신 프록시로 씀.
-  // 정확도는 떨어지지만 "이번 주 이 과목 하나도 안 건드림" 정도는 충분히 잡아냄.
-  function weekBoxCompletionCounts(){
-    const weekStart = mondayOf(now).getTime();
-    const counts = {};
-    boxes().forEach(b=>{ counts[b.key] = 0; });
-    state.data.completed.forEach(it=>{
-      if(hasBox(it.boxKey) && it.completedAt>=weekStart) counts[it.boxKey]++;
-    });
-    return counts;
-  }
-  function renderBalanceWarning(){
-    const counts = weekBoxCompletionCounts();
-    const total = Object.values(counts).reduce((a,b)=>a+b,0);
-    if(total<4) return ''; // 활동이 너무 적으면(주 초반 등) 비교 자체가 의미 없음
-    const neglected = boxes().filter(b=>counts[b.key]===0);
-    if(neglected.length===0) return '';
-    const hasLowTagged = state.data.assignments.some(a=>!a.done && a.priority==='low');
-    const extra = hasLowTagged ? ' 가성비 "하"로 태그해둔 과제가 있다면 그것 때문에 아예 손 놓은 건 아닌지 확인해보세요.' : '';
-    return `<div class="balance-warn">이번 주 <b>${neglected.map(b=>escapeHtml(b.label)).join(', ')}</b> 완료한 게 하나도 없어요 — 다른 과목엔 몰려있는데 여긴 비어있어요.${extra}</div>`;
-  }
-
   /* ---- 스톱워치: 항목에 연결해서 얼마나 붙잡고 있었는지 재는 용도 ---- */
+  /* 항목 연결은 드롭다운을 없애고 드래그로만 하도록 단순화함(어차피 잘 안 쓰이던
+     선택창이었고, select 팝업이 다크 테마와 안 맞아 보였음). 같은 카드 안에서
+     스톱워치/뽀모도로 모드만 전환한다(항목 연결은 두 모드가 공유). */
+  let swMode = 'stopwatch'; // 'stopwatch' | 'pomodoro' — 새로고침하면 스톱워치로 리셋
   const sw = { running:false, elapsedSec:0, target:null, intervalId:null };
+  const POMO_STUDY_SEC = 25*60, POMO_BREAK_SEC = 5*60;
+  const pomo = { running:false, phase:'study', remainingSec:POMO_STUDY_SEC, intervalId:null };
+  function setSwMode(mode){
+    if(mode!=='stopwatch' && mode!=='pomodoro') return;
+    swMode = mode;
+    render();
+  }
+  function pomoTick(){
+    pomo.remainingSec--;
+    if(pomo.remainingSec<=0){
+      pomo.phase = pomo.phase==='study' ? 'break' : 'study';
+      pomo.remainingSec = pomo.phase==='study' ? POMO_STUDY_SEC : POMO_BREAK_SEC;
+      render();
+      return;
+    }
+    const dEl = document.getElementById('pomoDisplay');
+    if(dEl) dEl.textContent = swFormat(pomo.remainingSec);
+  }
+  function pomoStart(){
+    if(pomo.running) return;
+    pomo.running = true;
+    pomo.intervalId = setInterval(pomoTick, 1000);
+    render();
+  }
+  function pomoPause(){
+    clearInterval(pomo.intervalId);
+    pomo.running = false;
+    render();
+  }
+  function pomoReset(){
+    clearInterval(pomo.intervalId);
+    pomo.running = false;
+    pomo.phase = 'study';
+    pomo.remainingSec = POMO_STUDY_SEC;
+    render();
+  }
   function swTargetLabel(){
     if(!sw.target) return null;
     const t = sw.target;
@@ -1059,7 +1331,7 @@
     if(t.type==='assignment') toggleAssignment(t.id);
     else if(t.type==='task') completeTask(t.id);
     sw.target = null;
-    swReset();
+    if(swMode==='pomodoro') pomoReset(); else swReset();
   }
   function swFormat(sec){
     sec = Math.max(0, sec);
@@ -1091,22 +1363,33 @@
   }
   function renderStopwatchCard(){
     const targetLabel = swTargetLabel();
+    const modeToggle = `<div class="rotation-actions pomo-mode-toggle">
+      <button class="rot-btn ${swMode==='stopwatch'?'active':''}" data-action="setSwMode" data-mode="stopwatch">스톱워치</button>
+      <button class="rot-btn ${swMode==='pomodoro'?'active':''}" data-action="setSwMode" data-mode="pomodoro">뽀모도로</button>
+    </div>`;
+    const completeBtn = targetLabel ? `<button class="btn" data-action="swCompleteLinked">"${escapeHtml(targetLabel)}" 완료 처리</button>` : '';
 
-    const pendingAssignments = state.data.assignments.filter(a=>!a.done).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
-    const t = sw.target;
-    const asgOptions = pendingAssignments.map(a=>{
-      const sel = t && t.type==='assignment' && t.id===a.id;
-      return `<option value="assignment:${a.id}" ${sel?'selected':''}>${escapeHtml(a.title)}</option>`;
-    }).join('');
-    const boxGroups = boxes().map(box=>{
-      const items = boxTaskItems(box);
-      if(items.length===0) return '';
-      const opts = items.map(q=>{
-        const sel = t && t.type==='task' && t.id===q.item.id;
-        return `<option value="task:${q.item.id}" ${sel?'selected':''}>${escapeHtml(q.item.text)}</option>`;
-      }).join('');
-      return `<optgroup label="${escapeHtml(box.label)}">${opts}</optgroup>`;
-    }).join('');
+    if(swMode==='pomodoro'){
+      const fullSec = pomo.phase==='study' ? POMO_STUDY_SEC : POMO_BREAK_SEC;
+      const startLabel = pomo.remainingSec<fullSec ? '계속' : '시작';
+      return `<div class="pomo-card">
+        <div class="pomo-drop-hint">여기에 놓으면 연결돼요</div>
+        <div class="pomo-ring ${pomo.running?'running':''}" id="pomoRing">
+          <div class="pomo-display" id="pomoDisplay">${swFormat(pomo.remainingSec)}</div>
+        </div>
+        <div class="pomo-body">
+          ${modeToggle}
+          <div class="pomo-phase">${pomo.phase==='study'?'공부 중':'휴식 중'} · 25분 공부 / 5분 휴식</div>
+          <div class="pomo-row">
+            ${pomo.running
+              ? `<button class="btn-outline" data-action="pomoPause">일시정지</button>`
+              : `<button class="btn" data-action="pomoStart">${startLabel}</button>`}
+            <button class="btn-outline" data-action="pomoReset">초기화</button>
+            ${completeBtn}
+          </div>
+        </div>
+      </div>`;
+    }
 
     return `<div class="pomo-card">
       <div class="pomo-drop-hint">여기에 놓으면 스톱워치에 연결돼요</div>
@@ -1114,17 +1397,13 @@
         <div class="pomo-display" id="swDisplay">${swFormat(sw.elapsedSec)}</div>
       </div>
       <div class="pomo-body">
-        <select class="pomo-select" id="swTargetSelect">
-          <option value="">스톱워치 — 항목 선택 안 함</option>
-          ${asgOptions?`<optgroup label="과제">${asgOptions}</optgroup>`:''}
-          ${boxGroups}
-        </select>
+        ${modeToggle}
         <div class="pomo-row">
           ${sw.running
             ? `<button class="btn-outline" data-action="swPause">일시정지</button>`
             : `<button class="btn" data-action="swStart">${sw.elapsedSec>0 ? '계속' : '시작'}</button>`}
           <button class="btn-outline" data-action="swReset">초기화</button>
-          ${targetLabel ? `<button class="btn" data-action="swCompleteLinked">"${escapeHtml(targetLabel)}" 완료 처리</button>` : ''}
+          ${completeBtn}
         </div>
       </div>
     </div>`;
@@ -1252,8 +1531,6 @@
       ${boxes().length===0 ? renderOnboardGuide() : ''}
       <div class="box-grid">${boxHtml}</div>
 
-      ${renderBalanceWarning()}
-
       <div class="section">
         <div class="section-head"><div class="section-title">임박한 과제</div><button class="section-link" data-action="goView" data-view="assignments">전체 보기</button></div>
         ${asgHtml}
@@ -1268,7 +1545,7 @@
           <span class="city-title">City of Brain</span>
           <button class="section-link" data-action="goView" data-view="city">크게 보기</button>
         </div>
-        <div id="city3dSlot" class="city-slot-home"></div>
+        <div id="city3dSlotHome" class="city-slot-home"></div>
       </aside>
     </div>`;
   }
@@ -1357,16 +1634,17 @@
       <button class="task-del" title="삭제" data-action="deleteTask" data-id="${item.id}">${icon('trash')}</button>
     </div>`;
   }
-  function addRowHtml(corner){
-    const boxOptionsHtml = boxes().map(b=>`<option value="${b.key}">${b.label}</option>`).join('');
-    return `<div class="add-row">
-      <select class="add-input" id="taskAddBox-${corner}" style="flex:0 0 128px;">
-        <option value="">과목 미지정</option>
-        ${boxOptionsHtml}
-      </select>
-      <input type="text" class="add-input" id="taskAddInput-${corner}" data-corner="${corner}" placeholder="추가할 내용 입력 후 Enter">
-      <button class="btn-outline" data-action="addTaskFromRow" data-corner="${corner}">추가</button>
-    </div>`;
+  let taskAddType = 'review'; // 'review' | 'self' — 저장 안 됨, 새로고침하면 기본값(수업 과제)으로
+  function setTaskAddType(type){
+    if(type!=='review' && type!=='self') return;
+    taskAddType = type;
+    render();
+  }
+  function addTaskUnified(){
+    const input = document.getElementById('taskAddInput');
+    const boxSel = document.getElementById('taskAddBox');
+    if(!input) return;
+    addTask(input.value, boxSel ? boxSel.value : null, taskAddType);
   }
   function renderTasksPage(){
     const review = state.data.tasks.filter(t=>t.corner==='review').sort((a,b)=>itemStaleDays(b)-itemStaleDays(a));
@@ -1374,18 +1652,32 @@
 
     const reviewHtml = review.length===0 ? `<div class="empty">수업 과제가 없어요.</div>` : review.map(taskRowHtml).join('');
     const selfHtml = self.length===0 ? `<div class="empty">자율학습 항목이 없어요.</div>` : self.map(taskRowHtml).join('');
+    const boxOptionsHtml = boxes().map(b=>`<option value="${b.key}">${b.label}</option>`).join('');
 
     return `<div class="fade-in">
       <div class="page-head"><h1>할 일</h1></div>
 
       <div class="section">
+        <div class="section-head"><div class="section-title">할 일 추가</div></div>
+        <div class="corner-tabs" style="margin-bottom:12px;">
+          <button class="corner-tab ${taskAddType==='review'?'active':''}" data-action="setTaskAddType" data-type="review">수업 과제</button>
+          <button class="corner-tab ${taskAddType==='self'?'active':''}" data-action="setTaskAddType" data-type="self">자율학습</button>
+        </div>
+        <div class="add-row">
+          <select class="add-input" id="taskAddBox" style="flex:0 0 128px;">
+            <option value="">과목 미지정</option>
+            ${boxOptionsHtml}
+          </select>
+          <input type="text" class="add-input" id="taskAddInput" placeholder="추가할 내용 입력 후 Enter">
+          <button class="btn-outline" data-action="addTaskUnified">추가</button>
+        </div>
+      </div>
+      <div class="section">
         <div class="section-head"><div class="section-title">수업 과제</div></div>
-        ${addRowHtml('review')}
         ${reviewHtml}
       </div>
       <div class="section">
         <div class="section-head"><div class="section-title">자율학습</div></div>
-        ${addRowHtml('self')}
         ${selfHtml}
         <button class="completed-link" data-action="openCompleted">완료 목록 (${state.data.completed.length}) →</button>
       </div>
@@ -2236,9 +2528,19 @@
     return host;
   }
 
+  // 홈 미리보기와 도시 섹션은 둘 다 캔버스를 넣을 자리를 갖고 있어서(id가 다름),
+  // 지금 스크롤로 보고 있는 곳에 맞는 슬롯을 골라준다 — 둘 다 같은 id를 쓰면
+  // 스크롤 체인 때문에 항상 동시에 DOM에 존재해서 getElementById가 앞쪽 것만 찾아버림
+  function pickCityHostSlot(){
+    if(state.activeSection==='home'){
+      const homeSlot = document.getElementById('city3dSlotHome');
+      if(homeSlot) return homeSlot;
+    }
+    return document.getElementById('city3dSlot');
+  }
   // render()가 #app을 갈아엎은 뒤 3D 컨테이너를 제자리에 다시 끼워 넣는다
   function mountCity3D(){
-    const slot = document.getElementById('city3dSlot');
+    const slot = pickCityHostSlot();
     if(!slot) { stopCityLoop(); return; }
     if(!CITY3D.host) makeCityHost();
     if(CITY3D.host.parentElement !== slot) slot.appendChild(CITY3D.host);
@@ -2249,6 +2551,37 @@
     startCityLoop();
   }
 
+  // 도시의 정체성은 "얼마나 망가졌나"가 아니라 "지금까지 뭘 쌓았나" — 그래서 맨 위에 이걸 둔다.
+  // archiveLog는 완료 취소(undo) 외엔 줄지 않으므로, 며칠 손 놓아도 이 수치는 되돌아가지 않는다.
+  const CITY_GROWTH_PER_LEVEL = 12;
+  const CITY_GROWTH_MAX_LEVEL = 10;
+  function cityGrowth(){
+    const total = (state.data.archiveLog || []).length;
+    const level = Math.min(CITY_GROWTH_MAX_LEVEL, Math.floor(total / CITY_GROWTH_PER_LEVEL));
+    const intoLevel = total - level * CITY_GROWTH_PER_LEVEL;
+    return {
+      total, level,
+      atMax: level >= CITY_GROWTH_MAX_LEVEL,
+      toNext: level >= CITY_GROWTH_MAX_LEVEL ? 0 : CITY_GROWTH_PER_LEVEL - intoLevel,
+      progress: level >= CITY_GROWTH_MAX_LEVEL ? 1 : intoLevel / CITY_GROWTH_PER_LEVEL
+    };
+  }
+  function renderCityGrowthBar(){
+    const g = cityGrowth();
+    const sub = g.total === 0
+      ? '할 일을 하나씩 끝낼 때마다 이 도시가 자라요. 한 번 쌓인 건 사라지지 않아요.'
+      : (g.atMax
+          ? `지금까지 완료한 ${g.total}개가 이 도시를 다 키웠어요. 여기까지 온 건 되돌아가지 않아요.`
+          : `지금까지 완료한 ${g.total}개가 이 도시를 키웠어요. ${g.toNext}개 더 하면 도시가 한 번 더 자라요.`);
+    return `<div class="city-growth">
+      <div class="city-growth-head">
+        <b>도시 성장 Lv.${g.level}</b>
+        <span>${g.total}개 완료</span>
+      </div>
+      <div class="city-growth-track"><div class="city-growth-fill" style="width:${Math.round(g.progress*100)}%;"></div></div>
+      <div class="city-growth-sub">${sub}</div>
+    </div>`;
+  }
   function renderCityPage(){
     if(state.cityView==='archive') return renderGraduationArchive();
     const citizens = collectCityCitizens();
@@ -2256,6 +2589,7 @@
     return `<div class="fade-in">
       <div class="page-head"><h1 class="city-title">City of Brain</h1><button class="iconbtn" data-action="goCityArchive">${icon('external')} 졸업 앨범</button></div>
       <div class="empty" style="padding:0 0 14px;">수업 과제는 도로를 달리는 자동차, 자율학습은 도시를 돌아다니는 시민이에요. 방치하면 지쳐가다가 결국 쓰러져요. 할 일을 계속 완료하면 도시 한가운데 건물이 단계별로 커져요.</div>
+      ${renderCityGrowthBar()}
       ${graduating.length>0?`<div class="city-graduating">🎓 이번 주 졸업 예정 ${graduating.length}명 — 다음 주 월요일에 졸업 앨범으로 넘어가요</div>`:''}
       <div id="city3dSlot" class="city-slot-full"></div>
       ${citizens.length===0?`<div class="empty">아직 시민이 없어요 — 할 일 탭에서 수업 과제나 자율학습을 추가하면 도시에 나타나요.</div>`:''}
@@ -2478,8 +2812,13 @@
   function completeTask(id){
     const idx = state.data.tasks.findIndex(i=>i.id===id); if(idx<0) return;
     const [it] = state.data.tasks.splice(idx,1);
-    state.data.completed.push({...it, completedAt:Date.now()});
-    persist(); render();
+    const completedAt = Date.now();
+    state.data.completed.push({...it, completedAt});
+    const box = it.boxKey && hasBox(it.boxKey) ? findBox(it.boxKey) : null;
+    logArchiveEvent({id, ts:completedAt, createdAt:it.createdAt||null,
+      subject: box?box.label:'미분류', subjectKey: box?box.key:null, kind:it.corner, text:it.text});
+    lastCompletion = {id, text:it.text, snapshot:{...it}};
+    persist(); openCompletionFeedback(id);
   }
   function deleteTask(id){
     state.data.tasks = state.data.tasks.filter(i=>i.id!==id);
@@ -2494,6 +2833,162 @@
   }
   function deletePermanent(id){
     state.data.completed = state.data.completed.filter(i=>i.id!==id);
+    persist(); render();
+  }
+
+  /* ============ 아카이브 로그 — append-only 원자료 ============
+     완료 즉시 한 줄 기록하고, 이후 이 항목을 지우거나 다른 배열로 옮겨도 이 로그는
+     건드리지 않는다. 아카이브 탭 통계는 전부 이 원자료에서 매번 다시 계산한다. */
+  const RATING_LABELS = {AGAIN:'거의 기억 안 남', HARD:'가물가물했음', GOOD:'잘 기억남', EASY:'완벽했음'};
+  function logArchiveEvent(entry){
+    state.data.archiveLog = state.data.archiveLog || [];
+    state.data.archiveLog.push(entry);
+  }
+  function findAnyCompletedItem(id){
+    return state.data.completed.find(i=>i.id===id) || null;
+  }
+  function computeArchiveStats(){
+    const log = state.data.archiveLog || [];
+    const bySubject = {};
+    log.forEach(e=>{
+      const key = e.subject || '미분류';
+      if(!bySubject[key]) bySubject[key] = {subject:key, total:0, ratings:{AGAIN:0,HARD:0,GOOD:0,EASY:0}, unrated:0};
+      const b = bySubject[key];
+      b.total++;
+      if(e.rating && b.ratings[e.rating]!=null) b.ratings[e.rating]++;
+      else b.unrated++;
+    });
+    const subjects = Object.values(bySubject).map(b=>{
+      const rated = b.ratings.AGAIN + b.ratings.HARD + b.ratings.GOOD + b.ratings.EASY;
+      return {...b, rated};
+    }).sort((a,b)=>b.total-a.total);
+    return {subjects, totalAll: log.length};
+  }
+  function downloadTextFile(filename, content, mime){
+    const blob = new Blob([content], {type: mime||'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+  function exportArchiveLog(){
+    downloadTextFile(
+      `archive-log-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.json`,
+      JSON.stringify(state.data.archiveLog||[], null, 2), 'application/json'
+    );
+  }
+  function renderArchivePage(){
+    const stats = computeArchiveStats();
+    const subjectRows = stats.subjects.map(s=>{
+      const bar = s.rated>0 ? `<div class="arc-bar">
+          <div class="arc-bar-seg" style="width:${s.ratings.EASY/s.rated*100}%;background:var(--green);"></div>
+          <div class="arc-bar-seg" style="width:${s.ratings.GOOD/s.rated*100}%;background:var(--teal);"></div>
+          <div class="arc-bar-seg" style="width:${s.ratings.HARD/s.rated*100}%;background:var(--orange);"></div>
+          <div class="arc-bar-seg" style="width:${s.ratings.AGAIN/s.rated*100}%;background:var(--red);"></div>
+        </div>` : `<div class="arc-bar-empty">자기평가 없음</div>`;
+      return `<div class="arc-subject-row">
+        <div class="arc-subject-head"><b>${escapeHtml(s.subject)}</b><span>${s.total}개 완료${s.rated>0?` · 평가 ${s.rated}개`:''}</span></div>
+        ${bar}
+      </div>`;
+    }).join('');
+    const recent = (state.data.archiveLog||[]).slice(-30).reverse();
+    const recentHtml = recent.length===0 ? `<div class="empty">아직 완료 기록이 없어요.</div>` : recent.map(e=>`
+      <div class="arc-log-row">
+        <span class="arc-log-date">${fmtDate(e.ts)}</span>
+        <span class="arc-log-subject">${escapeHtml(e.subject||'미분류')}</span>
+        <span class="arc-log-text">${escapeHtml(e.text)}</span>
+        <span class="arc-log-rating">${e.rating?escapeHtml(RATING_LABELS[e.rating]||''):''}</span>
+      </div>`).join('');
+    return `<div class="fade-in">
+      <div class="page-head"><h1>아카이브</h1><button class="iconbtn" data-action="exportArchiveLog">${icon('external')} 원자료 내보내기</button></div>
+      <div class="empty" style="padding:0 0 14px;">지금까지 총 ${stats.totalAll}개 완료</div>
+      <div class="section">
+        <div class="section-head"><div class="section-title">과목별 현황</div></div>
+        ${subjectRows || `<div class="empty">아직 완료 기록이 없어요.</div>`}
+      </div>
+      <div class="section">
+        <div class="section-head"><div class="section-title">최근 완료 기록</div></div>
+        ${recentHtml}
+      </div>
+    </div>`;
+  }
+
+  /* ============ 완료 피드백 — 화면을 막지 않는 대화창 ============
+     끝낸 것마다 얼마나 확실히 알고 있었는지 자기평가 4단계 + 짧은 설명을 받는다.
+     등급 버튼은 고르기만 하고 바로 제출되지 않는다 — 이어서 설명까지 쓰고 별도
+     제출 버튼을 눌러야 반영됨(등급 클릭 = 즉시 제출이면 쓰던 글이 날아가는 문제가 있었음). */
+  let lastCompletion = null; // 실행취소용 — 가장 최근 완료 한 건만 기억
+  function openCompletionFeedback(id){
+    state.feedbackTargetId = id;
+    state.feedbackSelectedRating = null;
+    render();
+  }
+  function selectFeedbackRating(rating){
+    state.feedbackSelectedRating = rating;
+    renderOverlaysOnly();
+  }
+  function submitCompletionFeedback(){
+    const id = state.feedbackTargetId;
+    const rating = state.feedbackSelectedRating;
+    if(!rating) return;
+    const it = findAnyCompletedItem(id);
+    if(it){
+      const noteEl = document.getElementById('feedbackNoteInput');
+      it.recallRating = rating;
+      const note = noteEl ? noteEl.value.trim() : '';
+      if(note) it.feedbackNote = note;
+      it.feedbackAt = Date.now();
+      const log = (state.data.archiveLog||[]).find(e=>e.id===id);
+      if(log){ log.rating = rating; if(note) log.note = note; }
+      persist();
+    }
+    state.feedbackTargetId = null;
+    state.feedbackSelectedRating = null;
+    render();
+  }
+  function skipCompletionFeedback(){
+    state.feedbackTargetId = null;
+    state.feedbackSelectedRating = null;
+    render();
+  }
+  function renderCompletionFeedbackModal(){
+    const it = findAnyCompletedItem(state.feedbackTargetId);
+    if(!it) return '';
+    const RATINGS = [['AGAIN','거의 기억 안 남'],['HARD','가물가물했음'],['GOOD','잘 기억남'],['EASY','완벽했음']];
+    const selected = state.feedbackSelectedRating;
+    const ratingBtns = RATINGS.map(([key,label])=>
+      `<button class="btn-outline ${selected===key?'is-selected':''}" data-action="selectFeedbackRating" data-rating="${key}">${label}</button>`
+    ).join('');
+    return `<div class="feedback-dock" role="dialog" aria-label="학습 후기" data-target="${escapeHtml(state.feedbackTargetId||'')}">
+      <div class="feedback-dock-head">
+        <b>학습 후기</b>
+        <button class="modal-close" data-action="skipCompletionFeedback" aria-label="후기 건너뛰기">${icon('close')}</button>
+      </div>
+      <div class="feedback-dock-body">
+        <div class="city-inspect-text" style="margin-bottom:4px;">${escapeHtml(it.text)}</div>
+        <div class="city-inspect-meta" style="margin-bottom:10px;">방금 끝낸 거, 얼마나 확실하게 알고 있었어요?</div>
+        <div class="feedback-hint">등급을 고른다고 바로 제출되지 않아요 — 아래에 설명까지 쓰고 제출을 눌러주세요.</div>
+        <div class="feedback-ratings">${ratingBtns}</div>
+        <div class="feedback-explain-label">방금 이해한 걸 네 언어로 설명해봐요</div>
+        <div class="feedback-hint">여기서 막히면 아직 모르는 거예요. 짧아도 되니까 남의 말 말고 네 말로. 나중에 이 설명 자체가 복습 자료가 돼요.</div>
+        <textarea class="ai-textarea" id="feedbackNoteInput" placeholder="예: 급수가 수렴하는지는 항이 0으로 가는 속도로 판단하는데, 0으로 가도 느리면 발산할 수 있다"></textarea>
+        <div class="feedback-dock-actions">
+          <button class="section-link" data-action="skipCompletionFeedback">그냥 넘어가기</button>
+          <button class="btn" data-action="submitCompletionFeedback" ${selected?'':'disabled'}>제출</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  // 완료 자체를 잘못 눌렀을 때 되돌린다. 가장 최근 완료 한 건만 대상.
+  function undoLastCompletion(){
+    const lc = lastCompletion;
+    if(!lc) return;
+    const idx = state.data.completed.findIndex(i=>i.id===lc.id); if(idx<0) return;
+    state.data.completed.splice(idx,1);
+    state.data.tasks.push(lc.snapshot);
+    state.data.archiveLog = (state.data.archiveLog||[]).filter(e=>e.id!==lc.id);
+    if(state.feedbackTargetId===lc.id){ state.feedbackTargetId=null; state.feedbackSelectedRating=null; }
+    lastCompletion = null;
     persist(); render();
   }
 
@@ -2630,42 +3125,91 @@
   document.body.addEventListener('pointerup', endBoxDrag);
   document.body.addEventListener('pointercancel', endBoxDrag);
 
-  /* ============ 할 일 항목을 스톱워치 카드로 드래그해서 연결하기 ============ */
+  /* ============ 할 일 항목 드래그 ============
+     두 가지 목적을 하나의 네이티브 드래그로 처리한다:
+     1) 그냥 드래그해서 스톱워치/뽀모도로 카드에 놓으면 연결(기존 기능)
+     2) 몇백 ms 이상 누르고 있으면(움직이기 전부터) 오른쪽 아래에 휴지통이 뜨고,
+        그 상태로 끌어다 놓으면 삭제(신규 기능)
+     휴지통 노출은 순수 포인터 타이머로 재고, 실제 드래그 자체는 그대로 네이티브
+     HTML5 dragstart/dragover/drop을 쓴다 — 빠르게 휙 끌면(타이머가 뜨기 전) 휴지통이
+     안 뜨니 기존 스톱워치 연결 동작은 그대로 유지됨. */
+  const TASK_LONGPRESS_MS = 550;
+  let taskLongPressTimer = null, taskLongPressRow = null, taskDragActive = false;
+  function showTaskTrash(row){
+    const trash = document.getElementById('taskTrashZone');
+    if(trash) trash.classList.add('visible');
+    if(row) row.classList.add('longpress-armed');
+  }
+  function hideTaskTrash(){
+    const trash = document.getElementById('taskTrashZone');
+    if(trash) trash.classList.remove('visible', 'drag-over');
+    document.querySelectorAll('.box-task-row.longpress-armed').forEach(r=>r.classList.remove('longpress-armed'));
+  }
+  document.body.addEventListener('pointerdown', function(e){
+    const row = e.target.closest('.box-task-row');
+    if(!row || e.target.closest('button')) return;
+    taskLongPressRow = row;
+    taskLongPressTimer = setTimeout(()=>{
+      if(taskLongPressRow===row) showTaskTrash(row);
+    }, TASK_LONGPRESS_MS);
+  });
+  function clearTaskLongPress(){
+    clearTimeout(taskLongPressTimer);
+    taskLongPressTimer = null;
+    taskLongPressRow = null;
+    if(!taskDragActive) hideTaskTrash();
+  }
+  document.body.addEventListener('pointerup', clearTaskLongPress);
+  document.body.addEventListener('pointercancel', clearTaskLongPress);
+
   document.body.addEventListener('dragstart', function(e){
     const row = e.target.closest('.box-task-row');
     if(!row) return;
     const payload = {type:'task', id:row.dataset.dragId};
     e.dataTransfer.setData('application/json', JSON.stringify(payload));
-    e.dataTransfer.effectAllowed = 'copy';
+    e.dataTransfer.effectAllowed = 'copyMove';
     row.classList.add('dragging-task');
+    taskDragActive = true;
   });
   document.body.addEventListener('dragend', function(e){
     const row = e.target.closest('.box-task-row');
     if(row) row.classList.remove('dragging-task');
     document.querySelectorAll('.pomo-card.drag-over').forEach(c=>c.classList.remove('drag-over'));
+    taskDragActive = false;
+    hideTaskTrash();
   });
   document.body.addEventListener('dragover', function(e){
     const card = e.target.closest('.pomo-card');
-    if(!card) return;
+    const trash = e.target.closest('.task-trash.visible');
+    if(!card && !trash) return;
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
-    card.classList.add('drag-over');
+    if(card){ e.dataTransfer.dropEffect='copy'; card.classList.add('drag-over'); }
+    else document.querySelectorAll('.pomo-card.drag-over').forEach(c=>c.classList.remove('drag-over'));
+    if(trash){ e.dataTransfer.dropEffect='move'; trash.classList.add('drag-over'); }
+    else { const t=document.getElementById('taskTrashZone'); if(t) t.classList.remove('drag-over'); }
   });
   document.body.addEventListener('drop', function(e){
     const card = e.target.closest('.pomo-card');
-    if(!card) return;
+    const trash = e.target.closest('.task-trash.visible');
+    if(!card && !trash) return;
     e.preventDefault();
-    card.classList.remove('drag-over');
+    if(card) card.classList.remove('drag-over');
     try{
       const data = JSON.parse(e.dataTransfer.getData('application/json'));
-      if(data && data.type){
-        sw.target = data;
-        render();
-        const newCard = document.querySelector('.pomo-card');
-        if(newCard){
-          newCard.classList.add('linked-flash');
-          newCard.addEventListener('animationend', ()=>newCard.classList.remove('linked-flash'), {once:true});
-        }
+      if(!data || !data.type) return;
+      if(trash){
+        if(data.type==='task') deleteTask(data.id);
+        trash.classList.remove('drag-over');
+        trash.classList.add('deleted');
+        trash.addEventListener('animationend', ()=>{ trash.classList.remove('deleted','visible'); }, {once:true});
+        return;
+      }
+      sw.target = data;
+      render();
+      const newCard = document.querySelector('.pomo-card');
+      if(newCard){
+        newCard.classList.add('linked-flash');
+        newCard.addEventListener('animationend', ()=>newCard.classList.remove('linked-flash'), {once:true});
       }
     }catch(err){}
   });
@@ -2676,35 +3220,48 @@
     const el = e.target.closest('[data-action]'); if(!el) return;
     if(el.dataset.action==='closeModal' && el.classList.contains('modal-overlay') && e.target!==el) return;
     switch(el.dataset.action){
-      case 'goView': state.view=el.dataset.view; render(); break;
-      case 'addTaskFromRow': {
-        const corner = el.dataset.corner;
-        const boxSel = document.getElementById('taskAddBox-'+corner);
-        const input = document.getElementById('taskAddInput-'+corner);
-        addTask(input.value, boxSel ? boxSel.value : null, corner);
+      case 'goView': {
+        const target = el.dataset.view;
+        if(chainModeActive && SCROLL_CHAIN.includes(target)){
+          // 이미 스크롤 체인 화면 안이면 다시 그리지 않고 그 섹션까지 그냥 부드럽게 스크롤만
+          const sec = document.getElementById('sec-'+target);
+          if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
+        } else {
+          state.view = target;
+          if(SCROLL_CHAIN.includes(target)) pendingScrollTarget = target;
+          render();
+        }
         break;
       }
+      case 'setTaskAddType': setTaskAddType(el.dataset.type); break;
+      case 'addTaskUnified': addTaskUnified(); break;
       case 'completeTask': completeTask(el.dataset.id); break;
       case 'deleteTask': deleteTask(el.dataset.id); break;
       case 'restoreTask': restoreTask(el.dataset.id); break;
       case 'deletePermanent': deletePermanent(el.dataset.id); break;
-      case 'openCompleted': state.modal='completed'; render(); break;
+      case 'openCompleted': state.modal='completed'; renderOverlaysOnly(); break;
       case 'openCityInspect': openCityInspect(el.dataset.id); break;
       case 'cityCompleteFromInspect': cityCompleteFromInspect(); break;
       case 'goCityArchive': state.cityView='archive'; render(); break;
       case 'goCityMain': state.cityView='main'; render(); break;
-      case 'openQuickAdd': state.quickAddBoxKey = el.dataset.boxkey; state.quickAddCorner = 'review'; state.modal = 'quickAdd'; render(); break;
-      case 'setQuickAddCorner': state.quickAddCorner = el.dataset.corner; render(); break;
+      case 'openQuickAdd': state.quickAddBoxKey = el.dataset.boxkey; state.quickAddCorner = 'review'; state.modal = 'quickAdd'; renderOverlaysOnly(); break;
+      case 'setQuickAddCorner': state.quickAddCorner = el.dataset.corner; renderOverlaysOnly(); break;
       case 'quickAddSubmit': {
         const input = document.getElementById('quickAddInput');
         addTask(input.value, el.dataset.boxkey, el.dataset.corner);
         break;
       }
-      case 'openSettings': state.modal='settings'; render(); break;
-      case 'openPrivacy': state.modal='privacy'; render(); break;
-      case 'closeModal': state.modal=null; render(); break;
+      case 'openSettings': state.modal='settings'; renderOverlaysOnly(); break;
+      case 'openPrivacy': state.modal='privacy'; renderOverlaysOnly(); break;
+      case 'openNotifications': state.modal='notifications'; renderOverlaysOnly(); break;
+      case 'closeModal': state.modal=null; renderOverlaysOnly(); break;
       case 'exportData': exportData(); break;
+      case 'exportArchiveLog': exportArchiveLog(); break;
       case 'importTrigger': document.getElementById('importFile').click(); break;
+      case 'selectFeedbackRating': selectFeedbackRating(el.dataset.rating); break;
+      case 'submitCompletionFeedback': if(!el.disabled) submitCompletionFeedback(); break;
+      case 'skipCompletionFeedback': skipCompletionFeedback(); break;
+      case 'undoLastCompletion': undoLastCompletion(); break;
       case 'addAssignment': addAssignment(); break;
       case 'addDday': addDday(); break;
       case 'deleteDday': deleteDday(el.dataset.id); break;
@@ -2742,6 +3299,10 @@
       case 'swPause': swPause(); break;
       case 'swReset': swReset(); break;
       case 'swCompleteLinked': swCompleteLinked(); break;
+      case 'setSwMode': setSwMode(el.dataset.mode); break;
+      case 'pomoStart': pomoStart(); break;
+      case 'pomoPause': pomoPause(); break;
+      case 'pomoReset': pomoReset(); break;
       case 'saveStudentName': saveStudentName(); break;
       case 'signInGoogle': signInGoogle(); break;
       case 'signOut': signOut(); break;
@@ -2786,23 +3347,14 @@
       submitAddBox();
     } else if(e.target.id==='quickAddInput'){
       addTask(e.target.value, e.target.dataset.boxkey, e.target.dataset.corner);
-    } else if(e.target.classList.contains('add-input') && e.target.dataset.corner){
-      addTask(e.target.value, document.getElementById('taskAddBox-'+e.target.dataset.corner)?.value, e.target.dataset.corner);
+    } else if(e.target.id==='taskAddInput'){
+      addTaskUnified();
     }
   });
 
   let debTimer = null;
   document.body.addEventListener('input', function(e){
-    if(e.target.id==='swTargetSelect'){
-      const v = e.target.value;
-      if(!v){ sw.target = null; }
-      else {
-        const parts = v.split(':');
-        if(parts[0]==='assignment'){ sw.target = {type:'assignment', id:parts[1]}; }
-        else if(parts[0]==='task'){ sw.target = {type:'task', id:parts[1]}; }
-      }
-      render();
-    } else if(e.target.dataset.role==='templateName' || e.target.dataset.role==='templateContent'){
+    if(e.target.dataset.role==='templateName' || e.target.dataset.role==='templateContent'){
       const field = e.target.dataset.role==='templateName' ? 'name' : 'content';
       const id = e.target.dataset.id, val = e.target.value;
       clearTimeout(debTimer);
@@ -2820,7 +3372,7 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(()=>{
       const w = isWideScreen();
-      if(w !== lastWide){ lastWide = w; if(state.view==='home') render(); }
+      if(w !== lastWide){ lastWide = w; render(); }
     }, 180);
   });
 
@@ -2831,6 +3383,9 @@
 
   /* ============ 초기화 ============ */
   (function init(){
+    const trashZone = document.getElementById('taskTrashZone');
+    if(trashZone) trashZone.innerHTML = icon('trash');
+
     const saved = loadData();
     if(saved){
       state.data = {
@@ -2838,7 +3393,8 @@
         completed: saved.completed || [],
         assignments: saved.assignments || [],
         ddays: saved.ddays || [],
-        boxes: saved.boxes || []
+        boxes: saved.boxes || [],
+        archiveLog: saved.archiveLog || []
       };
     }
     // 세션 확인은 비동기로 흘려보냄 — 네트워크가 느리거나 막혀도 첫 화면은 바로 그려짐.
