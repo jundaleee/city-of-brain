@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <title>City of Brain</title>
-<meta name="theme-color" content="#0B0B0E">
+<meta name="theme-color" content="#FFF8EE">
 <link rel="icon" href="favicon.ico?v=4" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png?v=4">
 <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png?v=4">
@@ -15,121 +15,97 @@
 <meta name="apple-mobile-web-app-title" content="City of Brain">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
 <style>
   :root{
-    /* 디자인: 블루 + 화이트 + 블랙 + 글래스만 쓴다(무지개색 금지) — 그래서 accent는
-       --blue 하나뿐이고, danger/good 같은 의미색 구분도 전부 이 하나로 수렴시킨다. */
-    color-scheme: dark;
-    --bg:#0B0B0E;
-    --glass:rgba(255,255,255,.08); --glass-strong:rgba(255,255,255,.15); --glass-press:rgba(255,255,255,.2);
-    --border:rgba(255,255,255,.13); --border-strong:rgba(255,255,255,.22); --border-hi:rgba(255,255,255,.36);
-    --text:#FFFFFF; --text-2:rgba(255,255,255,.76); --text-3:rgba(255,255,255,.52);
+    /* 디자인: 밝고 따뜻한 "동네 분식집" 톤 — 글래스/블러 효과는 전부 폐기하고 종이 같은
+       플랫 카드로 바꿨다. 색은 여전히 블루 하나(accent) + 화이트/블랙 계열만 쓰되,
+       배경 자체가 크림색이라 "화이트/블랙"은 크림~진갈색 범위로 치환된다. */
+    color-scheme: light;
+    --bg:#FFF8EE;
+    --glass:#FFFFFF; --glass-strong:#FFF1DC; --glass-press:#FFE7C4;
+    --border:rgba(90,58,24,.14); --border-strong:rgba(90,58,24,.26); --border-hi:rgba(90,58,24,.14);
+    --text:#2B2017; --text-2:rgba(43,32,23,.7); --text-3:rgba(43,32,23,.48);
     --blue:#0A84FF;
     --accent:var(--blue);
     --danger:var(--blue); --good:var(--blue);
-    --sans:-apple-system,BlinkMacSystemFont,'SF Pro Text','Pretendard Variable','Pretendard','Malgun Gothic',sans-serif;
+    --sans:'Jua','Pretendard Variable','Pretendard','Malgun Gothic',sans-serif;
     --r-sm:10px; --r-md:16px; --r-lg:22px; --r-pill:999px;
-    --blur:26px;
     --dur:200ms; --ease:cubic-bezier(.4,0,.2,1);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:
-      radial-gradient(ellipse 900px 620px at 12% -8%, rgba(10,132,255,.20), transparent 60%),
-      radial-gradient(ellipse 780px 680px at 105% 8%, rgba(10,132,255,.12), transparent 55%),
-      radial-gradient(ellipse 700px 640px at 25% 108%, rgba(10,132,255,.08), transparent 58%),
-      var(--bg);
-    background-attachment:fixed;
+    background:var(--bg);
     color:var(--text);font-family:var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' 1;
   }
-  ::selection{background:rgba(10,132,255,.35);}
+  ::selection{background:rgba(10,132,255,.25);}
   button,input,textarea{font-family:inherit;}
   a{color:inherit;}
   :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px;}
   button{cursor:pointer;}
 
-  /* ---- glass utility ---- */
+  /* ---- 카드 표면 유틸(예전엔 glass였으나 지금은 플랫 종이 카드) ---- */
   .glass{
     background:var(--glass);
-    -webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);
-    backdrop-filter:blur(var(--blur)) saturate(1.7);
     border:1px solid var(--border);
     border-top-color:var(--border-hi);
   }
 
-  /* ---- shell / nav ---- */
-  .app-shell{display:flex;min-height:100vh;align-items:stretch;}
-  .sidebar{width:236px;flex-shrink:0;margin:14px 0 14px 14px;padding:20px 12px;border-radius:var(--r-lg);position:sticky;top:14px;height:calc(100vh - 28px);overflow-y:auto;display:flex;flex-direction:column;}
-  .sidebar-brand{padding:4px 10px 22px;display:flex;align-items:center;gap:9px;cursor:pointer;}
-  .sidebar-brand .mark{
-    width:26px;height:26px;border-radius:9px;flex-shrink:0;position:relative;overflow:hidden;
+  /* ---- shell / top nav ---- */
+  .app-shell{min-height:100vh;}
+  .topnav{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);}
+  .topnav-inner{max-width:1100px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:4px;}
+  .topnav-brand{display:flex;align-items:center;gap:9px;cursor:pointer;margin-right:14px;flex-shrink:0;}
+  .topnav-brand .mark{
+    width:28px;height:28px;border-radius:10px;flex-shrink:0;position:relative;overflow:hidden;
     background:linear-gradient(135deg, var(--blue), #FFFFFF);
     box-shadow:
       inset 0 1px 1px rgba(255,255,255,.6),
-      inset 0 -3px 5px -2px rgba(0,0,0,.4),
-      0 2px 5px rgba(0,0,0,.3);
+      0 2px 5px rgba(90,58,24,.18);
   }
-  .sidebar-brand .mark::after{
-    content:'';position:absolute;inset:0;border-radius:inherit;
-    background:linear-gradient(135deg, rgba(255,255,255,.5), rgba(255,255,255,0) 55%);
-    -webkit-backdrop-filter:blur(1px) saturate(1.4);
-    backdrop-filter:blur(1px) saturate(1.4);
-  }
-  .sidebar-brand b{font-size:14.5px;font-weight:600;letter-spacing:-.01em;}
-  .nav-list{display:flex;flex-direction:column;gap:2px;}
-  .nav-item{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:11px;font-size:14px;color:var(--text-2);background:none;border:none;text-align:left;width:100%;transition:background var(--dur) var(--ease),color var(--dur) var(--ease);position:relative;}
-  .nav-icon{width:27px;height:27px;border-radius:8px;background:var(--nc,var(--blue));display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.35);}
-  .nav-icon svg{opacity:1;}
-  .nav-item:hover{background:var(--glass);color:var(--text);}
+  .topnav-brand b{font-size:17px;font-weight:400;letter-spacing:0;}
+  .nav-list{display:flex;align-items:center;gap:2px;flex:1;}
+  .nav-item{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--r-pill);font-size:14.5px;color:var(--text-2);background:none;border:none;text-align:left;transition:background var(--dur) var(--ease),color var(--dur) var(--ease);position:relative;white-space:nowrap;}
+  .nav-icon{width:24px;height:24px;border-radius:50%;background:var(--nc,var(--blue));display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;}
+  .nav-icon svg{width:13px;height:13px;}
+  .nav-item:hover{background:var(--glass-strong);color:var(--text);}
   .nav-item.active{background:var(--glass-strong);color:var(--text);font-weight:600;}
   .nav-item .label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);}
   .footer-link{display:block;width:100%;background:none;border:none;color:var(--text-3);font-size:11px;text-align:left;padding:8px 12px;cursor:pointer;font-family:var(--sans);}
   .footer-link:hover{color:var(--text-2);}
-  .sidebar-auth-status{font-size:11px;color:var(--text-3);padding:0 12px 10px;}
-  .sidebar-account{padding:0 12px 10px;}
-  .sidebar-account-email{font-size:11px;color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px;}
-  .sidebar-foot .sidebar-login-btn{margin:0 0 10px;padding:9px 14px;font-size:12.5px;}
 
-  .bottom-nav{display:none;}
+  .topnav-ad-wrap{max-width:1100px;margin:0 auto;padding:0 24px;}
   .main{flex:1;min-width:0;}
-  .main-inner{max-width:720px;margin:0 auto;padding:40px 32px 110px;}
+  .main-inner{max-width:720px;margin:0 auto;padding:32px 32px 80px;}
   .main-inner.wide{max-width:1560px;}
-  /* 홈→할일→과제→아카이브→도시가 화면 전환 없이 하나로 이어지는 스크롤 화면.
+  /* 홈→할일→이번주가 화면 전환 없이 하나로 이어지는 스크롤 화면.
      각 섹션이 자기 폭을 갖도록 바깥 컨테이너의 max-width는 풀고, 섹션마다 다시 좁혀
-     중앙 정렬한다(도시 섹션만 더 넓게 튀어나올 수 있도록). */
+     중앙 정렬한다. */
   .main-inner.chain-mode{max-width:none;padding-left:0;padding-right:0;}
-  .scroll-sec{max-width:720px;margin:0 auto;padding:0 32px;scroll-margin-top:20px;}
+  .scroll-sec{max-width:720px;margin:0 auto;padding:0 32px;scroll-margin-top:84px;}
   .scroll-sec+.scroll-sec{margin-top:72px;}
 
-  .topbar-mini{display:flex;justify-content:flex-end;margin-bottom:10px;}
+  .topbar-mini{display:flex;justify-content:flex-end;max-width:720px;margin:0 auto 10px;padding:0 32px;}
   .notif-badge{display:inline-flex;align-items:center;justify-content:center;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:var(--blue);color:#fff;font-size:9.5px;font-weight:700;}
   .notif-row{font-size:13px;line-height:1.6;padding:9px 0;border-bottom:1px solid var(--border);}
   .notif-row:last-child{border-bottom:none;}
-  .iconbtn{background:var(--glass);border:1px solid var(--border);color:var(--text-2);font-size:12.5px;padding:7px 14px;border-radius:var(--r-pill);display:inline-flex;align-items:center;gap:6px;transition:all var(--dur) var(--ease);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));}
+  .iconbtn{background:var(--glass);border:1px solid var(--border);color:var(--text-2);font-size:12.5px;padding:7px 14px;border-radius:var(--r-pill);display:inline-flex;align-items:center;gap:6px;transition:all var(--dur) var(--ease);}
   .iconbtn:hover{color:var(--text);border-color:var(--border-strong);background:var(--glass-strong);}
 
   @media(max-width:979px){
-    .sidebar{width:64px;padding:20px 8px;}
-    .sidebar-brand{justify-content:center;padding:4px 0 20px;}
-    .sidebar-brand b{display:none;}
-    .nav-item{justify-content:center;padding:8px;}
+    .topnav-brand b{display:none;}
     .nav-item .label{display:none;}
-    .main-inner{padding:34px 22px 110px;}
+    .nav-item{padding:8px 10px;}
+    .main-inner{padding:28px 20px 80px;}
     .main-inner.chain-mode{padding-left:0;padding-right:0;}
-    .scroll-sec{padding:0 22px;}
+    .scroll-sec{padding:0 20px;}
   }
   @media(max-width:639px){
-    .app-shell{display:block;}
-    .sidebar{display:none;}
-    .bottom-nav{display:flex;position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));border-radius:var(--r-lg);padding:8px 6px;justify-content:space-around;z-index:60;box-shadow:0 12px 32px rgba(0,0,0,.45);}
-    .bottom-nav .nav-item{flex-direction:column;gap:3px;font-size:9.5px;padding:5px 4px;border-radius:12px;flex:1;min-width:0;}
-    .bottom-nav .nav-icon{width:26px;height:26px;}
-    .bottom-nav .nav-item .label{display:block;font-size:9.5px;}
-    .main-inner{padding:24px 16px 110px;max-width:100%;}
+    .topnav-inner{padding:10px 14px;}
+    .main-inner{padding:20px 14px 48px;max-width:100%;}
     .main-inner.chain-mode{padding-left:0;padding-right:0;}
-    .scroll-sec{padding:0 16px;max-width:100%;}
+    .scroll-sec{padding:0 14px;max-width:100%;}
   }
 
   /* ---- page header ---- */
@@ -231,39 +207,47 @@
     .box-grid{grid-template-columns:1fr;}
   }
 
-  /* ---- 이번주: 과목별 간식 게이지 ---- */
+  /* ---- 이번주: 과목별 간식 게이지(음식집 주문서 컨셉) ---- */
   .exam-add-wrap{margin-bottom:24px;}
   .exam-add-form{
-    background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
+    background:var(--glass);
     border:1px solid var(--border);border-top-color:var(--border-hi);border-radius:var(--r-lg);
     padding:18px 20px;display:flex;flex-direction:column;gap:10px;
   }
-  .exam-add-form input{background:var(--glass);border:1px solid var(--border);border-radius:var(--r-pill);color:var(--text);padding:9px 15px;font-size:13.5px;}
-  .exam-add-form textarea{background:var(--glass);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text);padding:11px 14px;font-size:13px;line-height:1.55;resize:vertical;font-family:inherit;}
+  .exam-add-form input{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-pill);color:var(--text);padding:9px 15px;font-size:14px;}
+  .exam-add-form textarea{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text);padding:11px 14px;font-size:14px;line-height:1.6;resize:vertical;font-family:inherit;}
   .exam-add-form textarea::placeholder,.exam-add-form input::placeholder{color:var(--text-3);}
   .exam-add-form .add-row-line{display:flex;gap:8px;}
   .exam-add-form .add-row-line button{flex:1;}
-  .exam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+  .exam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px;}
+  /* 영수증/주문서 느낌 — 흰 종이에 아래쪽만 톱니 모양으로 찢어진 테두리, 그림자는
+     clip-path와 같이 써도 안 잘리게 box-shadow 대신 filter:drop-shadow 사용 */
   .exam-card{
-    background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
-    border:1px solid var(--border);border-top-color:var(--border-hi);border-radius:20px;padding:16px 18px;
+    position:relative;background:var(--glass);padding:20px 20px 30px;
+    clip-path:polygon(0 0,100% 0,100% 100%,95% 95%,90% 100%,85% 95%,80% 100%,75% 95%,70% 100%,65% 95%,60% 100%,55% 95%,50% 100%,45% 95%,40% 100%,35% 95%,30% 100%,25% 95%,20% 100%,15% 95%,10% 100%,5% 95%,0 100%);
+    filter:drop-shadow(0 10px 18px rgba(90,58,24,.14));
   }
-  .exam-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px;}
-  .exam-card-title{font-size:15.5px;font-weight:700;letter-spacing:-.01em;}
-  .exam-card-meta{font-size:11.5px;color:var(--text-3);margin-top:2px;}
-  .food-bar{position:relative;height:36px;border-radius:10px;overflow:hidden;background:var(--glass-strong);border:1px solid var(--border);margin-bottom:12px;}
+  .exam-card-head{position:relative;margin-bottom:14px;padding-bottom:12px;border-bottom:1.5px dashed var(--border-strong);}
+  .exam-card-shop{font-size:11px;color:var(--text-3);letter-spacing:.08em;}
+  .exam-card-title{font-size:19px;letter-spacing:-.01em;margin-top:2px;}
+  .exam-card-meta{font-size:12px;color:var(--text-3);margin-top:3px;}
+  .exam-card-del{position:absolute;top:0;right:0;opacity:.55;}
+  .exam-card-del:hover{opacity:1;}
+  .food-bar{position:relative;height:40px;border-radius:10px;overflow:hidden;background:var(--glass-strong);border:1px solid var(--border);margin-bottom:14px;}
   .food-bar-img{position:absolute;inset:0;background-repeat:no-repeat;background-size:100% 100%;image-rendering:pixelated;image-rendering:crisp-edges;}
   .food-bar-blocks{position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent 0,transparent calc(100%/var(--n) - 2px),var(--bg) calc(100%/var(--n) - 2px),var(--bg) calc(100%/var(--n)));opacity:.9;}
-  .food-bar-eaten{position:absolute;inset:0 auto 0 0;width:0%;background:var(--bg);opacity:.88;box-shadow:2px 0 8px rgba(0,0,0,.5);transition:width 420ms var(--ease);}
-  .exam-items{display:flex;flex-direction:column;gap:2px;}
-  .exam-item{display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid var(--border);}
+  .food-bar-eaten{position:absolute;inset:0 auto 0 0;width:0%;background:var(--bg);opacity:.85;box-shadow:2px 0 8px rgba(0,0,0,.25);transition:width 420ms var(--ease);}
+  .exam-items{display:flex;flex-direction:column;}
+  .exam-item{display:flex;align-items:baseline;gap:6px;padding:8px 0;border-bottom:1px dotted var(--border-strong);font-size:13.5px;}
   .exam-item:last-child{border-bottom:none;}
-  .exam-item-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border-strong);flex-shrink:0;background:var(--glass);display:flex;align-items:center;justify-content:center;padding:0;transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease);}
-  .exam-item-check svg{width:11px;height:11px;opacity:0;transform:scale(.4);transition:all var(--dur) var(--ease);color:var(--bg);}
-  .exam-item.done .exam-item-check{background:var(--blue);border-color:var(--blue);}
-  .exam-item.done .exam-item-check svg{opacity:1;transform:scale(1);}
-  .exam-item-text{flex:1;min-width:0;font-size:13px;line-height:1.4;word-break:break-word;}
+  .exam-item-no{font-size:11px;color:var(--text-3);flex-shrink:0;}
+  .exam-item-text{min-width:0;line-height:1.4;word-break:break-word;flex-shrink:1;}
   .exam-item.done .exam-item-text{color:var(--text-3);text-decoration:line-through;text-decoration-color:var(--border-strong);}
+  .exam-item-dots{flex:1;min-width:16px;border-bottom:1px dotted var(--border-strong);transform:translateY(-3px);}
+  .exam-item-check{flex-shrink:0;background:none;border:1.5px solid var(--border-strong);border-radius:var(--r-pill);color:var(--text-3);font-size:11px;font-weight:400;padding:3px 10px;transition:all var(--dur) var(--ease);}
+  .exam-item.done .exam-item-check{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .exam-card-total{margin-top:14px;padding-top:12px;border-top:1.5px dashed var(--border-strong);text-align:right;font-size:14px;}
+  .exam-add-item-row{margin-top:12px;margin-bottom:0;}
 
   /* ---- 디데이 + 스톱워치를 가로로 절반씩 ---- */
   .dday-sw-row{
@@ -558,17 +542,15 @@
   /* ---- 광고 슬롯 ---- */
   .ad-slot{margin:20px 0;min-height:90px;display:flex;align-items:center;justify-content:center;}
   .ad-slot-placeholder{border:1px dashed var(--border);border-radius:var(--r-md);color:var(--text-3);font-size:12px;width:100%;text-align:center;line-height:1.5;}
-  .ad-slot-sidebar{min-height:500px;margin:14px 0;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3167268253626557" crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="app-shell" id="shell">
-  <div id="sidebarSlot"></div>
+  <div id="topNavSlot"></div>
   <main class="main"><div class="main-inner" id="app"></div></main>
 </div>
-<div id="bottomNavSlot"></div>
 <div class="task-trash" id="taskTrashZone" aria-hidden="true"></div>
 <input type="file" id="importFile" accept="application/json" style="display:none">
 
@@ -640,20 +622,6 @@
     await handleAuthChange(null);
   }
   // 로그인은 강제 게이트가 아니라 사이드바/설정에 있는 버튼으로 선택하는 부가 기능임 —
-  // 로그인 안 해도 이 브라우저에 바로 저장되고, 로그인하면 그 계정 클라우드로도 동기화됨
-  function renderSidebarAuth(){
-    if(!sb) return '';
-    if(authChecking) return `<div class="sidebar-auth-status">계정 확인 중...</div>`;
-    if(authSession) return `<div class="sidebar-account">
-      <div class="sidebar-account-email">${escapeHtml(authSession.user.email||'')}</div>
-      <button class="footer-link" style="padding:2px 0;" data-action="signOut">로그아웃</button>
-    </div>`;
-    return `<button class="btn-google sidebar-login-btn" data-action="signInGoogle">
-      <svg width="15" height="15" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.87-3.04.87-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.73A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.19.28-1.73V4.94H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.06l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
-      로그인해서 저장
-    </button>`;
-  }
-
   /* ============ 광고 배너 ============
      AdSense 승인 후 아래 두 값(ca-pub-... / 광고 단위 슬롯 ID)을 채우면 실제 광고로 바뀐다.
      비어있는 동안은 자리만 차지하는 플레이스홀더를 보여준다. */
@@ -902,8 +870,7 @@
     applyA11yLabels();
   }
   function render(){
-    const sidebarSlot = document.getElementById('sidebarSlot');
-    const bottomNavSlot = document.getElementById('bottomNavSlot');
+    const topNavSlot = document.getElementById('topNavSlot');
 
     const wasChainMode = chainModeActive;
     chainModeActive = SCROLL_CHAIN.includes(state.view);
@@ -917,8 +884,7 @@
     }
     const feedbackDraft = captureFeedbackDraft();
 
-    sidebarSlot.innerHTML = renderSidebar();
-    bottomNavSlot.innerHTML = renderBottomNav();
+    topNavSlot.innerHTML = renderTopNav();
 
     const app = document.getElementById('app');
     const viewChanged = state.view !== lastRenderedView;
@@ -1025,30 +991,20 @@
     });
   }
 
-  function renderSidebar(){
+  function renderTopNav(){
     const activeKey = chainModeActive ? state.activeSection : state.view;
     const items = NAV_ITEMS.map(n=>`
       <button class="nav-item ${activeKey===n.view?'active':''}" data-action="goView" data-view="${n.view}">
         <span class="nav-icon" style="--nc:${n.color}">${icon(n.icon)}</span><span class="label">${n.label}</span>
       </button>`).join('');
-    return `<div class="sidebar glass">
-      <div class="sidebar-brand" data-action="goView" data-view="home"><div class="mark"></div><b>City of Brain</b></div>
-      <div class="nav-list">${items}</div>
-      ${renderAdSlot('sidebar')}
-      <div class="sidebar-foot">
-        ${renderSidebarAuth()}
-        <button class="nav-item" data-action="openSettings"><span class="nav-icon" style="--nc:rgba(255,255,255,.16)">${icon('settings')}</span><span class="label">설정</span></button>
-        <button class="footer-link" data-action="openPrivacy">개인정보처리방침</button>
+    return `<div class="topnav">
+      <div class="topnav-inner">
+        <div class="topnav-brand" data-action="goView" data-view="home"><div class="mark"></div><b>City of Brain</b></div>
+        <div class="nav-list">${items}</div>
+        <button class="nav-item" data-action="openSettings"><span class="nav-icon">${icon('settings')}</span><span class="label">설정</span></button>
       </div>
-    </div>`;
-  }
-  function renderBottomNav(){
-    const activeKey = chainModeActive ? state.activeSection : state.view;
-    const items = NAV_ITEMS.map(n=>`
-      <button class="nav-item ${activeKey===n.view?'active':''}" data-action="goView" data-view="${n.view}">
-        <span class="nav-icon" style="--nc:${n.color}">${icon(n.icon)}</span><span class="label">${n.label}</span>
-      </button>`).join('');
-    return `<div class="bottom-nav glass">${items}</div>`;
+    </div>
+    <div class="topnav-ad-wrap">${renderAdSlot('banner')}</div>`;
   }
   function computeNotifications(){
     const list = [];
@@ -1623,6 +1579,7 @@
               <button class="btn-outline" data-action="importTrigger">가져오기</button>
             </div>
           </div>
+          <button class="footer-link" data-action="openPrivacy">개인정보처리방침</button>
         </div>
       </div>
     </div>`;
@@ -1692,9 +1649,10 @@
     glazed: { w:54, h:18, label:'글레이즈드 소시지', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAASCAYAAAAQeC39AAABQElEQVR42mNkIBI4e8X/ZxgEYO+2hYzEqGMcKh4i1YOMpHhqYxL7gHrGf95Poj3HSIynBtpD+DyIy3OMhJIbzFMcGqoMP27cZuDQUB0Qz8Ds/nHjNtbYQ49JJmI8NRgBPrc5e8X/Z4FxJvJeZWBgYGDI/6yNofDB6nMMDAznoDwIrRBqhCSHADBxVL245QmpQxU/h9MMdPczwmIMJgHTiG4RKQCXp0lVQ6xdyGbAPMaELKCgzc8wVIGCNj9KamOihSUPVp8jGFuwQghX0qQUMCGn0QdXP9K1lKNqYF79iJKdWNAV5H/WZmCY95OBgUEbReFgBPjcyoKe6egBHqw+R7XCA5f7CVbQgzXW8EXE3m0LGYlqUk3kvcpw5/YbBhVVkUFBT5awJ65JRWwjOPfFwQH1FHoskdUIHtbdlqHc0QQAxY37dpYYJB8AAAAASUVORK5CYII=' },
     sub: { w:54, h:18, label:'서브 샌드위치', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAASCAYAAAAQeC39AAABMElEQVR42mNkwAGcveL/MwwBsHfbQkZs4oxD1UOEPMiIz0Md5v8ZNLU5BqVHrl/9wVBxkhGnB5mwearD/D+Gp65f/YFhMDGWk6qHWP2a2hxwd2JLcYzInkJXhC22rl/9QXIsoush1Qxc6tE9jhyDcI+hewqf5wZLUsQGYJ5jIdeAwQ6YYIwL1z8xDHWA7Ad4jE2OMEJRxGH8dUh45sdZbgRHn4FBdNZdVI8tW74JRYPCJf4h4bEHVz+i8PMZtFGT4nAD8BjL/6zNsDGJHZEUNVSHhAcUtG7D2f7zfmIW9xF8qFFqoMmHs8ind0mJz370Qm/FJ34GjAoa3XPIIDJEjIGBgYFh+ZpXAxIzxNgP8xRRFfRQA7AKmglbc2Soewreuh+qXRV8XRgmfJ21odwvAwATiou8tSg8xQAAAABJRU5ErkJggg==' },
     club: { w:54, h:36, label:'클럽 샌드위치', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAAkCAYAAADCW8lNAAACbElEQVR42t2YwStEQRjAv/cSK2VP5CApKfueIg7cKeHg4kApcpHTupA/YeOiHMRBlHBwoZDizkFJnqe2rU0O4rQrWS7rNLMz82bmzVvhzfsuM7P7fTPze99733zfGCCQvqHJImggFyfbBu93Q1cgP0BDBpTqKULCjoUSxHUKsHhlCAFNHlSqp+iBcp2CZ2KVxYPaqNon7BjeJ++NM0goVonnLdcpBPYiaxN0DpE+C056EIOxUDK4sLyKPEFwFeVOEHYxUefGzYPuQjJgj62OdVFKse53LWAK1zWlQQdA3UaGBtvdO6IMmm/jWoBlnRw1ToJNv4pRE+yx5JsNh9NVpVexrVULgGYrjfsjm5/ecD9WS7u0M1ErDPl/HSll67NBbz8fB88BzcKRMj5aDwAAewcv/+IZlfURlNIBrZugA9rkpSO6Q+HsXtdSRVbCmLJiTee6TAnIz6O8B8PasDp+/5erK6ygdamo/eCUn9LOyjwAAEzMLXPHPPHTUZnDT1fpzoPnnbOldm/i+ZCmE2ZBlvJaOQgAAHVfp+pJLTG3LPsZWLiTelF653HY+yRMNrnpjR0PrJ91ctgO9WW2pM3IZaN/8CAP6hs3T6VUSKrv73H/w7Lw+MOypACkXTn6Mlu0V3SGUZc5qoImJVu/TbKbUdVn9VTX8mT3vy1BNvUTG+pqgPy+kGtR1sy2bFb9360ompts0EBQopaFD0vLwuHs/vx4KxIpVf/wVLSvBqhCc30tpTXMzOxiKSpenGxjuJamhshk+NJwn3l8psY88LDpUOGe/PAyj8+eCcIsaL8oaFBgUSw0TdkHqGPQQPINTA+6Irqr6D0AAAAASUVORK5CYII=' },
-    corndog: { w:72, h:18, label:'콘도그', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAAASCAYAAAD4+JjWAAABFklEQVR42mNkoDNw9or/zzBIwd5tCxnRxRhHAwZ/QDEOROB0mA++sKo4yYg1kBjpGTiDMWDwBdTebQsZWegdOJraHAzXr/5g0NTmGDSBAnPP9as/GDrM/6MEEtNoysHvB0Z6FKxDMYBgqYhpNHDwA4Jl0MYkdorzNT5AjBpiwYXrnxgMNPlI1sPAwIBTHxM9YwPmGPSApBYgNXCIAYwDlcVgtdj1qz8wYp7YlABLfYRSASkAZibBMghbs5saDTBiYp5YjxKTfckpGujS1aBWNU+NMorUsgk5Umnakh6qbSFYAO3dtpCRpoU0cjaFWQorLwYrjV4kDEhnNYLvI4OBJh886Q8GesUn/oHprI4OdwyjgMJWcwMA/5/5feIJ06QAAAAASUVORK5CYII=' }
+    corndog: { w:72, h:18, label:'콘도그', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAAASCAYAAAD4+JjWAAABFklEQVR42mNkoDNw9or/zzBIwd5tCxnRxRhHAwZ/QDEOROB0mA++sKo4yYg1kBjpGTiDMWDwBdTebQsZWegdOJraHAzXr/5g0NTmGDSBAnPP9as/GDrM/6MEEtNoysHvB0Z6FKxDMYBgqYhpNHDwA4Jl0MYkdorzNT5AjBpiwYXrnxgMNPlI1sPAwIBTHxM9YwPmGPSApBYgNXCIAYwDlcVgtdj1qz8wYp7YlABLfYRSASkAZibBMghbs5saDTBiYp5YjxKTfckpGujS1aBWNU+NMorUsgk5Umnakh6qbSFYAO3dtpCRpoU0cjaFWQorLwYrjV4kDEhnNYLvI4OBJh886Q8GesUn/oHprI4OdwyjgMJWcwMA/5/5feIJ06QAAAAASUVORK5CYII=' },
+    cottoncandy: { w:18, h:18, label:'솜사탕', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAA0UlEQVR42mNkwAKcveL/M+ABe7ctZEQXYyTFAHwGMuIyZE9VNlbNLm1TsRrGiG4IhgEaKgwMN+7gNXDvtoWMTARdATNEQwWCcahlwggXJMXEAmev+P9wF+1Z1I/qAmwuQ5OD62FgYGAi2XocLibdIBwuZsJpGzab8cizEKX4xh0Em2ivYQlUYmKSiZzwwCbOiJKqkaKTGOASV4hwEbacjNc1ODIvEy4bCIULilp8uR8GZk7vYGBgYGBIz6zAW5Qw4SusGBgYGJTlJBiU5SQIlkcAYyVRDvv8M0QAAAAASUVORK5CYII=' }
   };
-  const FOOD_ORDER = ['choc','straw','graham','cheese','sausage','glazed','sub','club','corndog'];
+  const FOOD_ORDER = ['corndog','glazed','sausage','cottoncandy','club','sub','choc','straw','cheese','graham'];
   function examSubjects(){ return (state.data.examWeek && state.data.examWeek.subjects) || []; }
   function toggleExamAdd(){ state.examAddOpen = !state.examAddOpen; render(); }
   function addExamSubject(name, itemLines){
@@ -1738,13 +1696,15 @@
     const n = s.items.length;
     const done = s.items.filter(i=>i.done).length;
     const pct = n>0 ? Math.round(done/n*100) : 0;
-    const itemsHtml = s.items.map(it=>`
+    const itemsHtml = s.items.map((it,i)=>`
       <div class="exam-item ${it.done?'done':''}">
-        <button class="exam-item-check" data-action="toggleExamItem" data-subject="${s.id}" data-id="${it.id}">${icon('check')}</button>
+        <span class="exam-item-no">${String(i+1).padStart(2,'0')}</span>
         <div class="exam-item-text">${escapeHtml(it.text)}</div>
+        <div class="exam-item-dots"></div>
+        <button class="exam-item-check" data-action="toggleExamItem" data-subject="${s.id}" data-id="${it.id}">${it.done?'완료':'대기'}</button>
         <button class="task-del" style="opacity:1;" title="삭제" data-action="deleteExamItem" data-subject="${s.id}" data-id="${it.id}">${icon('trash')}</button>
       </div>`).join('');
-    const barHtml = n===0 ? `<div class="empty" style="padding:4px 0 10px;">아직 항목이 없어요 — 아래에서 추가해줘.</div>` : `
+    const barHtml = n===0 ? `<div class="empty" style="padding:4px 0 10px;">아직 주문 항목이 없어요 — 아래에서 추가해줘.</div>` : `
       <div class="food-bar" style="--n:${n};">
         <div class="food-bar-img" style="background-image:url('${food.src}');"></div>
         <div class="food-bar-blocks"></div>
@@ -1752,18 +1712,18 @@
       </div>`;
     return `<div class="exam-card">
       <div class="exam-card-head">
-        <div>
-          <div class="exam-card-title">${escapeHtml(s.name)}</div>
-          <div class="exam-card-meta">${food.label} · ${done}/${n} 완료</div>
-        </div>
-        <button class="task-del" style="opacity:1;" title="과목 삭제" data-action="deleteExamSubject" data-id="${s.id}">${icon('trash')}</button>
+        <div class="exam-card-shop">오늘의 주문서</div>
+        <div class="exam-card-title">${escapeHtml(s.name)}</div>
+        <div class="exam-card-meta">${food.label} 세트 · ${done}/${n} 완료</div>
+        <button class="task-del exam-card-del" title="과목 삭제" data-action="deleteExamSubject" data-id="${s.id}">${icon('trash')}</button>
       </div>
       ${barHtml}
       <div class="exam-items">${itemsHtml}</div>
-      <div class="add-row" style="margin-top:10px;margin-bottom:0;">
+      <div class="add-row exam-add-item-row">
         <input type="text" class="add-input exam-item-input" data-subject="${s.id}" placeholder="항목 추가 후 Enter">
         <button class="btn-outline" data-action="addExamItemFromRow" data-subject="${s.id}">추가</button>
       </div>
+      <div class="exam-card-total">합계 &nbsp;${done} / ${n}&nbsp; 완료</div>
     </div>`;
   }
   function renderExamPage(){
@@ -1779,10 +1739,10 @@
           <button class="btn-outline" data-action="toggleExamAdd">취소</button>
         </div>
       </div>`
-      : `<button class="box-add-btn" data-action="toggleExamAdd">+ 과목 추가</button>`;
+      : `<button class="box-add-btn" data-action="toggleExamAdd">+ 과목 추가 (새 주문서)</button>`;
     return `<div class="fade-in">
       <div class="page-head"><h1>이번주</h1></div>
-      <div class="empty" style="padding:0 0 14px;">과목마다 이번 주에 끝낼 것들을 적어두면, 끝낸 만큼 그 과목 간식이 사라져요.</div>
+      <div class="empty" style="padding:0 0 14px;">과목마다 주문서를 하나씩 받았다고 생각하고, 이번 주에 끝낼 것들을 적어줘. 끝낸 만큼 그 과목 간식을 먹어치워.</div>
       <div class="exam-add-wrap">${addForm}</div>
       ${subjects.length===0 ? '' : `<div class="exam-grid">${subjects.map(examSubjectCardHtml).join('')}</div>`}
     </div>`;
