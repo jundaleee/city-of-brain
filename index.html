@@ -17,17 +17,16 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
 <style>
   :root{
-    /* 라이트 모드가 없는 앱이라, 브라우저가 대신 그리는 요소(select 팝업 목록, 날짜
-       picker, 스크롤바)도 다크로 맞춰야 함 — 안 그러면 select를 열었을 때 목록만
-       흰 배경으로 튀는 문제가 생김. */
+    /* 디자인: 블루 + 화이트 + 블랙 + 글래스만 쓴다(무지개색 금지) — 그래서 accent는
+       --blue 하나뿐이고, danger/good 같은 의미색 구분도 전부 이 하나로 수렴시킨다. */
     color-scheme: dark;
     --bg:#0B0B0E;
     --glass:rgba(255,255,255,.08); --glass-strong:rgba(255,255,255,.15); --glass-press:rgba(255,255,255,.2);
     --border:rgba(255,255,255,.13); --border-strong:rgba(255,255,255,.22); --border-hi:rgba(255,255,255,.36);
     --text:#FFFFFF; --text-2:rgba(255,255,255,.76); --text-3:rgba(255,255,255,.52);
-    --blue:#0A84FF; --red:#FF453A; --green:#30D158; --orange:#FF9F0A; --purple:#BF5AF2; --pink:#FF375F; --indigo:#5E5CE6; --teal:#64D2FF;
+    --blue:#0A84FF;
     --accent:var(--blue);
-    --danger:var(--red); --good:var(--green);
+    --danger:var(--blue); --good:var(--blue);
     --sans:-apple-system,BlinkMacSystemFont,'SF Pro Text','Pretendard Variable','Pretendard','Malgun Gothic',sans-serif;
     --r-sm:10px; --r-md:16px; --r-lg:22px; --r-pill:999px;
     --blur:26px;
@@ -38,8 +37,8 @@
   body{
     background:
       radial-gradient(ellipse 900px 620px at 12% -8%, rgba(10,132,255,.20), transparent 60%),
-      radial-gradient(ellipse 780px 680px at 105% 8%, rgba(191,90,242,.14), transparent 55%),
-      radial-gradient(ellipse 700px 640px at 25% 108%, rgba(255,69,58,.08), transparent 58%),
+      radial-gradient(ellipse 780px 680px at 105% 8%, rgba(10,132,255,.12), transparent 55%),
+      radial-gradient(ellipse 700px 640px at 25% 108%, rgba(10,132,255,.08), transparent 58%),
       var(--bg);
     background-attachment:fixed;
     color:var(--text);font-family:var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' 1;
@@ -65,8 +64,7 @@
   .sidebar-brand{padding:4px 10px 22px;display:flex;align-items:center;gap:9px;cursor:pointer;}
   .sidebar-brand .mark{
     width:26px;height:26px;border-radius:9px;flex-shrink:0;position:relative;overflow:hidden;
-    background:conic-gradient(from 220deg at 50% 50%,
-      var(--blue), var(--teal), var(--green), var(--pink), var(--indigo), var(--purple), var(--orange), var(--blue));
+    background:linear-gradient(135deg, var(--blue), #FFFFFF);
     box-shadow:
       inset 0 1px 1px rgba(255,255,255,.6),
       inset 0 -3px 5px -2px rgba(0,0,0,.4),
@@ -104,10 +102,9 @@
   .main-inner.chain-mode{max-width:none;padding-left:0;padding-right:0;}
   .scroll-sec{max-width:720px;margin:0 auto;padding:0 32px;scroll-margin-top:20px;}
   .scroll-sec+.scroll-sec{margin-top:72px;}
-  .scroll-sec.sec-city{max-width:1560px;}
 
   .topbar-mini{display:flex;justify-content:flex-end;margin-bottom:10px;}
-  .notif-badge{display:inline-flex;align-items:center;justify-content:center;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:var(--red);color:#fff;font-size:9.5px;font-weight:700;}
+  .notif-badge{display:inline-flex;align-items:center;justify-content:center;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:var(--blue);color:#fff;font-size:9.5px;font-weight:700;}
   .notif-row{font-size:13px;line-height:1.6;padding:9px 0;border-bottom:1px solid var(--border);}
   .notif-row:last-child{border-bottom:none;}
   .iconbtn{background:var(--glass);border:1px solid var(--border);color:var(--text-2);font-size:12.5px;padding:7px 14px;border-radius:var(--r-pill);display:inline-flex;align-items:center;gap:6px;transition:all var(--dur) var(--ease);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));}
@@ -133,7 +130,6 @@
     .main-inner{padding:24px 16px 110px;max-width:100%;}
     .main-inner.chain-mode{padding-left:0;padding-right:0;}
     .scroll-sec{padding:0 16px;max-width:100%;}
-    .scroll-sec.sec-city{max-width:100%;}
   }
 
   /* ---- page header ---- */
@@ -193,7 +189,7 @@
   .box-meta{font-size:11px;color:var(--text-3);margin-top:2px;}
   .box-del{position:absolute;top:14px;right:14px;z-index:2;width:22px;height:22px;border-radius:50%;border:none;background:none;color:var(--text-3);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--dur) var(--ease),color var(--dur) var(--ease);padding:0;}
   .box-cell:hover .box-del{opacity:1;}
-  .box-del:hover{color:var(--red);}
+  .box-del:hover{color:var(--blue);}
   .box-add-cell{align-items:center;justify-content:center;border-style:dashed;cursor:default;}
   .box-add-btn{background:none;border:none;color:var(--text-3);font-size:13px;font-weight:600;cursor:pointer;padding:10px 16px;transition:color var(--dur) var(--ease);}
   .box-add-btn:hover{color:var(--text);}
@@ -235,6 +231,40 @@
     .box-grid{grid-template-columns:1fr;}
   }
 
+  /* ---- 이번주: 과목별 간식 게이지 ---- */
+  .exam-add-wrap{margin-bottom:24px;}
+  .exam-add-form{
+    background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
+    border:1px solid var(--border);border-top-color:var(--border-hi);border-radius:var(--r-lg);
+    padding:18px 20px;display:flex;flex-direction:column;gap:10px;
+  }
+  .exam-add-form input{background:var(--glass);border:1px solid var(--border);border-radius:var(--r-pill);color:var(--text);padding:9px 15px;font-size:13.5px;}
+  .exam-add-form textarea{background:var(--glass);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text);padding:11px 14px;font-size:13px;line-height:1.55;resize:vertical;font-family:inherit;}
+  .exam-add-form textarea::placeholder,.exam-add-form input::placeholder{color:var(--text-3);}
+  .exam-add-form .add-row-line{display:flex;gap:8px;}
+  .exam-add-form .add-row-line button{flex:1;}
+  .exam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+  .exam-card{
+    background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
+    border:1px solid var(--border);border-top-color:var(--border-hi);border-radius:20px;padding:16px 18px;
+  }
+  .exam-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px;}
+  .exam-card-title{font-size:15.5px;font-weight:700;letter-spacing:-.01em;}
+  .exam-card-meta{font-size:11.5px;color:var(--text-3);margin-top:2px;}
+  .food-bar{position:relative;height:36px;border-radius:10px;overflow:hidden;background:var(--glass-strong);border:1px solid var(--border);margin-bottom:12px;}
+  .food-bar-img{position:absolute;inset:0;background-repeat:no-repeat;background-size:100% 100%;image-rendering:pixelated;image-rendering:crisp-edges;}
+  .food-bar-blocks{position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent 0,transparent calc(100%/var(--n) - 2px),var(--bg) calc(100%/var(--n) - 2px),var(--bg) calc(100%/var(--n)));opacity:.9;}
+  .food-bar-eaten{position:absolute;inset:0 auto 0 0;width:0%;background:var(--bg);opacity:.88;box-shadow:2px 0 8px rgba(0,0,0,.5);transition:width 420ms var(--ease);}
+  .exam-items{display:flex;flex-direction:column;gap:2px;}
+  .exam-item{display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid var(--border);}
+  .exam-item:last-child{border-bottom:none;}
+  .exam-item-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border-strong);flex-shrink:0;background:var(--glass);display:flex;align-items:center;justify-content:center;padding:0;transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease);}
+  .exam-item-check svg{width:11px;height:11px;opacity:0;transform:scale(.4);transition:all var(--dur) var(--ease);color:var(--bg);}
+  .exam-item.done .exam-item-check{background:var(--blue);border-color:var(--blue);}
+  .exam-item.done .exam-item-check svg{opacity:1;transform:scale(1);}
+  .exam-item-text{flex:1;min-width:0;font-size:13px;line-height:1.4;word-break:break-word;}
+  .exam-item.done .exam-item-text{color:var(--text-3);text-decoration:line-through;text-decoration-color:var(--border-strong);}
+
   /* ---- 디데이 + 스톱워치를 가로로 절반씩 ---- */
   .dday-sw-row{
     display:grid;grid-template-columns:1fr 1fr;align-items:stretch;margin-bottom:20px;
@@ -269,7 +299,7 @@
   .dday-item-val.masked{font-size:12.5px;font-weight:600;color:var(--text-3);}
   .dday-eye,.dday-del{width:24px;height:24px;border-radius:50%;border:none;background:none;color:var(--text-3);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:color var(--dur) var(--ease);padding:0;}
   .dday-eye:hover{color:var(--text);}
-  .dday-del:hover{color:var(--red);}
+  .dday-del:hover{color:var(--blue);}
   .dday-add-panel{overflow:hidden;max-height:0;transition:max-height 260ms var(--ease);}
   .dday-add-panel.open{max-height:170px;}
   .dday-add-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
@@ -293,7 +323,7 @@
     opacity:0;pointer-events:none;transition:opacity .12s ease;
   }
   .pomo-card.drag-over .pomo-drop-hint{opacity:1;}
-  @keyframes pomoLinked{0%{box-shadow:0 0 0 0 rgba(48,209,88,.55);}100%{box-shadow:0 0 0 16px rgba(48,209,88,0);}}
+  @keyframes pomoLinked{0%{box-shadow:0 0 0 0 rgba(10,132,255,.55);}100%{box-shadow:0 0 0 16px rgba(10,132,255,0);}}
   .pomo-card.linked-flash{animation:pomoLinked .55s ease;}
   .pomo-ring{
     width:76px;height:76px;border-radius:50%;flex-shrink:0;
@@ -337,64 +367,16 @@
   .task-badge{font-size:11px;color:var(--text-3);flex-shrink:0;margin-top:3px;font-variant-numeric:tabular-nums;}
   .task-del{width:22px;height:22px;border-radius:50%;border:none;background:none;color:var(--text-3);flex-shrink:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--dur) var(--ease);}
   .task-row:hover .task-del{opacity:1;}
-  .task-del:hover{color:var(--red);}
+  .task-del:hover{color:var(--blue);}
   .task-row.stale{position:relative;padding-left:13px;}
-  .task-row.stale::before{content:'';position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:var(--orange);animation:taskStaleGlow 2.4s ease-in-out infinite;}
+  .task-row.stale::before{content:'';position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:var(--blue);animation:taskStaleGlow 2.4s ease-in-out infinite;}
   @keyframes taskStaleGlow{0%,100%{opacity:.4;}50%{opacity:1;}}
-  .task-stale-badge{font-size:10.5px;color:var(--orange);font-weight:600;margin-top:3px;}
-  .box-task-row.stale .box-task-tag{color:var(--orange);font-weight:600;}
-
-  /* ---- assignment rows ---- */
-  .asg-row{display:flex;align-items:center;gap:14px;padding:13px 4px;border-bottom:1px solid var(--border);}
-  .asg-row:last-child{border-bottom:none;}
-  .asg-row.done{opacity:.4;}
-  .asg-check{width:22px;height:22px;border-radius:7px;border:1.5px solid var(--border-strong);flex-shrink:0;background:var(--glass);display:flex;align-items:center;justify-content:center;padding:0;transition:all var(--dur) var(--ease);}
-  .asg-row.done .asg-check{background:var(--green);border-color:var(--green);}
-  .asg-check svg{opacity:0;transform:scale(.4);transition:all var(--dur) var(--ease);}
-  .asg-row.done .asg-check svg{opacity:1;transform:scale(1);}
-  .asg-main{flex:1;min-width:0;}
-  .asg-tag{font-size:12px;color:var(--text-3);}
-  .asg-title{font-size:14.5px;margin-top:1px;word-break:break-word;}
-  .asg-row.done .asg-title{text-decoration:line-through;text-decoration-color:var(--border-strong);}
-  .asg-due{font-size:12.5px;color:var(--text-2);flex-shrink:0;font-variant-numeric:tabular-nums;white-space:nowrap;}
-  .asg-due.urgent{color:var(--orange);font-weight:600;}
-  .asg-due.overdue{color:var(--red);font-weight:600;}
-  .asg-del{width:24px;height:24px;border-radius:50%;border:none;background:none;color:var(--text-3);flex-shrink:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--dur);}
-  .asg-row:hover .asg-del{opacity:1;}
-  .asg-del:hover{color:var(--red);}
-  .asg-row.asg-complete-anim{pointer-events:none;overflow:hidden;animation:asgCollapse 260ms cubic-bezier(.4,0,.2,1) 260ms forwards;}
-  .asg-row.asg-complete-anim .asg-check{background:var(--green);border-color:var(--green);transform:scale(1.08);transition:all 240ms cubic-bezier(.34,1.56,.64,1);}
-  .asg-row.asg-complete-anim .asg-check svg{opacity:1;transform:scale(1);transition:all 240ms cubic-bezier(.34,1.56,.64,1) 30ms;}
-  .asg-row.asg-complete-anim .asg-title{text-decoration:line-through;text-decoration-color:var(--border-strong);transition:text-decoration-color 200ms var(--ease);}
-  @keyframes asgCollapse{
-    0%{opacity:1;max-height:200px;transform:translateX(0);}
-    60%{opacity:0;max-height:200px;transform:translateX(48px);}
-    100%{opacity:0;max-height:0;margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0;border-bottom-width:0;transform:translateX(48px);}
-  }
-  .asg-priority{display:flex;align-items:center;gap:6px;margin-top:7px;}
-  .asg-priority-label{font-size:11px;color:var(--text-3);}
-  .pri-btn{background:var(--glass);border:1px solid var(--border);color:var(--text-3);border-radius:var(--r-pill);padding:3px 11px;font-size:11px;font-weight:600;}
-  .pri-btn.active[data-val="high"]{background:var(--red);border-color:var(--red);color:#fff;}
-  .pri-btn.active[data-val="mid"]{background:var(--blue);border-color:var(--blue);color:#fff;}
-  .pri-btn.active[data-val="low"]{background:rgba(255,255,255,.22);border-color:var(--border-strong);color:var(--text);}
+  .task-stale-badge{font-size:10.5px;color:var(--blue);font-weight:600;margin-top:3px;}
+  .box-task-row.stale .box-task-tag{color:var(--blue);font-weight:600;}
 
   .sync-health{font-size:12px;color:var(--text-3);padding:0 0 14px;}
-  .sync-health.warn{color:var(--orange);font-weight:600;}
+  .sync-health.warn{color:var(--blue);font-weight:600;}
 
-
-  /* ---- 아카이브 ---- */
-  .arc-subject-row{margin-bottom:16px;}
-  .arc-subject-head{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;margin-bottom:6px;}
-  .arc-subject-head span{font-size:11.5px;color:var(--text-3);}
-  .arc-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--glass-strong);}
-  .arc-bar-seg{height:100%;}
-  .arc-bar-empty{font-size:11.5px;color:var(--text-3);}
-  .arc-log-row{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
-  .arc-log-row:last-child{border-bottom:none;}
-  .arc-log-date{color:var(--text-3);flex-shrink:0;width:34px;}
-  .arc-log-subject{color:var(--text-2);flex-shrink:0;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .arc-log-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .arc-log-rating{color:var(--text-3);flex-shrink:0;font-size:11px;}
 
   /* ---- 완료 후기 — 화면을 덮지 않고 구석에 뜨는 대화창(오버레이 없음) ---- */
   .btn[disabled]{opacity:.4;cursor:not-allowed;}
@@ -412,33 +394,13 @@
   .feedback-explain-label{font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:4px;}
   @media(max-width:639px){ .feedback-dock{right:12px;left:12px;bottom:calc(76px + env(safe-area-inset-bottom));width:auto;} }
 
-  /* ---- D-day 역산 타임라인 ---- */
-  .dday-legend{font-size:11.5px;color:var(--text-3);margin:0 14px 6px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
-  .dday-legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;}
-  .dday-legend-dot.overdue{background:var(--red);}
-  .dday-timeline{position:relative;height:92px;margin:4px 14px 28px;}
-  .dday-track{position:absolute;left:0;right:0;bottom:26px;height:2px;background:var(--border);}
-  .dday-today{position:absolute;bottom:20px;width:2px;height:14px;background:var(--blue);box-shadow:0 0 8px rgba(10,132,255,.7);}
-  .dday-cluster{position:absolute;bottom:26px;display:flex;flex-direction:column-reverse;align-items:center;gap:3px;transform:translateX(-50%);cursor:default;}
-  .dday-dot{width:9px;height:9px;border-radius:50%;background:var(--orange);flex-shrink:0;border:1.5px solid var(--bg);box-shadow:0 0 0 1px var(--border);}
-  .dday-dot.overdue{background:var(--red);}
-  .dday-count{font-size:9.5px;color:var(--text-3);}
-  .dday-label{position:absolute;bottom:0;font-size:10.5px;color:var(--text-3);white-space:nowrap;}
-  .dday-label.start{left:0;color:var(--blue);font-weight:600;}
-  .dday-label.end{right:0;}
-
-  .asg-form{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border);align-items:center;}
-  .asg-form input{background:var(--glass);border:1px solid var(--border);border-radius:var(--r-pill);color:var(--text);padding:9px 14px;font-size:13px;}
-  .asg-form input.title{flex:2;min-width:180px;}
-  .asg-form input.date{flex:1;min-width:130px;}
-  .asg-form input.tag{flex:1;min-width:110px;}
   .btn{background:var(--blue);color:#fff;border:none;border-radius:var(--r-pill);padding:9px 20px;font-size:13.5px;font-weight:600;transition:filter var(--dur) var(--ease),transform var(--dur) var(--ease);}
   .btn:hover{filter:brightness(1.12);}
   .btn:active{transform:scale(.97);}
   .btn-outline{background:var(--glass);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));border:1px solid var(--border-strong);color:var(--text);border-radius:var(--r-pill);padding:9px 20px;font-size:13.5px;font-weight:600;transition:all var(--dur) var(--ease);}
   .btn-outline:hover{background:var(--glass-strong);}
   .btn-outline:active{transform:scale(.97);}
-  .btn-danger{background:var(--red);color:#fff;border:none;border-radius:var(--r-pill);padding:9px 20px;font-size:13.5px;font-weight:600;transition:filter var(--dur) var(--ease);}
+  .btn-danger{background:var(--blue);color:#fff;border:none;border-radius:var(--r-pill);padding:9px 20px;font-size:13.5px;font-weight:600;transition:filter var(--dur) var(--ease);}
   .btn-danger:hover{filter:brightness(1.12);}
 
   /* ---- schedule ---- */
@@ -452,7 +414,7 @@
   .sched-row.clickable{cursor:pointer;transition:background var(--dur) var(--ease);}
   .sched-row.clickable:hover{background:var(--glass);padding-left:10px;padding-right:10px;margin:0 -10px;border-bottom-color:transparent;}
   .sched-row.clickable:hover .sched-add{opacity:1;}
-  .sched-add{width:22px;height:22px;border-radius:50%;background:var(--glass-strong);color:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transition:opacity var(--dur) var(--ease);}
+  .sched-add{width:22px;height:22px;border-radius:50%;background:var(--glass-strong);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transition:opacity var(--dur) var(--ease);}
   .wcell.clickable{cursor:pointer;transition:background var(--dur) var(--ease);}
   .wcell.clickable:hover{background:var(--glass-strong);}
 
@@ -505,9 +467,9 @@
   .rep-btn{font-size:11px;background:var(--glass);border:1px solid var(--border);color:var(--text-2);border-radius:var(--r-pill);padding:4px 11px;}
   .rep-count{font-size:11px;color:var(--text-3);}
   .retry-btn{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);background:var(--glass);color:var(--text-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .retry-btn.on{color:#fff;border-color:var(--red);background:var(--red);}
+  .retry-btn.on{color:#fff;border-color:var(--blue);background:var(--blue);}
   .meter{position:relative;height:4px;background:var(--border);border-radius:4px;margin-top:9px;max-width:220px;}
-  .meter .fill{position:absolute;left:0;top:0;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--purple));}
+  .meter .fill{position:absolute;left:0;top:0;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--blue));}
 
   .ot-box{border:1px solid var(--border);border-top-color:var(--border-hi);border-radius:var(--r-lg);padding:18px;margin-top:26px;background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);}
   .ot-head{font-size:13.5px;font-weight:600;margin-bottom:10px;}
@@ -531,12 +493,12 @@
   /* ---- AI classify box ---- */
   .ai-box{border:1px solid var(--border);border-top-color:var(--border-hi);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:26px;background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);}
   .ai-box .ai-head{font-size:13.5px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:7px;}
-  .ai-box .ai-head svg{color:var(--purple);}
+  .ai-box .ai-head svg{color:var(--blue);}
   .ai-box .ai-desc{font-size:11.5px;color:var(--text-3);margin-bottom:10px;line-height:1.55;}
   .ai-textarea{width:100%;min-height:64px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text);padding:11px 13px;font-size:13px;margin-bottom:10px;}
   .ai-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .ai-status{font-size:11.5px;color:var(--text-3);}
-  .btn-ai{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;border:none;border-radius:var(--r-pill);padding:9px 18px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:filter var(--dur) var(--ease);}
+  .btn-ai{background:linear-gradient(135deg,var(--blue),var(--blue));color:#fff;border:none;border-radius:var(--r-pill);padding:9px 18px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:filter var(--dur) var(--ease);}
   .btn-ai:hover{filter:brightness(1.12);}
 
   /* ---- settings modal ---- */
@@ -574,74 +536,8 @@
   .completed-modal .item-text{flex:1;font-size:13.5px;}
   .completed-modal .item-date{font-size:11px;color:var(--text-3);margin-top:4px;}
 
-  /* ---- 도시 (City, beta) ---- */
-  .recall-note{font-size:12px;color:var(--text-3);margin-bottom:10px;line-height:1.55;}
-  .city-graduating{font-size:12.5px;color:var(--teal);background:rgba(100,210,255,.1);border:1px solid rgba(100,210,255,.3);border-radius:var(--r-md);padding:9px 13px;margin-bottom:18px;}
-  .city-growth{background:var(--glass);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7);backdrop-filter:blur(var(--blur)) saturate(1.7);
-    border:1px solid var(--border);border-radius:var(--r-md);padding:13px 16px;margin-bottom:16px;}
-  .city-growth-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px;}
-  .city-growth-head b{font-size:14px;font-weight:600;}
-  .city-growth-head span{font-size:11.5px;color:var(--text-3);}
-  .city-growth-track{height:5px;border-radius:3px;background:var(--glass-strong);overflow:hidden;}
-  .city-growth-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--green));transition:width 600ms var(--ease);}
-  .city-growth-sub{font-size:11.5px;color:var(--text-3);line-height:1.55;margin-top:8px;}
-  /* 검은 유리 상자 안에 도시가 들어있는 느낌 */
-  .city3d{position:relative;width:100%;height:100%;border-radius:var(--r-lg);overflow:hidden;
-    border:1px solid var(--border);border-top-color:var(--border-hi);
-    background:rgba(4,4,7,.78);
-    -webkit-backdrop-filter:blur(var(--blur)) saturate(1.4);backdrop-filter:blur(var(--blur)) saturate(1.4);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 18px 44px rgba(0,0,0,.45);}
-  .city3d-canvas{width:100%;height:100%;}
-  /* 도시가 들어가는 자리 — 탭에선 화면 가득, 홈 오른쪽에선 뷰포트 높이만큼 */
-  .city-slot-full{height:calc(100vh - 230px);min-height:420px;}
-  .city-slot-home{height:calc(100vh - 132px);min-height:420px;}
-  .home-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:26px;align-items:start;}
-  .home-city{position:sticky;top:24px;}
-  .home-city-head{display:flex;align-items:center;justify-content:space-between;gap:10px;
-    margin-bottom:10px;font-size:13px;font-weight:600;color:var(--text-2);}
-  .home-city-head .city-title{font-size:16px;font-weight:800;letter-spacing:-.01em;}
-  .city-title{background:linear-gradient(90deg,var(--blue),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent;}
-  @media(max-width:1179px){ .home-split{display:block;} .home-city{display:none;} }
-  .scroll-sec.sec-home-wide{max-width:1560px;}
-  .city3d-canvas canvas{display:block;width:100%;height:100%;touch-action:none;}
-  .city3d-tip{position:absolute;z-index:4;max-width:250px;pointer-events:none;
-    background:rgba(20,22,28,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-    border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:9px 12px;
-    box-shadow:0 10px 28px rgba(0,0,0,.5);}
-  .city3d-tip .ct-tag{font-size:11px;color:var(--text-3);margin-bottom:3px;}
-  .city3d-tip .ct-text{font-size:13.5px;line-height:1.45;word-break:break-word;}
-  .city3d-tip .ct-meta{font-size:11.5px;color:var(--orange);margin-top:4px;font-weight:600;}
-  .city3d-status{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
-    text-align:center;padding:24px;font-size:13px;color:var(--text-2);background:rgba(17,22,31,.86);}
-  .city3d-reset{position:absolute;top:12px;right:12px;z-index:3;font-size:12px;color:var(--text-2);
-    background:rgba(255,255,255,.09);border:1px solid var(--border-strong);border-radius:var(--r-pill);
-    padding:6px 13px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-    transition:all var(--dur) var(--ease);}
-  .city3d-reset:hover{color:var(--text);background:rgba(255,255,255,.16);}
-  .city3d-hint{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:7px 12px;font-size:11px;
-    color:var(--text-3);text-align:center;background:linear-gradient(to top, rgba(10,13,19,.82), transparent);
-    pointer-events:none;}
-  @media(max-width:639px){ .city3d-canvas{height:min(52vh, 380px);} .city3d-hint{font-size:10px;} }
-
-  .city-inspect-text{font-size:14.5px;line-height:1.5;margin-bottom:8px;}
-  .city-inspect-meta{font-size:12.5px;color:var(--text-3);margin-bottom:16px;}
-  .city-fix-flourish{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 0;font-size:13px;color:var(--text-2);}
-  .city-fix-icon{color:var(--blue);animation:cityFixDrive 700ms ease-in-out;}
-  .city-fix-flourish.rest .city-fix-icon{color:var(--green);}
-  .city-fix-icon svg{width:40px;height:40px;}
-  @keyframes cityFixDrive{0%{transform:translateX(-40px);opacity:0;}30%{opacity:1;}100%{transform:translateX(40px);opacity:0;}}
-
-  .city-grad-row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--border);}
-  .city-grad-row:last-child{border-bottom:none;}
-  .city-grad-icon{color:var(--fc,var(--blue));flex-shrink:0;}
-  .city-grad-icon svg{width:20px;height:20px;}
-  .city-grad-body{flex:1;min-width:0;}
-  .city-grad-tag{font-size:12px;color:var(--text-3);}
-  .city-grad-text{font-size:13.5px;}
-  .city-grad-del{width:24px;height:24px;border-radius:50%;border:none;background:none;color:var(--text-3);
-    flex-shrink:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--dur) var(--ease);padding:0;}
-  .city-grad-row:hover .city-grad-del{opacity:1;}
-  .city-grad-del:hover{color:var(--red);}
+  .feedback-item-text{font-size:14.5px;line-height:1.5;margin-bottom:8px;}
+  .feedback-item-meta{font-size:12.5px;color:var(--text-3);margin-bottom:16px;}
   .task-editing{display:block;padding:12px 4px;}
   .task-edit-form{display:flex;flex-direction:column;gap:8px;}
   .task-edit-line{display:flex;gap:8px;flex-wrap:wrap;}
@@ -789,17 +685,12 @@
 
   // 과목 박스 색은 고정 팔레트를 순서대로 배정해서 매번 시각적으로 구분되게 한다
   const BOX_PALETTE = [
-    { qc:'var(--blue)',   qg:'linear-gradient(135deg,var(--blue),var(--indigo))' },
-    { qc:'var(--green)',  qg:'linear-gradient(135deg,var(--green),var(--teal))' },
-    { qc:'var(--orange)', qg:'linear-gradient(135deg,var(--orange),var(--pink))' },
-    { qc:'var(--purple)', qg:'linear-gradient(135deg,var(--purple),var(--pink))' },
-    { qc:'var(--teal)',   qg:'linear-gradient(135deg,var(--teal),var(--blue))' },
-    { qc:'var(--red)',    qg:'linear-gradient(135deg,var(--red),var(--orange))' },
-    { qc:'var(--indigo)', qg:'linear-gradient(135deg,var(--indigo),var(--purple))' },
-    { qc:'var(--pink)',   qg:'linear-gradient(135deg,var(--pink),var(--red))' }
+    { qc:'var(--blue)', qg:'linear-gradient(135deg, var(--blue), rgba(10,132,255,.2))' },
+    { qc:'#FFFFFF',     qg:'linear-gradient(135deg, rgba(255,255,255,.55), rgba(255,255,255,.12))' },
+    { qc:'var(--blue)', qg:'linear-gradient(135deg, rgba(10,132,255,.65), rgba(255,255,255,.18))' }
   ];
   function buildSkeleton(){
-    return { tasks:[], completed:[], assignments:[], ddays:[], boxes:[], archiveLog:[] };
+    return { tasks:[], completed:[], ddays:[], boxes:[], archiveLog:[], examWeek:{subjects:[]} };
   }
 
   /* ============ 오늘 정보 ============ */
@@ -870,10 +761,10 @@
         state.data = {
           tasks: data.data.tasks || [],
           completed: data.data.completed || [],
-          assignments: data.data.assignments || [],
           ddays: data.data.ddays || [],
           boxes: data.data.boxes || [],
-          archiveLog: data.data.archiveLog || []
+          archiveLog: data.data.archiveLog || [],
+          examWeek: data.data.examWeek || {subjects:[]}
         };
         persistLocal();
       } else {
@@ -908,9 +799,8 @@
   const state = {
     view:'home', modal:null, activeSection:null,
     quickAddBoxKey:null, quickAddCorner:'review',
-    asgSortMode:'due',
-    cityView:'main', cityInspectTarget:null, editingAssignment:null, editingTask:null,
-    ddayAddOpen:false, boxAddOpen:false,
+    editingTask:null,
+    ddayAddOpen:false, boxAddOpen:false, examAddOpen:false,
     feedbackTargetId:null, feedbackSelectedRating:null,
     data:buildSkeleton()
   };
@@ -930,7 +820,7 @@
     const p = {
       home:'<path d="M3 10.5 10 4l7 6.5"/><path d="M5 9v7h10V9"/>',
       tasks:'<path d="M4 6h1.5M4 10h1.5M4 14h1.5"/><path d="M8 6h8M8 10h8M8 14h5"/>',
-      assignments:'<path d="M5 3h7l3 3v11H5z"/><path d="M12 3v3h3"/><path d="M7.5 10h5M7.5 13h5"/>',
+      exam:'<path d="M5 3v6a1.5 1.5 0 0 0 3 0V3M6.5 3v14M14 3c-1.4 1-2 2.5-2 4.5S13 11 14 11v6"/>',
       settings:'<circle cx="10" cy="10" r="2.6"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2M5 5l1.4 1.4M13.6 13.6 15 15M15 5l-1.4 1.4M6.4 13.6 5 15"/>',
       check:'<path d="M4 8.5 7 11.5 12 5"/>',
       close:'<path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/>',
@@ -960,17 +850,15 @@
 
   const NAV_ITEMS = [
     {view:'home', label:'홈', icon:'home', color:'var(--blue)'},
-    {view:'tasks', label:'할 일', icon:'tasks', color:'var(--green)'},
-    {view:'assignments', label:'과제', icon:'assignments', color:'var(--orange)'},
-    {view:'archive', label:'아카이브', icon:'archive', color:'var(--pink)'},
-    {view:'city', label:'도시', icon:'city', color:'var(--teal)'}
+    {view:'tasks', label:'할 일', icon:'tasks', color:'var(--blue)'},
+    {view:'exam', label:'이번주', icon:'exam', color:'var(--blue)'}
   ];
 
   /* ============ 렌더 ============
-     홈→할일→과제→아카이브→도시 전체가 화면 전환 없이 한 장의 긴 페이지처럼 이어져서
+     홈→할일→이번주 전체가 화면 전환 없이 한 장의 긴 페이지처럼 이어져서
      그려진다(애플 홈페이지처럼). 실제 브라우저 스크롤만 쓰고, 지금 보고 있는 섹션은
      스크롤 위치를 직접 계산해서 판단한다(가짜로 탭을 갈아치우지 않음). */
-  const SCROLL_CHAIN = ['home','tasks','assignments','archive','city'];
+  const SCROLL_CHAIN = ['home','tasks','exam'];
   const SCROLL_TRIGGER_LINE = 140; // 뷰포트 위에서 이 지점을 넘어간 섹션을 "지금 보는 중"으로 간주
   let lastRenderedView = null; // 같은 화면 안에서 다시 그릴 땐(체크박스 클릭 등) fade-in을 안 태우려고 추적
   let chainModeActive = false;
@@ -979,9 +867,7 @@
     switch(v){
       case 'home': return renderHome();
       case 'tasks': return renderTasksPage();
-      case 'assignments': return renderAssignmentsPage();
-      case 'archive': return renderArchivePage();
-      case 'city': return renderCityPage();
+      case 'exam': return renderExamPage();
       default: return '';
     }
   }
@@ -1007,7 +893,6 @@
     if(state.modal==='settings') document.body.insertAdjacentHTML('beforeend', renderSettingsModal());
     else if(state.modal==='completed') document.body.insertAdjacentHTML('beforeend', renderCompletedModal());
     else if(state.modal==='quickAdd') document.body.insertAdjacentHTML('beforeend', renderQuickAddModal());
-    else if(state.modal==='cityInspect') document.body.insertAdjacentHTML('beforeend', renderCityInspectModal());
     else if(state.modal==='privacy') document.body.insertAdjacentHTML('beforeend', renderPrivacyModal());
     else if(state.modal==='notifications') document.body.insertAdjacentHTML('beforeend', renderNotificationsModal());
     if(state.feedbackTargetId) document.body.insertAdjacentHTML('beforeend', renderCompletionFeedbackModal());
@@ -1041,13 +926,10 @@
     let html = renderTopbarMini();
     if(!storageOK) html += `<div class="empty" style="color:var(--danger);">이 브라우저에서는 로컬 저장이 안 돼요(시크릿 모드이거나 저장 공간이 꽉 찼을 수 있어요). 작업 후 꼭 설정에서 내보내기로 백업해주세요.</div>`;
     html += SCROLL_CHAIN.map(v=>{
-      const wideCls = v==='city' ? ' sec-city' : (v==='home' && isWideScreen() ? ' sec-home-wide' : '');
-      return `<section class="scroll-sec${wideCls}" id="sec-${v}">${renderChainSection(v)}</section>`;
+      return `<section class="scroll-sec" id="sec-${v}">${renderChainSection(v)}</section>`;
     }).join('');
     app.classList.toggle('chain-mode', chainModeActive);
     app.innerHTML = html;
-    // 3D 도시 캔버스는 #app 바깥에 살아있으므로 갈아엎은 뒤 제자리에 다시 끼워 넣는다
-    mountCity3D();
     // 렌더마다 사이드바/본문을 통째로 다시 그려서 <ins>가 매번 새 DOM으로 바뀌니,
     // 광고 단위 하나당 한 번만 채워지는 게 맞다면 나중에 좀 더 정교한 트래킹이 필요할 수 있음
     if(ADSENSE_PUBLISHER_ID){
@@ -1068,7 +950,6 @@
     if(state.modal==='settings') document.body.insertAdjacentHTML('beforeend', renderSettingsModal());
     else if(state.modal==='completed') document.body.insertAdjacentHTML('beforeend', renderCompletedModal());
     else if(state.modal==='quickAdd') document.body.insertAdjacentHTML('beforeend', renderQuickAddModal());
-    else if(state.modal==='cityInspect') document.body.insertAdjacentHTML('beforeend', renderCityInspectModal());
     else if(state.modal==='privacy') document.body.insertAdjacentHTML('beforeend', renderPrivacyModal());
     else if(state.modal==='notifications') document.body.insertAdjacentHTML('beforeend', renderNotificationsModal());
     if(state.feedbackTargetId) document.body.insertAdjacentHTML('beforeend', renderCompletionFeedbackModal());
@@ -1106,14 +987,10 @@
     }
     if(!best) best = SCROLL_CHAIN[0];
     if(best !== state.activeSection){
-      const prev = state.activeSection;
       state.activeSection = best;
       state.view = best;
       updateNavActiveClasses();
-      // 홈 미리보기 ↔ 도시 섹션 사이를 넘나들 때만 캔버스를 다시 옮겨 끼운다(둘 다 슬롯을 가짐)
-      if(best==='home' || best==='city' || prev==='home' || prev==='city') mountCity3D();
     }
-    if(best==='city' || best==='home') startCityLoop(); else stopCityLoop();
   }
   function updateNavActiveClasses(){
     const activeKey = chainModeActive ? state.activeSection : state.view;
@@ -1180,12 +1057,6 @@
       const dueMid = new Date(d.date+'T00:00:00').getTime();
       const daysLeft = Math.round((dueMid-todayMid)/86400000);
       if(daysLeft===7) list.push(`"${d.name}" 디데이가 일주일 남았어요 (D-7)`);
-    });
-    (state.data.assignments||[]).filter(a=>!a.done).forEach(a=>{
-      const dueMid = new Date(a.dueDate+'T00:00:00').getTime();
-      const daysLeft = Math.round((dueMid-todayMid)/86400000);
-      if(daysLeft===3) list.push(`"${a.title}" 마감이 3일 남았어요`);
-      if(daysLeft===1) list.push(`"${a.title}" 마감이 내일이에요`);
     });
     return list;
   }
@@ -1315,10 +1186,6 @@
   function swTargetLabel(){
     if(!sw.target) return null;
     const t = sw.target;
-    if(t.type==='assignment'){
-      const a = state.data.assignments.find(x=>x.id===t.id);
-      return a ? a.title : null;
-    }
     if(t.type==='task'){
       const it = state.data.tasks.find(x=>x.id===t.id);
       return it ? it.text : null;
@@ -1328,8 +1195,7 @@
   function swCompleteLinked(){
     if(!sw.target) return;
     const t = sw.target;
-    if(t.type==='assignment') toggleAssignment(t.id);
-    else if(t.type==='task') completeTask(t.id);
+    if(t.type==='task') completeTask(t.id);
     sw.target = null;
     if(swMode==='pomodoro') pomoReset(); else swReset();
   }
@@ -1513,12 +1379,6 @@
         </div>` : `<button class="box-add-btn" data-action="toggleBoxAdd">+ 과목 추가</button>`}
       </div>`;
 
-    const allPending = state.data.assignments.filter(a=>!a.done).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
-    const pending = allPending.slice(0,3);
-    const asgHtml = pending.length===0
-      ? `<div class="empty">등록된 과제가 없어요.</div>`
-      : pending.map(a=>assignmentRowHtml(a,false)).join('');
-
     const left = `
       <div class="home-date">${todayDateStr}</div>
       <h1 class="home-greeting">${greetingWord()}${name?', '+escapeHtml(name):''}</h1>
@@ -1529,65 +1389,9 @@
       </div>
 
       ${boxes().length===0 ? renderOnboardGuide() : ''}
-      <div class="box-grid">${boxHtml}</div>
+      <div class="box-grid">${boxHtml}</div>`;
 
-      <div class="section">
-        <div class="section-head"><div class="section-title">임박한 과제</div><button class="section-link" data-action="goView" data-view="assignments">전체 보기</button></div>
-        ${asgHtml}
-      </div>`;
-
-    // 데스크탑에서만 오른쪽에 살아있는 도시를 띄운다 (좁은 화면에선 3D를 아예 안 받음)
-    if(!isWideScreen()) return `<div class="fade-in">${left}</div>`;
-    return `<div class="fade-in home-split">
-      <div class="home-main">${left}</div>
-      <aside class="home-city">
-        <div class="home-city-head">
-          <span class="city-title">City of Brain</span>
-          <button class="section-link" data-action="goView" data-view="city">크게 보기</button>
-        </div>
-        <div id="city3dSlotHome" class="city-slot-home"></div>
-      </aside>
-    </div>`;
-  }
-
-  const PRIORITY_LABELS = {high:'상', mid:'중', low:'하'};
-  const PRIORITY_RANK = {high:0, mid:1, low:2};
-  function assignmentRowHtml(a, showCheckbox){
-    // Classroom에서 긁어온 제목이 잘리거나 기한이 틀릴 때가 있어서 직접 고칠 수 있어야 함
-    if(state.editingAssignment === a.id){
-      return `<div class="asg-row asg-editing">
-        <div class="asg-edit-form">
-          <input type="text" class="add-input" id="asgEditTitle" value="${escapeHtml(a.title)}" placeholder="과제명">
-          <div class="asg-edit-line">
-            <input type="date" class="add-input" id="asgEditDate" value="${escapeHtml(a.dueDate||'')}">
-            <input type="text" class="add-input" id="asgEditTag" value="${escapeHtml(a.tag||'')}" placeholder="관련 과목">
-          </div>
-          <div class="asg-edit-line">
-            <button class="btn" data-action="saveAssignmentEdit" data-id="${a.id}">저장</button>
-            <button class="btn-outline" data-action="cancelAssignmentEdit">취소</button>
-          </div>
-        </div>
-      </div>`;
-    }
-    const dueMid = new Date(a.dueDate+'T00:00:00').getTime();
-    const dLeft = Math.round((dueMid-todayMid)/86400000);
-    const ddLabel = dLeft>0?`D-${dLeft}`:(dLeft===0?'D-DAY':`D+${Math.abs(dLeft)} 지남`);
-    const ddClass = dLeft<0?'overdue':(dLeft<=2?'urgent':'');
-    const priorityRow = (showCheckbox && !a.done) ? `<div class="asg-priority">
-      <span class="asg-priority-label">가성비</span>
-      ${['high','mid','low'].map(p=>`<button class="pri-btn ${a.priority===p?'active':''}" data-action="setAssignmentPriority" data-id="${a.id}" data-val="${p}">${PRIORITY_LABELS[p]}</button>`).join('')}
-    </div>` : '';
-    return `<div class="asg-row ${a.done?'done':''}" data-row-id="${a.id}">
-      <button class="asg-check" data-action="toggleAssignment" data-id="${a.id}">${icon('check')}</button>
-      <div class="asg-main">
-        ${a.tag?`<div class="asg-tag">${escapeHtml(a.tag)}</div>`:''}
-        <div class="asg-title">${a.link?`<a href="${escapeHtml(a.link)}" target="_blank" rel="noopener noreferrer" class="row-link">${escapeHtml(a.title)} ${icon('external')}</a>`:escapeHtml(a.title)}</div>
-        ${priorityRow}
-      </div>
-      <div class="asg-due ${ddClass}">${ddLabel}</div>
-      <button class="asg-del" title="수정" data-action="editAssignment" data-id="${a.id}">${icon('pencil')}</button>
-      <button class="asg-del" title="삭제" data-action="deleteAssignment" data-id="${a.id}">${icon('trash')}</button>
-    </div>`;
+    return `<div class="fade-in">${left}</div>`;
   }
 
   /* ---- Tasks ---- */
@@ -1681,967 +1485,6 @@
         ${selfHtml}
         <button class="completed-link" data-action="openCompleted">완료 목록 (${state.data.completed.length}) →</button>
       </div>
-    </div>`;
-  }
-
-  /* ---- Assignments ---- */
-  function fmtShortDate(iso){
-    const d = new Date(iso+'T00:00:00');
-    return `${MONTHNAME[d.getMonth()]} ${d.getDate()}일(${DAYNAME[d.getDay()]})`;
-  }
-
-  // 마감일들을 가로 타임라인에 흩뿌려서 특정 날짜에 몰려있는지 한눈에 보이게 함
-  // (peakDailyLoad와 같은 문제의식: 합계/평균만으로는 클러스터링이 안 보임)
-  function renderDdayTimeline(assignments){
-    const pending = assignments.filter(a=>!a.done);
-    if(pending.length===0) return '';
-    const dueTimes = pending.map(a=>new Date(a.dueDate+'T00:00:00').getTime());
-    let maxDue = Math.max.apply(null, dueTimes.concat([todayMid]));
-    const minSpan = 7*86400000; // 폭이 너무 좁으면(전부 임박) 점들이 뭉개지니 최소 폭 보장
-    if(maxDue - todayMid < minSpan) maxDue = todayMid + minSpan;
-    const span = maxDue - todayMid;
-
-    const byDate = {};
-    pending.forEach(a=>{ (byDate[a.dueDate] = byDate[a.dueDate] || []).push(a); });
-
-    const clusters = Object.keys(byDate).map(dateStr=>{
-      const dueMs = new Date(dateStr+'T00:00:00').getTime();
-      const overdue = dueMs < todayMid;
-      const pct = Math.max(0, Math.min(100, ((dueMs-todayMid)/span)*100));
-      const items = byDate[dateStr];
-      const shown = items.slice(0,4);
-      const dotsHtml = shown.map(a=>`<div class="dday-dot ${overdue?'overdue':''}" title="${escapeHtml(fmtShortDate(dateStr))} · ${escapeHtml(a.title)}"></div>`).join('');
-      const moreHtml = items.length>4 ? `<div class="dday-count">+${items.length-4}</div>` : '';
-      return `<div class="dday-cluster" style="left:${pct}%;" title="${escapeHtml(fmtShortDate(dateStr))} · 과제 ${items.length}개">${dotsHtml}${moreHtml}</div>`;
-    }).join('');
-
-    return `<div class="dday-legend">점 = 그 날짜 마감인 과제 (겹치면 숫자로 표시) · <span class="dday-legend-dot"></span> 대기 중 · <span class="dday-legend-dot overdue"></span> 기한 지남</div>
-    <div class="dday-timeline">
-      <div class="dday-track"></div>
-      <div class="dday-today" style="left:0%;"></div>
-      ${clusters}
-      <div class="dday-label start">오늘</div>
-      <div class="dday-label end">${fmtShortDate(toISODate(new Date(maxDue)))}</div>
-    </div>`;
-  }
-
-  function renderAssignmentsPage(){
-    const sorted = state.data.assignments.filter(a=>!a.done).slice().sort((a,b)=>{
-      if(state.asgSortMode==='priority'){
-        const ra = PRIORITY_RANK[a.priority]??1, rb = PRIORITY_RANK[b.priority]??1;
-        if(ra!==rb) return ra-rb;
-      }
-      return a.dueDate.localeCompare(b.dueDate);
-    });
-    const rows = sorted.map(a=>assignmentRowHtml(a,true)).join('');
-
-    return `<div class="fade-in">
-      <div class="page-head"><h1>과제</h1></div>
-      ${renderDdayTimeline(sorted)}
-      <div class="asg-form">
-        <input type="text" class="title" id="asgTitle" placeholder="과제명">
-        <input type="date" class="date" id="asgDate">
-        <input type="text" class="tag" id="asgTag" placeholder="관련 과목">
-        <button class="btn" data-action="addAssignment">추가</button>
-      </div>
-      ${sorted.length>0?`<div class="corner-tabs" style="margin-bottom:14px;">
-        <button class="corner-tab ${state.asgSortMode==='due'?'active':''}" data-action="setAsgSortMode" data-mode="due">마감일순</button>
-        <button class="corner-tab ${state.asgSortMode==='priority'?'active':''}" data-action="setAsgSortMode" data-mode="priority">가성비순</button>
-      </div>`:''}
-      ${sorted.length===0?`<div class="empty">등록된 과제가 없어요.</div>`:rows}
-    </div>`;
-  }
-
-  /* ---- 도시 (City, beta) ----
-     새 데이터를 저장하지 않음 — 수업 과제(teachers[key].review)와 자율학습(teachers[key].self + personal.tasks)을
-     그대로 읽어서 시각화만 새로 하는 뷰 레이어. 완료 처리도 기존 completeItem/completePersonalTask를 그대로 씀. */
-  function citySubjectColor(item){
-    const box = item.boxKey && hasBox(item.boxKey) ? findBox(item.boxKey) : null;
-    return box ? box.qc : 'var(--text-3)';
-  }
-  // 차(수업 과제): 3단계 — 막힘/정체 컨셉은 빼고 정상→연기→고장으로 단순화
-  function carDecayStage(days){
-    if(days>=12) return 2; // 고장
-    if(days>=4) return 1;  // 연기
-    return 0;               // 정상 주행
-  }
-  // 사람(자율학습): 4단계 — 평범→지침→많이 지침→쓰러짐
-  function humanFatigueStage(days){
-    if(days>=15) return 3; // 쓰러짐
-    if(days>=10) return 2; // 많이 지침
-    if(days>=4) return 1;  // 지침
-    return 0;               // 평범
-  }
-  // 연기 단계(1단계)에 들어선 뒤로도 4~7일째에 걸쳐 연기가 점점 짙어지게 — 하루 만에
-  // 뚝 나타났다 그대로 머무는 대신 방치가 길어질수록 눈에 띄게 다급해 보인다
-  function smokeLevel(days){ return Math.max(0, Math.min(3, days-4)); }
-  function collectCityCitizens(){
-    return state.data.tasks.map(item=>{
-      const days = itemStaleDays(item);
-      const vehicle = item.corner==='review' ? 'car' : 'human';
-      const stage = vehicle==='car' ? carDecayStage(days) : humanFatigueStage(days);
-      return {vehicle, corner:item.corner, item, days, stage, smoke:smokeLevel(days), color:citySubjectColor(item)};
-    });
-  }
-  // 도시 발전도 — 개별 항목이 아니라 지금까지 완료한 전체 개수로 랜드마크 건물이 단계별로 커짐
-  function cityLandmarkLevel(){
-    const n = state.data.completed.length;
-    if(n>=50) return 4;
-    if(n>=25) return 3;
-    if(n>=10) return 2;
-    if(n>=3) return 1;
-    return 0;
-  }
-  function collectGraduatingThisWeek(){
-    const weekStart = mondayOf(now).getTime();
-    return state.data.completed
-      .filter(it=>it.completedAt>=weekStart)
-      .map(it=>({vehicle: it.corner==='review'?'car':'human', corner:it.corner, item:it, color:citySubjectColor(it)}));
-  }
-  function collectGraduationArchive(){
-    const groups = {};
-    state.data.completed.forEach(it=>{
-      const wk = mondayOf(new Date(it.completedAt)).getTime();
-      (groups[wk] = groups[wk] || []).push({vehicle: it.corner==='review'?'car':'human', corner:it.corner, item:it, color:citySubjectColor(it)});
-    });
-    return Object.keys(groups).map(Number).sort((a,b)=>b-a)
-      .map(wk=>({weekStart:wk, items:groups[wk].sort((a,b)=>b.item.completedAt-a.item.completedAt)}));
-  }
-
-  /* ============ 도시 3D (Kenney CC0 킷 + three.js) ============
-     #app은 상태가 바뀔 때마다 innerHTML로 통째로 갈리기 때문에, WebGL 캔버스를 그 안에
-     직접 넣으면 클릭 한 번에 도시가 날아간다. 그래서 3D 컨테이너는 #app 바깥에서 딱 한 번
-     만들어 두고, 렌더가 끝난 뒤 자리(#city3dSlot)에 끼워 넣는다.
-     three.js 번들(160KB gzip)과 모델(363KB gzip)은 도시 탭에 처음 들어올 때만 받는다. */
-  const CITY_TILE = 4;
-  // 3칸마다 한 줄이 도로 → 나머지 칸이 2x2 블록의 구획이 된다
-  function isoRoadAxis(N){ const a=[]; for(let i=0;i<N;i++) if(i%3===2) a.push(i); return a; }
-  function isoPlotAxis(N){ const a=[]; for(let i=0;i<N;i++) if(i%3!==2) a.push(i); return a; }
-  // 빈 건물을 안 채우니 집 수에 딱 맞게 시작해서 늘려간다 (넓은 빈 땅이 안 생기게)
-  function isoGridDim(houseCount){
-    let N = 6;
-    while(isoPlotAxis(N).length*isoPlotAxis(N).length < houseCount && N < 27) N += 3;
-    return N;
-  }
-  const CITY_BUILDINGS = ['building-a','building-b','building-c','building-d','building-e','building-f',
-                          'building-g','building-h','building-i','building-j','building-k','building-l'];
-  const CITY_CARS = ['car-sedan','car-suv','car-taxi','car-van','car-hatchback-sports','car-delivery','car-truck'];
-  const CITY_CHARS = ['char-male-a','char-male-b','char-male-c','char-male-d',
-                      'char-female-a','char-female-b','char-female-c','char-female-d'];
-  const CITY3D = {
-    THREE:null, host:null, canvasWrap:null, tip:null, statusEl:null,
-    renderer:null, scene:null, camera:null, controls:null, raycaster:null, pointer:null,
-    proto:{}, cityGroup:null, owned:[], cars:[], peds:[], walkers:[], hazards:[], beacons:[],
-    running:false, raf:0, last:0, sig:'', phase:'idle', err:'', hover:null, downAt:null
-  };
-
-  function cssVarHex(v){
-    const m = /var\((--[\w-]+)\)/.exec(v||'');
-    if(!m) return v || '#8a8f9c';
-    return (getComputedStyle(document.documentElement).getPropertyValue(m[1])||'').trim() || '#8a8f9c';
-  }
-  // GitHub Pages가 에셋을 오래 캐시해서, 번들·모델을 갱신하면 이 숫자를 올려야 새로 받는다
-  const CITY_ASSET_V = '2';
-  function cityAssetUrl(p){
-    const u = new URL(p, document.baseURI);
-    u.searchParams.set('v', CITY_ASSET_V);
-    return u.href;
-  }
-  // 홈 화면 2단 구성(할 일 + 살아있는 도시)은 가로가 충분할 때만
-  function isWideScreen(){ return window.innerWidth >= 1180; }
-  function hexToRgbStr(hex){
-    const h = (hex||'').replace('#','').trim();
-    if(h.length!==6) return '198,204,216';
-    return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16)).join(',');
-  }
-  function citySignature(){
-    const cz = collectCityCitizens();
-    // smoke는 같은 단계 안에서도 날마다 짙어지는 연기 세기라 signature에 넣어야 갱신됨
-    return cz.map(c=>c.item.id+':'+c.stage+':'+c.smoke+':'+c.vehicle).sort().join('|') + '|LM:' + cityLandmarkLevel();
-  }
-  function setCityStatus(msg){
-    if(CITY3D.statusEl) CITY3D.statusEl.textContent = msg || '';
-    if(CITY3D.statusEl) CITY3D.statusEl.style.display = msg ? '' : 'none';
-  }
-
-  async function ensureCity3D(){
-    if(CITY3D.phase==='loading' || CITY3D.phase==='ready') return;
-    CITY3D.phase = 'loading';
-    setCityStatus('3D 도시를 불러오는 중...');
-    try{
-      const THREE = await import(cityAssetUrl('assets/vendor/three-city.min.js'));
-      CITY3D.THREE = THREE;
-      const gltf = await new THREE.GLTFLoader().loadAsync(cityAssetUrl('assets/city/city-kit.glb'));
-      gltf.scene.children.slice().forEach(n=>{ CITY3D.proto[n.name] = n; });
-      applyWarmTownSkin(THREE);
-      initCityRenderer();
-      CITY3D.phase = 'ready';
-      setCityStatus('');
-      buildCityScene();
-      startCityLoop();
-    }catch(e){
-      CITY3D.phase = 'error';
-      CITY3D.err = (e && e.message) ? e.message : String(e);
-      setCityStatus('3D 도시를 불러오지 못했어 — ' + CITY3D.err);
-    }
-  }
-
-  /* Kenney 시티킷은 같은 UV에 색만 다른 팔레트를 여러 장 준다 —
-     기본(초록 마을) 대신 따뜻한 톤(variation-b)으로 갈아끼운다. 건물/나무 쪽 머티리얼만
-     건드리면 차·캐릭터는 원래 색을 그대로 유지한다. */
-  function applyWarmTownSkin(THREE){
-    const tex = new THREE.TextureLoader().load(cityAssetUrl('assets/city/town-warm.png'));
-    tex.flipY = false;                 // glTF 텍스처 규약
-    tex.colorSpace = THREE.SRGBColorSpace;
-    const done = new Set();
-    ['tree-large','tree-small','planter'].concat(CITY_BUILDINGS).forEach(name=>{
-      const p = CITY3D.proto[name];
-      if(!p) return;
-      p.traverse(n=>{
-        if(!n.isMesh || !n.material) return;
-        (Array.isArray(n.material) ? n.material : [n.material]).forEach(m=>{
-          if(done.has(m.uuid)) return;
-          done.add(m.uuid);
-          m.map = tex; m.needsUpdate = true;
-        });
-      });
-    });
-  }
-
-  function initCityRenderer(){
-    const T = CITY3D.THREE;
-    const wrap = CITY3D.canvasWrap;
-    const renderer = new T.WebGLRenderer({antialias:true, alpha:true, powerPreference:'low-power'});
-    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
-    renderer.outputColorSpace = T.SRGBColorSpace;
-    renderer.setClearColor(0x000000, 0);   // 캔버스는 투명 — 유리 상자 배경이 그대로 비침
-    wrap.appendChild(renderer.domElement);
-
-    const scene = new T.Scene();
-    scene.background = null;
-    scene.fog = new T.Fog(0x000000, 40, 130);
-
-    const camera = new T.PerspectiveCamera(42, 1, 0.5, 400);
-    camera.position.set(26, 24, 26);
-
-    // 따뜻한 노을빛 조명 — 초록 마을이 아니라 해질녘 타운 느낌으로
-    scene.add(new T.HemisphereLight(0xffd9b3, 0x3a2c24, 2.1));
-    const sun = new T.DirectionalLight(0xffe3bb, 2.3);
-    sun.position.set(20, 30, 14);
-    scene.add(sun);
-    const rim = new T.DirectionalLight(0xff9f6a, 0.7);
-    rim.position.set(-22, 12, -18);
-    scene.add(rim);
-
-    const controls = new T.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.08;
-    controls.enablePan = false;
-    controls.minDistance = 12;
-    controls.maxDistance = 90;
-    controls.minPolarAngle = 0.18;
-    controls.maxPolarAngle = 1.36; // 지면 아래로는 못 내려가게
-    controls.target.set(0, 1.5, 0);
-
-    Object.assign(CITY3D, {renderer, scene, camera, controls, raycaster:new T.Raycaster(), pointer:new T.Vector2()});
-    bindCityPointer(renderer.domElement);
-
-    const ro = new ResizeObserver(()=>resizeCity3D());
-    ro.observe(wrap);
-    resizeCity3D();
-  }
-
-  function resizeCity3D(){
-    const wrap = CITY3D.canvasWrap;
-    if(!wrap || !CITY3D.renderer) return;
-    const w = wrap.clientWidth || 1, h = wrap.clientHeight || 1;
-    CITY3D.renderer.setSize(w, h, false);
-    CITY3D.camera.aspect = w/h;
-    CITY3D.camera.updateProjectionMatrix();
-  }
-
-  function disposeCityGroup(){
-    const T = CITY3D.THREE;
-    if(CITY3D.cityGroup){
-      CITY3D.scene.remove(CITY3D.cityGroup);
-      CITY3D.cityGroup.traverse(o=>{ if(o.isMesh && o.geometry && o.geometry.userData.own) o.geometry.dispose(); });
-    }
-    // 원본(proto)과 공유하는 지오메트리·머티리얼은 두고, 이 도시에서 새로 만든 것만 정리
-    CITY3D.owned.forEach(x=>{ try{ x.dispose(); }catch(e){} });
-    CITY3D.owned = [];
-    CITY3D.cityGroup = null;
-  }
-
-  function makePuffTexture(rgb){
-    const c = document.createElement('canvas'); c.width = c.height = 64;
-    const g = c.getContext('2d');
-    const grd = g.createRadialGradient(32,32,0,32,32,32);
-    grd.addColorStop(0, `rgba(${rgb},0.85)`);
-    grd.addColorStop(0.35, `rgba(${rgb},0.34)`);
-    grd.addColorStop(0.7, `rgba(${rgb},0.09)`);
-    grd.addColorStop(1, `rgba(${rgb},0)`);
-    g.fillStyle = grd; g.fillRect(0,0,64,64);
-    const tex = new CITY3D.THREE.CanvasTexture(c);
-    CITY3D.owned.push(tex);
-    return tex;
-  }
-  function makeRoadTexture(alongX){
-    const c = document.createElement('canvas'); c.width = 64; c.height = 64;
-    const g = c.getContext('2d');
-    g.fillStyle = '#59504b'; g.fillRect(0,0,64,64);
-    g.fillStyle = 'rgba(255,240,215,.34)';
-    if(alongX) g.fillRect(8, 30, 26, 4); else g.fillRect(30, 8, 4, 26);
-    const tex = new CITY3D.THREE.CanvasTexture(c);
-    tex.wrapS = tex.wrapT = CITY3D.THREE.RepeatWrapping;
-    CITY3D.owned.push(tex);
-    return tex;
-  }
-
-  function buildCityScene(){
-    const T = CITY3D.THREE;
-    if(!T || !CITY3D.scene) return;
-    disposeCityGroup();
-    const g = new T.Group();
-    CITY3D.cityGroup = g; CITY3D.scene.add(g);
-    CITY3D.cars = []; CITY3D.peds = []; CITY3D.walkers = []; CITY3D.hazards = []; CITY3D.beacons = [];
-
-    const citizens = collectCityCitizens();
-    const cars = citizens.filter(c=>c.vehicle==='car');
-    const humans = citizens.filter(c=>c.vehicle==='human');
-    const N = isoGridDim(humans.length + 1); // +1: 도시 발전도를 보여주는 랜드마크 건물 자리
-    const half = (N-1)/2;
-    const wx = i => (i-half)*CITY_TILE;
-    const span = (N+1)*CITY_TILE;
-
-    // 캐릭터는 스킨드 메시라 그냥 clone() 하면 뼈대가 원본에 묶인 채로 복제돼서 뭉개진다
-    function spawn(name){
-      const p = CITY3D.proto[name];
-      if(!p) return null;
-      return name.startsWith('char-') ? T.skeletonClone(p) : p.clone(true);
-    }
-    // 기본 자세가 T포즈라 팔을 내려주고, 걷기 애니메이션용 뼈를 뽑아둔다
-    function poseCharacter(o){
-      const bones = {};
-      o.traverse(n=>{ if(n.isBone) bones[n.name] = n; });
-      if(bones['arm-left'])  bones['arm-left'].rotation.z  =  1.28;
-      if(bones['arm-right']) bones['arm-right'].rotation.z = -1.28;
-      return {armL:bones['arm-left'], armR:bones['arm-right'],
-              legL:bones['leg-left'], legR:bones['leg-right']};
-    }
-    // 모델마다 크기가 제각각이라 기준 치수에 맞춰 스케일하고 바닥(y=0)에 앉힘.
-    // 건물·차는 발자국 폭 기준, 나무·사람·잔해처럼 가늘고 긴 건 높이 기준으로 재야
-    // 폭으로 맞추다 하늘까지 솟아버리는 일이 없다.
-    function fitBy(o, target, axis){
-      let box = new T.Box3().setFromObject(o);
-      const size = new T.Vector3(); box.getSize(size);
-      const base = axis==='h' ? size.y
-                 : axis==='m' ? Math.max(size.x, size.y, size.z)
-                 : Math.max(size.x, size.z);
-      // multiplyScalar가 맞다 — quantize()로 합친 모델 중 상당수가 이미 1이 아닌
-      // 스케일을 갖고 있어서 setScalar로 덮으면 그 보정값이 날아가 크기가 뒤틀린다
-      o.scale.multiplyScalar(target / (base || 1));
-      box = new T.Box3().setFromObject(o);
-      const c = new T.Vector3(); box.getCenter(c);
-      o.position.x -= c.x; o.position.z -= c.z; o.position.y -= box.min.y;
-      return o;
-    }
-    const fit  = (o, w) => fitBy(o, w, 'w');
-    const fitH = (o, h) => fitBy(o, h, 'h');
-    // 건물은 발자국 폭과 높이 둘 다 한도를 두고 더 빡빡한 쪽을 따른다.
-    // 폭만 맞추면 경사 지붕처럼 위로 긴 모델이 혼자 거대해진다.
-    function fitBuilding(o, targetW, maxH){
-      let box = new T.Box3().setFromObject(o);
-      const size = new T.Vector3(); box.getSize(size);
-      const byW = targetW / (Math.max(size.x, size.z) || 1);
-      const byH = maxH / (size.y || 1);
-      o.scale.multiplyScalar(Math.min(byW, byH));
-      box = new T.Box3().setFromObject(o);
-      const c = new T.Vector3(); box.getCenter(c);
-      o.position.x -= c.x; o.position.z -= c.z; o.position.y -= box.min.y;
-      return o;
-    }
-    // 소품은 가장 긴 변을 기준으로 — 납작한 잔해를 높이로 맞추면 판때기가 하늘을 덮는다
-    const fitMax = (o, m) => fitBy(o, m, 'm');
-    // strength: 건물은 약하게(마을 색감 유지), 차·사람은 강하게(작아서 티가 나야 함)
-    function recolor(o, hex, mode, strength){
-      o.traverse(n=>{
-        if(!n.isMesh || !n.material) return;
-        const arr = Array.isArray(n.material) ? n.material : [n.material];
-        const out = arr.map(m=>{
-          const cm = m.clone(); CITY3D.owned.push(cm);
-          if(mode==='dark') cm.color.multiplyScalar(0.3);
-          else cm.color.lerp(new T.Color(hex), strength==null ? 0.6 : strength);
-          return cm;
-        });
-        n.material = Array.isArray(n.material) ? out : out[0];
-      });
-    }
-    function pick(cz, obj){
-      obj.traverse(n=>{ n.userData.cz = cz; });
-      obj.userData.cz = cz;
-    }
-
-    /* 땅덩어리 — 종이 한 장이 아니라 두께 있는 지반으로 (윗면 잔디, 옆면 흙) */
-    const SLAB = CITY_TILE*0.9;
-    const grassMat = new T.MeshStandardMaterial({color:0x6d7a45, roughness:1, metalness:0});
-    const soilMat  = new T.MeshStandardMaterial({color:0x6b5340, roughness:1, metalness:0});
-    const rockMat  = new T.MeshStandardMaterial({color:0x4a382c, roughness:1, metalness:0});
-    CITY3D.owned.push(grassMat, soilMat, rockMat);
-    const slabGeo = new T.BoxGeometry(span, SLAB, span);
-    slabGeo.userData.own = true;
-    // BoxGeometry 면 순서: +x, -x, +y(윗면), -y(바닥), +z, -z
-    const slab = new T.Mesh(slabGeo, [soilMat, soilMat, grassMat, rockMat, soilMat, soilMat]);
-    slab.position.y = -SLAB/2;
-    g.add(slab);
-    // 흙과 잔디 사이 얇은 띠 — 단면이 잘린 느낌을 줄여줌
-    const rimGeo = new T.BoxGeometry(span*1.004, 0.28, span*1.004);
-    rimGeo.userData.own = true;
-    const rimMat = new T.MeshStandardMaterial({color:0x7d6248, roughness:1});
-    CITY3D.owned.push(rimMat);
-    const rimMesh = new T.Mesh(rimGeo, rimMat);
-    rimMesh.position.y = -0.16;
-    g.add(rimMesh);
-
-    const roadMatZ = new T.MeshStandardMaterial({map:makeRoadTexture(false), roughness:1});
-    const roadMatX = new T.MeshStandardMaterial({map:makeRoadTexture(true), roughness:1});
-    CITY3D.owned.push(roadMatZ, roadMatX);
-    roadMatZ.map.repeat.set(1, N+1); roadMatX.map.repeat.set(N+1, 1);
-    isoRoadAxis(N).forEach(i=>{
-      const a = new T.Mesh(new T.PlaneGeometry(CITY_TILE, span), roadMatZ);
-      a.geometry.userData.own = true; a.rotation.x = -Math.PI/2; a.position.set(wx(i), 0.02, 0); g.add(a);
-      const b = new T.Mesh(new T.PlaneGeometry(span, CITY_TILE), roadMatX);
-      b.geometry.userData.own = true; b.rotation.x = -Math.PI/2; b.position.set(0, 0.03, wx(i)); g.add(b);
-    });
-
-    /* 구획 배치 — 주민 집이 한쪽에 몰리지 않게 해시로 섞어서 고르게 흩뿌림 */
-    const ax = isoPlotAxis(N);
-    const plots = [];
-    ax.forEach(c=>ax.forEach(r=>plots.push({c,r})));
-    plots.sort((a,b)=>hashStr('plot'+a.c+'x'+a.r)-hashStr('plot'+b.c+'x'+b.r));
-
-    const used = new Set();
-
-    // 랜드마크 — 개별 할 일이 아니라 지금까지 완료한 전체 개수로 단계별로 커지는
-    // 도시 중심 건물. 첫 번째 구획을 항상 이 자리로 예약해둔다.
-    const landmarkCell = plots[0];
-    used.add(landmarkCell.c+'x'+landmarkCell.r);
-    {
-      const lvl = cityLandmarkLevel();
-      const lmHex = cssVarHex('var(--teal)');
-      const LM_W = [0.55, 0.75, 0.92, 1.08, 1.28];
-      const LM_H = [0.55, 0.9, 1.3, 1.75, 2.3];
-      const holder = new T.Group();
-      holder.position.set(wx(landmarkCell.c), 0, wx(landmarkCell.r));
-      g.add(holder);
-      const b = spawn(CITY_BUILDINGS[(lvl*3) % CITY_BUILDINGS.length]);
-      if(b){ fitBuilding(b, CITY_TILE*LM_W[lvl], CITY_TILE*LM_H[lvl]); recolor(b, '#ffcf6b', 'tint', 0.18+lvl*0.06); holder.add(b); }
-      addGlow(holder, lmHex, CITY_TILE*(1.4+lvl*0.3));
-      addRing(holder, lmHex, CITY_TILE*(0.5+lvl*0.08));
-      addBeacon(holder, lmHex, CITY_TILE*0.5+lvl*0.4);
-    }
-
-    // 사람(자율학습) — 자기 구획 안을 좁게 서성이다가, 완전히 지치면 그 자리에 멈춰 선다
-    humans.forEach((cz,i)=>{
-      const cell = plots[(1+i) % plots.length];
-      used.add(cell.c+'x'+cell.r);
-      const home = new T.Vector3(wx(cell.c), 0, wx(cell.r));
-      const hex = cssVarHex(cz.color);
-      const o = spawn(CITY_CHARS[hashStr(cz.item.id+'human') % CITY_CHARS.length]);
-      if(!o) return;
-      const rig = poseCharacter(o);
-      fitH(o, CITY_TILE*0.42);
-      const collapsed = cz.stage===3;
-      if(collapsed) recolor(o, null, 'dark');
-      const holder = new T.Group();
-      holder.position.copy(home);
-      holder.rotation.y = (hashStr(cz.item.id+'rot')%4) * Math.PI/2;
-      holder.add(o);
-      g.add(holder);
-      addGlow(holder, hex, CITY_TILE*1.1);
-      addRing(holder, hex, CITY_TILE*0.36);
-      addBeacon(holder, hex, collapsed ? 1.3 : 2.2);
-      if(cz.stage===1 || cz.stage===2) addHazard(holder, 'smoke', 1.7, hex, 0.4+cz.smoke*0.2);
-      pick(cz, holder);
-      if(!collapsed){
-        CITY3D.peds.push({obj:holder, rig, t:0, dur:4+Math.random()*4,
-          from:home.clone(), to:home.clone(), home:home.clone(), range:0.9,
-          bob: Math.random()*6.28});
-      }
-    });
-
-    // 빈 구획엔 건물을 세우지 않는다 — 사람은 할 일 하나당 한 명. 대신 가끔 나무만 심어서
-    // 허전하지 않게 하고, 어느 자리가 진짜 할 일인지 헷갈리지 않게 한다.
-    plots.forEach(p=>{
-      if(used.has(p.c+'x'+p.r)) return;
-      const hs = hashStr('f'+p.c+'_'+p.r);
-      if(hs%2!==0) return;
-      const holder = new T.Group();
-      holder.position.set(wx(p.c), 0, wx(p.r));
-      holder.rotation.y = (hs%4)*Math.PI/2;
-      g.add(holder);
-      const t1 = spawn(hs%2 ? 'tree-large' : 'tree-small');
-      if(t1){ fitMax(t1, CITY_TILE*(hs%2?0.6:0.46)); t1.position.x += 0.6; holder.add(t1); }
-      if(hs%5===0){
-        const t2 = spawn('tree-small');
-        if(t2){ fitMax(t2, CITY_TILE*0.38); t2.position.set(-1, t2.position.y, 0.8); holder.add(t2); }
-      }
-    });
-
-    /* 자동차 — 도로 한 줄을 편도로 끝까지 달린다. 도로 영역(맵) 밖으로 나가는 지점,
-       즉 도로 양 끝에서는 차체·링·글로우가 스무스하게 투명해져서 터널 속으로 들어가듯
-       사라졌다가, 다시 시작점에서 스무스하게 나타난다 — 안 보일 때만 자리를 바꾸기
-       때문에 순간이동이 눈에 보이지 않는다. */
-    const roadIdxs = isoRoadAxis(N);
-    const roadLines = roadIdxs.map(wx);
-    const roads = [];
-    roadIdxs.forEach((_,li)=>roads.push({axis:'z', li}));
-    roadIdxs.forEach((_,li)=>roads.push({axis:'x', li}));
-    cars.forEach((cz, idx)=>{
-      const road = roads[idx % roads.length];
-      const hs = hashStr(cz.item.id+'car');
-      const o = spawn(CITY_CARS[hs % CITY_CARS.length]);
-      if(!o) return;
-      const hex = cssVarHex(cz.color);
-      fit(o, CITY_TILE*0.86);
-      recolor(o, hex, 'tint', 0.62);
-      const holder = new T.Group();
-      holder.add(o);
-      const glow = addGlow(holder, hex, CITY_TILE*0.95);
-      const ring = addRing(holder, hex, CITY_TILE*0.42);
-      g.add(holder);
-      pick(cz, holder);
-
-      const dir = (hs%2) ? 1 : -1;
-      const lane = roadLines[road.li] + dir*0.8;      // 우측통행
-      const a = new T.Vector3(), b = new T.Vector3();
-      if(road.axis==='z'){ a.set(lane,0,-span/2); b.set(lane,0,span/2); holder.rotation.y = 0; }
-      else { a.set(-span/2,0,lane); b.set(span/2,0,lane); holder.rotation.y = Math.PI/2; }
-      if(dir<0){ const t2=a.clone(); a.copy(b); b.copy(t2); holder.rotation.y += Math.PI; }
-
-      if(cz.stage===2){
-        // 고장 — 갓길에 비스듬히 서 있고 연기, 옆에 라바콘
-        holder.position.lerpVectors(a, b, 0.42);
-        holder.position.x += road.axis==='z' ? 1.4 : 0;
-        holder.position.z += road.axis==='x' ? 1.4 : 0;
-        holder.rotation.y += 0.35;
-        addHazard(holder, 'smoke', 1.4, hex);
-        const cone = spawn('cone');
-        if(cone){ fitMax(cone, 0.42); cone.position.set(1.5, cone.position.y, 0.8); holder.add(cone); }
-        addBeacon(holder, hex, 2.2);
-      } else {
-        const beacon = addBeacon(holder, hex, 2.2);
-        const hazard = cz.stage===1 ? addHazard(holder, 'smoke', 1.4, hex, 0.4+cz.smoke*0.2) : null;
-        // 차체·링·글로우 재질을 투명 처리 가능하게 만들어서 도로 양 끝에서 페이드시킨다
-        const fadeMats = [];
-        function collect(n){
-          if(!n.isMesh && !n.isSprite) return;
-          const arr = Array.isArray(n.material) ? n.material : [n.material];
-          arr.forEach(m=>{ m.transparent = true; fadeMats.push({mat:m, base:m.opacity}); });
-        }
-        [o, ring, glow].forEach(node=>{ if(node) node.traverse(collect); });
-        holder.position.copy(a);
-        // 도로 폭 0.6칸만큼을 도로 양 끝 '터널 구간'으로 삼는다 — 도시가 커도 항상 같은 물리적 길이
-        const fadeFrac = Math.min(0.1, (CITY_TILE*0.6)/span);
-        CITY3D.cars.push({obj:holder, a, b, p:(hs%100)/100, fadeMats, fadeFrac, hazard, beacon,
-                          speed:(cz.stage===1 ? 0.008 : 0.014) + ((hs>>4)%12)/4000});
-      }
-    });
-
-    // 연기는 그 항목의 과목 테마색으로 — 어느 과목을 방치하고 있는지 멀리서도 보이게
-    function addHazard(parent, type, baseY, hex, intensity){
-      // intensity(0~1) — 연기 단계에 갓 들어선 날은 옅게, 며칠 지날수록 짙게(점층적으로)
-      const iv = intensity==null ? 1 : Math.max(0.15, Math.min(1, intensity));
-      const isFire = type==='fire';
-      const rgb = isFire ? '255,120,25' : hexToRgbStr(hex);
-      const tex = makePuffTexture(rgb);
-      const group = new T.Group();
-      group.position.y = baseY;
-      parent.add(group);
-      const puffs = [];
-      const count = Math.max(4, Math.round((isFire ? 14 : 22) * iv));
-      for(let i=0;i<count;i++){
-        const m = new T.SpriteMaterial({map:tex, transparent:true, depthWrite:false,
-          blending: isFire ? T.AdditiveBlending : T.NormalBlending, opacity:0});
-        CITY3D.owned.push(m);
-        const s = new T.Sprite(m);
-        s.position.set((Math.random()-0.5)*0.5, 0, (Math.random()-0.5)*0.5);
-        s.raycast = ()=>{};   // 흘러다니는 연기가 클릭을 가로채면 조준이 안 됨
-        group.add(s); puffs.push(s);
-      }
-      const entry = {puffs, rise:isFire?2.0:5.2, speed:isFire?0.8:0.24,
-                     size:(isFire?1.3:2.6)*(0.55+0.45*iv), alpha:(isFire?0.5:0.34)*iv,
-                     drift:isFire?0.15:1.1, fadeMul:1};
-      CITY3D.hazards.push(entry);
-      return entry;
-    }
-    // 테마색 바닥 링 — 글로우만으론 밝은 모델 위에서 묻혀서, 선명한 테두리를 하나 더 깐다
-    function addRing(parent, hex, radius){
-      const geo = new T.RingGeometry(radius*0.82, radius, 40);
-      geo.userData.own = true;
-      const mat = new T.MeshBasicMaterial({color:new T.Color(hex), transparent:true,
-        opacity:0.85, side:T.DoubleSide, depthWrite:false});
-      CITY3D.owned.push(mat);
-      const m = new T.Mesh(geo, mat);
-      m.rotation.x = -Math.PI/2;
-      m.position.y = 0.06;
-      m.raycast = ()=>{};
-      parent.add(m);
-      return m;
-    }
-    // 테마색 바닥 글로우 — 진짜 할 일이 어디 있는지 한눈에
-    function addGlow(parent, hex, size){
-      const tex = makePuffTexture(hexToRgbStr(hex));
-      const m = new T.SpriteMaterial({map:tex, transparent:true, depthWrite:false,
-        blending:T.AdditiveBlending, opacity:0.32});
-      CITY3D.owned.push(m);
-      const s = new T.Sprite(m);
-      s.scale.set(size, size, 1);
-      s.position.y = 0.12;
-      s.raycast = ()=>{};
-      parent.add(s);
-      return s;
-    }
-    function addBeacon(parent, hex, y){
-      const mat = new T.MeshBasicMaterial({color:new T.Color(hex), transparent:true, opacity:0.92});
-      CITY3D.owned.push(mat);
-      const geo = new T.ConeGeometry(0.22, 0.5, 5);
-      geo.userData.own = true;
-      const m = new T.Mesh(geo, mat);
-      m.rotation.x = Math.PI;      // 아래를 가리키는 핀
-      m.position.y = y;
-      parent.add(m);
-      const entry = {obj:m, baseY:y, phase:Math.random()*6.28, baseOpacity:0.92, fadeMul:1};
-      CITY3D.beacons.push(entry);
-      return entry;
-    }
-
-    // 도시가 화면에 다 들어오도록 카메라 거리 계산 (도시가 커지면 다시 맞춤)
-    CITY3D.controls.maxDistance = span*2.2;
-    CITY3D.controls.minDistance = span*0.28;
-    const dist = span*1.72, el = 0.62;                // 약 35도 위에서 내려다보는 각도
-    const horiz = dist*Math.cos(el)/Math.SQRT2;
-    CITY3D.homePos = new T.Vector3(horiz, dist*Math.sin(el), horiz);
-    CITY3D.homeTarget = new T.Vector3(0, 1.5, 0);
-    if(CITY3D.lastSpan !== span){
-      CITY3D.camera.position.copy(CITY3D.homePos);
-      CITY3D.controls.target.copy(CITY3D.homeTarget);
-      CITY3D.controls.update();
-      CITY3D.lastSpan = span;
-    }
-    CITY3D.scene.fog.near = span*0.9;
-    CITY3D.scene.fog.far = span*3.2;
-    CITY3D.atHome = true;
-    CITY3D.lastInteract = 0;
-    CITY3D.sig = citySignature();
-  }
-
-  // 팔다리를 번갈아 흔들어서 걷는 것처럼 보이게 (뼈 4개짜리 아주 단순한 워크 사이클)
-  function stepRig(rig, phase){
-    if(!rig) return;
-    const s = Math.sin(phase);
-    if(rig.legL) rig.legL.rotation.x =  s*0.45;
-    if(rig.legR) rig.legR.rotation.x = -s*0.45;
-    if(rig.armL) rig.armL.rotation.x = -s*0.35;
-    if(rig.armR) rig.armR.rotation.x =  s*0.35;
-  }
-  function cityFrame(){
-    CITY3D.raf = requestAnimationFrame(cityFrame);
-    const now = performance.now();
-    const dt = Math.min(0.05, (now - CITY3D.last)/1000 || 0.016);
-    CITY3D.last = now;
-    const t = now/1000;
-
-    CITY3D.cars.forEach(c=>{
-      c.p += c.speed*dt;
-      if(c.p > 1) c.p -= 1;
-      c.obj.position.lerpVectors(c.a, c.b, c.p);
-      // 도로 양 끝(터널 구간)에서 스무스하게 투명해졌다가, 반대쪽 시작점에서 다시 나타난다
-      const f = c.fadeFrac;
-      const fade = c.p < f ? c.p/f : (c.p > 1-f ? (1-c.p)/f : 1);
-      c.fadeMats.forEach(e=>{ e.mat.opacity = e.base*fade; });
-      if(c.hazard) c.hazard.fadeMul = fade;
-      if(c.beacon) c.beacon.fadeMul = fade;
-    });
-    CITY3D.peds.forEach(p=>{
-      p.t += dt;
-      if(p.t >= p.dur){
-        p.t = 0; p.dur = 4 + Math.random()*4;
-        p.from.copy(p.obj.position);
-        const r = p.range || 2.6;
-        p.to.set(p.home.x + (Math.random()-0.5)*r*2, 0, p.home.z + (Math.random()-0.5)*r*2);
-        p.obj.rotation.y = Math.atan2(p.to.x-p.from.x, p.to.z-p.from.z);
-      }
-      p.obj.position.lerpVectors(p.from, p.to, p.t/p.dur);
-      p.obj.position.y = Math.abs(Math.sin(t*4 + p.bob))*0.07;   // 걷는 느낌의 작은 위아래
-      stepRig(p.rig, t*4 + p.bob);
-    });
-    CITY3D.walkers.forEach(w=>{
-      w.p += w.speed*dt;
-      if(w.p > 1) w.p -= 1;
-      w.obj.position.lerpVectors(w.a, w.b, w.p);
-      w.obj.position.y = Math.abs(Math.sin(t*4 + w.bob))*0.07;
-      stepRig(w.rig, t*4 + w.bob);
-    });
-    CITY3D.hazards.forEach(h=>{
-      h.puffs.forEach((s,i)=>{
-        const ph = ((t*h.speed) + i/h.puffs.length) % 1;
-        s.position.y = ph*h.rise;
-        // 올라가면서 옆으로 퍼지게 — 안 그러면 빛기둥처럼 뭉쳐 보임
-        s.position.x = Math.sin(i*2.1 + ph*2.4)*h.drift*ph;
-        s.position.z = Math.cos(i*1.7 + ph*2.0)*h.drift*ph;
-        s.material.opacity = Math.sin(ph*Math.PI)*h.alpha*(h.fadeMul==null?1:h.fadeMul);
-        const sc = h.size*(0.4 + ph*1.1);
-        s.scale.set(sc, sc, 1);
-      });
-    });
-    CITY3D.beacons.forEach(b=>{
-      b.obj.position.y = b.baseY + Math.sin(t*2 + b.phase)*0.16;
-      b.obj.rotation.y = t*1.3;
-      if(b.baseOpacity!=null) b.obj.material.opacity = b.baseOpacity*(b.fadeMul==null?1:b.fadeMul);
-    });
-
-    // 10초 동안 안 건드리면 알아서 기본 시점으로 돌아감
-    if(!CITY3D.tween && !CITY3D.atHome && CITY3D.lastInteract
-       && now - CITY3D.lastInteract > CITY_IDLE_RETURN_MS){
-      resetCityView(1.1);
-    }
-
-    const tw = CITY3D.tween;
-    if(tw){
-      tw.t = Math.min(1, tw.t + dt/tw.dur);
-      const e = tw.t<0.5 ? 2*tw.t*tw.t : 1-Math.pow(-2*tw.t+2,2)/2;   // ease-in-out
-      CITY3D.camera.position.lerpVectors(tw.fromPos, tw.toPos, e);
-      CITY3D.controls.target.lerpVectors(tw.fromTgt, tw.toTgt, e);
-      if(tw.t>=1) CITY3D.tween = null;
-    }
-
-    CITY3D.controls.update();
-    CITY3D.renderer.render(CITY3D.scene, CITY3D.camera);
-  }
-  function startCityLoop(){
-    if(CITY3D.running || CITY3D.phase!=='ready') return;
-    CITY3D.running = true; CITY3D.last = performance.now();
-    CITY3D.raf = requestAnimationFrame(cityFrame);
-  }
-  function stopCityLoop(){
-    CITY3D.running = false;
-    if(CITY3D.raf) cancelAnimationFrame(CITY3D.raf);
-    CITY3D.raf = 0;
-    hideCityTip();
-  }
-
-  /* 마우스를 올리면 무슨 할 일인지 바로 보여줌 (클릭은 상세 모달) */
-  function czUnderPointer(ev){
-    if(!CITY3D.renderer) return null;
-    const r = CITY3D.renderer.domElement.getBoundingClientRect();
-    CITY3D.pointer.x = ((ev.clientX - r.left)/r.width)*2 - 1;
-    CITY3D.pointer.y = -((ev.clientY - r.top)/r.height)*2 + 1;
-    CITY3D.raycaster.setFromCamera(CITY3D.pointer, CITY3D.camera);
-    const hits = CITY3D.raycaster.intersectObjects(CITY3D.cityGroup ? CITY3D.cityGroup.children : [], true);
-    for(const h of hits){
-      let o = h.object;
-      while(o){ if(o.userData && o.userData.cz) return o.userData.cz; o = o.parent; }
-    }
-    return null;
-  }
-  function showCityTip(cz, ev){
-    if(!CITY3D.tip) return;
-    const isCar = cz.vehicle==='car';
-    const tag = cz.item.boxKey && hasBox(cz.item.boxKey) ? findBox(cz.item.boxKey).label : '미분류';
-    const stageLabel = isCar
-      ? ['정상 주행 중','연기가 나는 중','완전히 고장남'][cz.stage]
-      : ['평범하게 지내는 중','조금 지침','많이 지침','완전히 지쳐 쓰러짐'][cz.stage];
-    CITY3D.tip.innerHTML = `<div class="ct-tag">${escapeHtml(tag)} · ${isCar?'수업 과제':'자율학습'}</div>`
-      + `<div class="ct-text">${escapeHtml(cz.item.text)}</div>`
-      + `<div class="ct-meta">${cz.days}일째 · ${stageLabel}</div>`;
-    placeCityTip(ev);
-  }
-  function placeCityTip(ev){
-    CITY3D.tip.style.display = 'block';
-    const host = CITY3D.host.getBoundingClientRect();
-    let x = ev.clientX - host.left + 14, y = ev.clientY - host.top + 14;
-    const tw = CITY3D.tip.offsetWidth, th = CITY3D.tip.offsetHeight;
-    if(x + tw > host.width - 6) x = ev.clientX - host.left - tw - 14;
-    if(y + th > host.height - 6) y = ev.clientY - host.top - th - 14;
-    CITY3D.tip.style.left = Math.max(6, x)+'px';
-    CITY3D.tip.style.top = Math.max(6, y)+'px';
-  }
-  function hideCityTip(){ if(CITY3D.tip) CITY3D.tip.style.display = 'none'; }
-
-  function bindCityPointer(el){
-    el.addEventListener('pointermove', ev=>{
-      if(CITY3D.downAt) return; // 카메라 돌리는 중엔 툴팁 안 띄움
-      const cz = czUnderPointer(ev);
-      CITY3D.hover = cz;
-      el.style.cursor = cz ? 'pointer' : 'grab';
-      if(cz) showCityTip(cz, ev); else hideCityTip();
-    });
-    el.addEventListener('pointerleave', ()=>{ hideCityTip(); CITY3D.hover = null; });
-    el.addEventListener('pointerdown', ev=>{
-      CITY3D.downAt = {x:ev.clientX, y:ev.clientY};
-      markCityInteraction();
-      hideCityTip();
-    });
-    el.addEventListener('wheel', markCityInteraction, {passive:true});
-    el.addEventListener('pointerup', ev=>{
-      const d = CITY3D.downAt; CITY3D.downAt = null;
-      CITY3D.lastInteract = performance.now();
-      if(!d) return;
-      if(Math.abs(ev.clientX-d.x) > 4 || Math.abs(ev.clientY-d.y) > 4) return; // 드래그는 클릭 아님
-      const cz = czUnderPointer(ev);
-      if(!cz) return;
-      openCityInspect(cz.item.id);
-    });
-  }
-
-  // 카메라를 처음 잡아둔 시점으로 부드럽게 되돌림 (돌리다 길을 잃었을 때)
-  const CITY_IDLE_RETURN_MS = 10000;
-  function resetCityView(dur){
-    if(!CITY3D.camera || !CITY3D.homePos) return;
-    CITY3D.tween = {
-      fromPos: CITY3D.camera.position.clone(), toPos: CITY3D.homePos.clone(),
-      fromTgt: CITY3D.controls.target.clone(), toTgt: CITY3D.homeTarget.clone(),
-      t: 0, dur: dur || 0.55
-    };
-    CITY3D.atHome = true;
-  }
-  function markCityInteraction(){
-    CITY3D.lastInteract = performance.now();
-    CITY3D.atHome = false;
-    CITY3D.tween = null;   // 사용자가 카메라를 잡으면 복귀 애니메이션은 중단
-  }
-
-  function makeCityHost(){
-    const host = document.createElement('div');
-    host.className = 'city3d';
-    host.innerHTML = `<div class="city3d-canvas"></div>
-      <div class="city3d-tip"></div>
-      <div class="city3d-status"></div>
-      <button class="city3d-reset" type="button">기본 시점</button>
-      <div class="city3d-hint">드래그로 회전 · 휠로 확대 · 마우스를 올리면 무슨 할 일인지 나와</div>`;
-    host.querySelector('.city3d-reset').addEventListener('click', ()=>resetCityView());
-    CITY3D.host = host;
-    CITY3D.canvasWrap = host.querySelector('.city3d-canvas');
-    CITY3D.tip = host.querySelector('.city3d-tip');
-    CITY3D.statusEl = host.querySelector('.city3d-status');
-    hideCityTip();
-    return host;
-  }
-
-  // 홈 미리보기와 도시 섹션은 둘 다 캔버스를 넣을 자리를 갖고 있어서(id가 다름),
-  // 지금 스크롤로 보고 있는 곳에 맞는 슬롯을 골라준다 — 둘 다 같은 id를 쓰면
-  // 스크롤 체인 때문에 항상 동시에 DOM에 존재해서 getElementById가 앞쪽 것만 찾아버림
-  function pickCityHostSlot(){
-    if(state.activeSection==='home'){
-      const homeSlot = document.getElementById('city3dSlotHome');
-      if(homeSlot) return homeSlot;
-    }
-    return document.getElementById('city3dSlot');
-  }
-  // render()가 #app을 갈아엎은 뒤 3D 컨테이너를 제자리에 다시 끼워 넣는다
-  function mountCity3D(){
-    const slot = pickCityHostSlot();
-    if(!slot) { stopCityLoop(); return; }
-    if(!CITY3D.host) makeCityHost();
-    if(CITY3D.host.parentElement !== slot) slot.appendChild(CITY3D.host);
-    if(CITY3D.phase==='idle' || CITY3D.phase==='error'){ ensureCity3D(); return; }
-    if(CITY3D.phase!=='ready') return;
-    if(citySignature() !== CITY3D.sig) buildCityScene();
-    resizeCity3D();
-    startCityLoop();
-  }
-
-  // 도시의 정체성은 "얼마나 망가졌나"가 아니라 "지금까지 뭘 쌓았나" — 그래서 맨 위에 이걸 둔다.
-  // archiveLog는 완료 취소(undo) 외엔 줄지 않으므로, 며칠 손 놓아도 이 수치는 되돌아가지 않는다.
-  const CITY_GROWTH_PER_LEVEL = 12;
-  const CITY_GROWTH_MAX_LEVEL = 10;
-  function cityGrowth(){
-    const total = (state.data.archiveLog || []).length;
-    const level = Math.min(CITY_GROWTH_MAX_LEVEL, Math.floor(total / CITY_GROWTH_PER_LEVEL));
-    const intoLevel = total - level * CITY_GROWTH_PER_LEVEL;
-    return {
-      total, level,
-      atMax: level >= CITY_GROWTH_MAX_LEVEL,
-      toNext: level >= CITY_GROWTH_MAX_LEVEL ? 0 : CITY_GROWTH_PER_LEVEL - intoLevel,
-      progress: level >= CITY_GROWTH_MAX_LEVEL ? 1 : intoLevel / CITY_GROWTH_PER_LEVEL
-    };
-  }
-  function renderCityGrowthBar(){
-    const g = cityGrowth();
-    const sub = g.total === 0
-      ? '할 일을 하나씩 끝낼 때마다 이 도시가 자라요. 한 번 쌓인 건 사라지지 않아요.'
-      : (g.atMax
-          ? `지금까지 완료한 ${g.total}개가 이 도시를 다 키웠어요. 여기까지 온 건 되돌아가지 않아요.`
-          : `지금까지 완료한 ${g.total}개가 이 도시를 키웠어요. ${g.toNext}개 더 하면 도시가 한 번 더 자라요.`);
-    return `<div class="city-growth">
-      <div class="city-growth-head">
-        <b>도시 성장 Lv.${g.level}</b>
-        <span>${g.total}개 완료</span>
-      </div>
-      <div class="city-growth-track"><div class="city-growth-fill" style="width:${Math.round(g.progress*100)}%;"></div></div>
-      <div class="city-growth-sub">${sub}</div>
-    </div>`;
-  }
-  function renderCityPage(){
-    if(state.cityView==='archive') return renderGraduationArchive();
-    const citizens = collectCityCitizens();
-    const graduating = collectGraduatingThisWeek();
-    return `<div class="fade-in">
-      <div class="page-head"><h1 class="city-title">City of Brain</h1><button class="iconbtn" data-action="goCityArchive">${icon('external')} 졸업 앨범</button></div>
-      <div class="empty" style="padding:0 0 14px;">수업 과제는 도로를 달리는 자동차, 자율학습은 도시를 돌아다니는 시민이에요. 방치하면 지쳐가다가 결국 쓰러져요. 할 일을 계속 완료하면 도시 한가운데 건물이 단계별로 커져요.</div>
-      ${renderCityGrowthBar()}
-      ${graduating.length>0?`<div class="city-graduating">🎓 이번 주 졸업 예정 ${graduating.length}명 — 다음 주 월요일에 졸업 앨범으로 넘어가요</div>`:''}
-      <div id="city3dSlot" class="city-slot-full"></div>
-      ${citizens.length===0?`<div class="empty">아직 시민이 없어요 — 할 일 탭에서 수업 과제나 자율학습을 추가하면 도시에 나타나요.</div>`:''}
-    </div>`;
-  }
-  function findCityItem(target){
-    if(!target) return null;
-    return state.data.tasks.find(i=>i.id===target.id) || null;
-  }
-  function renderCityInspectModal(){
-    const item = findCityItem(state.cityInspectTarget);
-    if(!item) return '';
-    const isCar = item.corner==='review';
-    const days = itemStaleDays(item);
-    const stage = isCar ? carDecayStage(days) : humanFatigueStage(days);
-    const stageLabel = isCar
-      ? ['정상 주행 중이에요','연기가 나고 있어요','완전히 고장났어요'][stage]
-      : ['평범하게 지내고 있어요','조금 지쳤어요','많이 지쳤어요','완전히 지쳐 쓰러졌어요'][stage];
-    const box = item.boxKey && hasBox(item.boxKey) ? findBox(item.boxKey) : null;
-    const tag = box ? box.label : '미분류';
-    return `<div class="modal-overlay" data-action="closeModal">
-      <div class="modal" style="max-width:360px;">
-        <div class="modal-head"><h2>${isCar?icon('car'):icon('person')} ${escapeHtml(tag)}</h2><button class="modal-close" data-action="closeModal">${icon('close')}</button></div>
-        <div class="modal-body">
-          <div class="city-inspect-text">${escapeHtml(item.text)}</div>
-          <div class="city-inspect-meta">등록한 지 ${days}일째 · ${stageLabel}</div>
-          <button class="btn" data-action="cityCompleteFromInspect" data-id="${item.id}">지금 완료 처리</button>
-        </div>
-      </div>
-    </div>`;
-  }
-  function renderGraduationArchive(){
-    const weeks = collectGraduationArchive();
-    const weeksHtml = weeks.length===0 ? `<div class="empty">아직 졸업한 시민이 없어요.</div>` : weeks.map(w=>{
-      const label = fmtShortDate(toISODate(new Date(w.weekStart)));
-      const rows = w.items.map(entry=>{
-        const box = entry.item.boxKey && hasBox(entry.item.boxKey) ? findBox(entry.item.boxKey) : null;
-        const tag = box ? box.label : '미분류';
-        return `<div class="city-grad-row">
-          <span class="city-grad-icon" style="--fc:${entry.color};">${icon(entry.vehicle==='car'?'car':'person')}</span>
-          <div class="city-grad-body"><div class="city-grad-tag">${escapeHtml(tag)}</div><div class="city-grad-text">${escapeHtml(entry.item.text)}</div></div>
-          <button class="city-grad-del" title="졸업 취소하고 기록 지우기" data-action="deletePermanent" data-id="${entry.item.id}">${icon('trash')}</button>
-        </div>`;
-      }).join('');
-      return `<div class="section">
-        <div class="section-head"><div class="section-title">${label} 주 — 졸업생 ${w.items.length}명</div></div>
-        ${rows}
-      </div>`;
-    }).join('');
-    return `<div class="fade-in">
-      <div class="page-head"><h1>졸업 앨범</h1><button class="iconbtn" data-action="goCityMain">${icon('arrowLeft')} 도시로</button></div>
-      ${weeksHtml}
     </div>`;
   }
 
@@ -2836,81 +1679,124 @@
     persist(); render();
   }
 
+  /* ============ 이번주 — 중간/기말고사 벼락치기용 과목별 간식 게이지 ============
+     "계획을 세운다"가 아니라 "이번 주에 끝낼 것"을 과목별로 다 적어두고, 끝낸 만큼
+     그 과목의 간식(길쭉한 음식 스프라이트)을 먹어치우는 식으로 진행률을 보여준다.
+     블록 수 = 그 과목에 적어둔 항목 개수 — 새 항목을 추가하면 블록도 그만큼 늘어난다. */
+  const FOOD_SPRITES = {
+    choc: { w:72, h:18, label:'초콜릿 바', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAAASCAYAAAD4+JjWAAABUElEQVR42mNkYGBgcPaK/89AAdi7bSEjNcwZbGDvtoWMjMPNU9QGLDDGzi4dsgxwL7uCwifXnMEGYP5iGk0jRKagHzduU8VAapkzWMBoCiI2BS1f8wqrgsgQMRQ+pjp+nPKE9eIG6HpxmUGsHTB1xLsP4i94LdZhjrsy09TmYGBgYGC4fvUHhlzFSUYUPro5+PQSA4jRT4kduPTC/MUy0rMQoUBlITaEOTRUGTQZbpMcS4TUX7j+icFAk4+mnqRLIU2r2glXWYMROVA2LcCF658YLlz/RFwAoStGjh1axBQxZmKLHHyeIjZQqJaCrl/9QXLgUOoBWnkYW8qNDBHDmZJZcGnEFyDUKDeIjRhctQy6OyNDxEiKRGJzBgs5SZ4YxxAT0JRkQWRxWqZUJlqVG+RkS1oU9JSC0eEOQikINthFCdi7bSEjNcwZbGDvtoWMAJsPvzfJSlJ8AAAAAElFTkSuQmCC' },
+    straw: { w:72, h:18, label:'딸기 바', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAAASCAYAAAD4+JjWAAABSUlEQVR42u1YSw6CMBCdEi5gXPQCJnoPXcmGG+jR5AZuYAX3KAkXYGE8gi5MsWg/03ZIiPI2Fpnf6zymBAYAsD+eHhCBpioYRZy5oakKxn6NFDVSuajLS1CAQ3YeXYfGmRskr2TRCFJBcLvTRKSKMxMsCsIqqL+WWgOeZ6Nrk53uvq+vLa8pBjaHtPOtb9ggvtvqKxUdwG4zrL/t6nEh6n2nrwWie/0q/to6sTl0/lbf+mMG/StkI4JnkNzh9eq99i3AUkQvWhqSDqIjLpMM6YlOJ9OsIWkOUi29aI2NSpzGalBMl2xkdSQxMTXNsZHCAOubkEqYkAAZYUNjVOXyPDMqOTU6OuaG14kUqr6PU8ZWJ88zvxzIJyMNIYIpBrPRURur/N+LFjhlY6LfpDFJAx7LSQZ9JJbPHS4FyY9dMWiqglHEmRuaqmBPTyeteWQYS28AAAAASUVORK5CYII=' },
+    graham: { w:54, h:18, label:'크래커 바', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAASCAYAAAAQeC39AAAAtElEQVR42mNkgAJnr/j/DMMA7N22kJGBgYGBaTh5CtkvjMie2pjEzsDAwMBw/eoPBgYGBgZNbQ6iDCNGPbXU4FPvP+8nXA7uMZinhjqAeY6JYZgCJvRoRY9qUsQHWj+y2LCNMbx5jENDlYGBgYHhx43bRIkPBv2wPMaCz2BcFhNy0GDQP/wLj9FScbRUHC0VR0tFskpF5AYksXmAFPXUUoNPPUojeLh1W2B9Mibkztlw6mgCADRM3vdjf5WcAAAAAElFTkSuQmCC' },
+    cheese: { w:54, h:18, label:'치즈 바', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAASCAYAAAAQeC39AAAA/ElEQVR42mNkgAJnr/j/DMMA7N22kJGBgYGBaTh5CtkvjMieWmBzEq5AUO8zAwMDA8P7S7xkWUCpfnLMTzhiDmfDPYbsqaEMYJ5jwRUSQw2gpwwmYjVeP+vMcP2s85DxKAs5mmAe1DTeS7EDyDELOYBx6SPaY8bJygwMDAwM3y7sHdoxhh4q3y7MItuT+GKFVgFGVlJE9iSlAJdZxAQGeoAI6n1mYDhCgcdIjSFKYwXdPGICloVQnqJGMiEnhskJDOQin4UWyY0a+YaSPE2zpEjNPEiueSyEavChCpiwNSCxNbOo3dQi1Uxi1KM0godbtwXWJ2NC7pwNp44mAO4Ng8nzYx4PAAAAAElFTkSuQmCC' },
+    sausage: { w:54, h:18, label:'소시지', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAASCAYAAAAQeC39AAAA8UlEQVR42mNkIBI4e8X/ZxgEYO+2hYzEqGMcKh4i1YOMpHhqIu/VAfVM/mdtoj3HSIynBtpD+DyIy3OMhJIbzFMK2vwMD65+ZFDQ5h8Qz8DsfnD1I9bYQ49JJmI8NRgBPrc5e8X/Z0FXiCskYCEFowcq1gh5FOZ+FmwKFEKNGB6sPscw2AE+tzIhZ8iByj/UAAra/CipjYlhmAIm5GgdyPxDjfyHXKCwYK0j5v1kYGDQHtSlIiG3suCq1YcaQHc/E75myWD2LKEKmugm1Z3bbxhUVEUGBT1Zwp64JhWxjeDcFwcH1FNUaQQP627LUO5oAgB+rNya2g8xZwAAAABJRU5ErkJggg==' },
+    glazed: { w:54, h:18, label:'글레이즈드 소시지', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAASCAYAAAAQeC39AAABQElEQVR42mNkIBI4e8X/ZxgEYO+2hYzEqGMcKh4i1YOMpHhqYxL7gHrGf95Poj3HSIynBtpD+DyIy3OMhJIbzFMcGqoMP27cZuDQUB0Qz8Ds/nHjNtbYQ49JJmI8NRgBPrc5e8X/Z4FxJvJeZWBgYGDI/6yNofDB6nMMDAznoDwIrRBqhCSHADBxVL245QmpQxU/h9MMdPczwmIMJgHTiG4RKQCXp0lVQ6xdyGbAPMaELKCgzc8wVIGCNj9KamOihSUPVp8jGFuwQghX0qQUMCGn0QdXP9K1lKNqYF79iJKdWNAV5H/WZmCY95OBgUEbReFgBPjcyoKe6egBHqw+R7XCA5f7CVbQgzXW8EXE3m0LGYlqUk3kvcpw5/YbBhVVkUFBT5awJ65JRWwjOPfFwQH1FHoskdUIHtbdlqHc0QQAxY37dpYYJB8AAAAASUVORK5CYII=' },
+    sub: { w:54, h:18, label:'서브 샌드위치', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAASCAYAAAAQeC39AAABMElEQVR42mNkwAGcveL/MwwBsHfbQkZs4oxD1UOEPMiIz0Md5v8ZNLU5BqVHrl/9wVBxkhGnB5mwearD/D+Gp65f/YFhMDGWk6qHWP2a2hxwd2JLcYzInkJXhC22rl/9QXIsoush1Qxc6tE9jhyDcI+hewqf5wZLUsQGYJ5jIdeAwQ6YYIwL1z8xDHWA7Ad4jE2OMEJRxGH8dUh45sdZbgRHn4FBdNZdVI8tW74JRYPCJf4h4bEHVz+i8PMZtFGT4nAD8BjL/6zNsDGJHZEUNVSHhAcUtG7D2f7zfmIW9xF8qFFqoMmHs8ind0mJz370Qm/FJ34GjAoa3XPIIDJEjIGBgYFh+ZpXAxIzxNgP8xRRFfRQA7AKmglbc2Soewreuh+qXRV8XRgmfJ21odwvAwATiou8tSg8xQAAAABJRU5ErkJggg==' },
+    club: { w:54, h:36, label:'클럽 샌드위치', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAAkCAYAAADCW8lNAAACbElEQVR42t2YwStEQRjAv/cSK2VP5CApKfueIg7cKeHg4kApcpHTupA/YeOiHMRBlHBwoZDizkFJnqe2rU0O4rQrWS7rNLMz82bmzVvhzfsuM7P7fTPze99733zfGCCQvqHJImggFyfbBu93Q1cgP0BDBpTqKULCjoUSxHUKsHhlCAFNHlSqp+iBcp2CZ2KVxYPaqNon7BjeJ++NM0goVonnLdcpBPYiaxN0DpE+C056EIOxUDK4sLyKPEFwFeVOEHYxUefGzYPuQjJgj62OdVFKse53LWAK1zWlQQdA3UaGBtvdO6IMmm/jWoBlnRw1ToJNv4pRE+yx5JsNh9NVpVexrVULgGYrjfsjm5/ecD9WS7u0M1ErDPl/HSll67NBbz8fB88BzcKRMj5aDwAAewcv/+IZlfURlNIBrZugA9rkpSO6Q+HsXtdSRVbCmLJiTee6TAnIz6O8B8PasDp+/5erK6ygdamo/eCUn9LOyjwAAEzMLXPHPPHTUZnDT1fpzoPnnbOldm/i+ZCmE2ZBlvJaOQgAAHVfp+pJLTG3LPsZWLiTelF653HY+yRMNrnpjR0PrJ91ctgO9WW2pM3IZaN/8CAP6hs3T6VUSKrv73H/w7Lw+MOypACkXTn6Mlu0V3SGUZc5qoImJVu/TbKbUdVn9VTX8mT3vy1BNvUTG+pqgPy+kGtR1sy2bFb9360ompts0EBQopaFD0vLwuHs/vx4KxIpVf/wVLSvBqhCc30tpTXMzOxiKSpenGxjuJamhshk+NJwn3l8psY88LDpUOGe/PAyj8+eCcIsaL8oaFBgUSw0TdkHqGPQQPINTA+6Irqr6D0AAAAASUVORK5CYII=' },
+    corndog: { w:72, h:18, label:'콘도그', src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAAASCAYAAAD4+JjWAAABFklEQVR42mNkoDNw9or/zzBIwd5tCxnRxRhHAwZ/QDEOROB0mA++sKo4yYg1kBjpGTiDMWDwBdTebQsZWegdOJraHAzXr/5g0NTmGDSBAnPP9as/GDrM/6MEEtNoysHvB0Z6FKxDMYBgqYhpNHDwA4Jl0MYkdorzNT5AjBpiwYXrnxgMNPlI1sPAwIBTHxM9YwPmGPSApBYgNXCIAYwDlcVgtdj1qz8wYp7YlABLfYRSASkAZibBMghbs5saDTBiYp5YjxKTfckpGujS1aBWNU+NMorUsgk5Umnakh6qbSFYAO3dtpCRpoU0cjaFWQorLwYrjV4kDEhnNYLvI4OBJh886Q8GesUn/oHprI4OdwyjgMJWcwMA/5/5feIJ06QAAAAASUVORK5CYII=' }
+  };
+  const FOOD_ORDER = ['choc','straw','graham','cheese','sausage','glazed','sub','club','corndog'];
+  function examSubjects(){ return (state.data.examWeek && state.data.examWeek.subjects) || []; }
+  function toggleExamAdd(){ state.examAddOpen = !state.examAddOpen; render(); }
+  function addExamSubject(name, itemLines){
+    name = (name||'').trim(); if(!name) return;
+    const items = (itemLines||'').split('\n').map(s=>s.trim()).filter(Boolean).map(text=>({id:genId(), text, done:false}));
+    state.data.examWeek = state.data.examWeek || {subjects:[]};
+    const food = FOOD_ORDER[state.data.examWeek.subjects.length % FOOD_ORDER.length];
+    state.data.examWeek.subjects.push({id:genId(), name, food, items});
+    persist(); render();
+  }
+  function submitExamSubject(){
+    const nameEl = document.getElementById('examNewName');
+    const itemsEl = document.getElementById('examNewItems');
+    if(!nameEl || !nameEl.value.trim()) return;
+    state.examAddOpen = false;
+    addExamSubject(nameEl.value, itemsEl ? itemsEl.value : '');
+  }
+  function deleteExamSubject(id){
+    state.data.examWeek.subjects = examSubjects().filter(s=>s.id!==id);
+    persist(); render();
+  }
+  function addExamItem(subjectId, text){
+    text = (text||'').trim(); if(!text) return;
+    const s = examSubjects().find(x=>x.id===subjectId); if(!s) return;
+    s.items.push({id:genId(), text, done:false});
+    persist(); render();
+  }
+  function toggleExamItem(subjectId, itemId){
+    const s = examSubjects().find(x=>x.id===subjectId); if(!s) return;
+    const it = s.items.find(x=>x.id===itemId); if(!it) return;
+    it.done = !it.done;
+    persist(); render();
+  }
+  function deleteExamItem(subjectId, itemId){
+    const s = examSubjects().find(x=>x.id===subjectId); if(!s) return;
+    s.items = s.items.filter(x=>x.id!==itemId);
+    persist(); render();
+  }
+  function examSubjectCardHtml(s){
+    const food = FOOD_SPRITES[s.food] || FOOD_SPRITES.choc;
+    const n = s.items.length;
+    const done = s.items.filter(i=>i.done).length;
+    const pct = n>0 ? Math.round(done/n*100) : 0;
+    const itemsHtml = s.items.map(it=>`
+      <div class="exam-item ${it.done?'done':''}">
+        <button class="exam-item-check" data-action="toggleExamItem" data-subject="${s.id}" data-id="${it.id}">${icon('check')}</button>
+        <div class="exam-item-text">${escapeHtml(it.text)}</div>
+        <button class="task-del" style="opacity:1;" title="삭제" data-action="deleteExamItem" data-subject="${s.id}" data-id="${it.id}">${icon('trash')}</button>
+      </div>`).join('');
+    const barHtml = n===0 ? `<div class="empty" style="padding:4px 0 10px;">아직 항목이 없어요 — 아래에서 추가해줘.</div>` : `
+      <div class="food-bar" style="--n:${n};">
+        <div class="food-bar-img" style="background-image:url('${food.src}');"></div>
+        <div class="food-bar-blocks"></div>
+        <div class="food-bar-eaten" style="width:${pct}%;"></div>
+      </div>`;
+    return `<div class="exam-card">
+      <div class="exam-card-head">
+        <div>
+          <div class="exam-card-title">${escapeHtml(s.name)}</div>
+          <div class="exam-card-meta">${food.label} · ${done}/${n} 완료</div>
+        </div>
+        <button class="task-del" style="opacity:1;" title="과목 삭제" data-action="deleteExamSubject" data-id="${s.id}">${icon('trash')}</button>
+      </div>
+      ${barHtml}
+      <div class="exam-items">${itemsHtml}</div>
+      <div class="add-row" style="margin-top:10px;margin-bottom:0;">
+        <input type="text" class="add-input exam-item-input" data-subject="${s.id}" placeholder="항목 추가 후 Enter">
+        <button class="btn-outline" data-action="addExamItemFromRow" data-subject="${s.id}">추가</button>
+      </div>
+    </div>`;
+  }
+  function renderExamPage(){
+    const subjects = examSubjects();
+    const addForm = state.examAddOpen ? `<div class="box-add-form exam-add-form">
+        <input type="text" id="examNewName" placeholder="과목 이름 (예: 수학)" autofocus>
+        <textarea id="examNewItems" rows="5" placeholder="이번 주에 끝낼 것들을 한 줄에 하나씩 적어줘
+예)
+미적분 7단원 복습
+기출 3회분 풀기"></textarea>
+        <div class="add-row-line">
+          <button class="btn" data-action="submitExamSubject">추가</button>
+          <button class="btn-outline" data-action="toggleExamAdd">취소</button>
+        </div>
+      </div>`
+      : `<button class="box-add-btn" data-action="toggleExamAdd">+ 과목 추가</button>`;
+    return `<div class="fade-in">
+      <div class="page-head"><h1>이번주</h1></div>
+      <div class="empty" style="padding:0 0 14px;">과목마다 이번 주에 끝낼 것들을 적어두면, 끝낸 만큼 그 과목 간식이 사라져요.</div>
+      <div class="exam-add-wrap">${addForm}</div>
+      ${subjects.length===0 ? '' : `<div class="exam-grid">${subjects.map(examSubjectCardHtml).join('')}</div>`}
+    </div>`;
+  }
+
   /* ============ 아카이브 로그 — append-only 원자료 ============
      완료 즉시 한 줄 기록하고, 이후 이 항목을 지우거나 다른 배열로 옮겨도 이 로그는
-     건드리지 않는다. 아카이브 탭 통계는 전부 이 원자료에서 매번 다시 계산한다. */
-  const RATING_LABELS = {AGAIN:'거의 기억 안 남', HARD:'가물가물했음', GOOD:'잘 기억남', EASY:'완벽했음'};
+     건드리지 않는다. 완료 피드백/실행취소(undo)가 이 원자료를 그대로 쓴다. */
   function logArchiveEvent(entry){
     state.data.archiveLog = state.data.archiveLog || [];
     state.data.archiveLog.push(entry);
   }
   function findAnyCompletedItem(id){
     return state.data.completed.find(i=>i.id===id) || null;
-  }
-  function computeArchiveStats(){
-    const log = state.data.archiveLog || [];
-    const bySubject = {};
-    log.forEach(e=>{
-      const key = e.subject || '미분류';
-      if(!bySubject[key]) bySubject[key] = {subject:key, total:0, ratings:{AGAIN:0,HARD:0,GOOD:0,EASY:0}, unrated:0};
-      const b = bySubject[key];
-      b.total++;
-      if(e.rating && b.ratings[e.rating]!=null) b.ratings[e.rating]++;
-      else b.unrated++;
-    });
-    const subjects = Object.values(bySubject).map(b=>{
-      const rated = b.ratings.AGAIN + b.ratings.HARD + b.ratings.GOOD + b.ratings.EASY;
-      return {...b, rated};
-    }).sort((a,b)=>b.total-a.total);
-    return {subjects, totalAll: log.length};
-  }
-  function downloadTextFile(filename, content, mime){
-    const blob = new Blob([content], {type: mime||'text/plain'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-  }
-  function exportArchiveLog(){
-    downloadTextFile(
-      `archive-log-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.json`,
-      JSON.stringify(state.data.archiveLog||[], null, 2), 'application/json'
-    );
-  }
-  function renderArchivePage(){
-    const stats = computeArchiveStats();
-    const subjectRows = stats.subjects.map(s=>{
-      const bar = s.rated>0 ? `<div class="arc-bar">
-          <div class="arc-bar-seg" style="width:${s.ratings.EASY/s.rated*100}%;background:var(--green);"></div>
-          <div class="arc-bar-seg" style="width:${s.ratings.GOOD/s.rated*100}%;background:var(--teal);"></div>
-          <div class="arc-bar-seg" style="width:${s.ratings.HARD/s.rated*100}%;background:var(--orange);"></div>
-          <div class="arc-bar-seg" style="width:${s.ratings.AGAIN/s.rated*100}%;background:var(--red);"></div>
-        </div>` : `<div class="arc-bar-empty">자기평가 없음</div>`;
-      return `<div class="arc-subject-row">
-        <div class="arc-subject-head"><b>${escapeHtml(s.subject)}</b><span>${s.total}개 완료${s.rated>0?` · 평가 ${s.rated}개`:''}</span></div>
-        ${bar}
-      </div>`;
-    }).join('');
-    const recent = (state.data.archiveLog||[]).slice(-30).reverse();
-    const recentHtml = recent.length===0 ? `<div class="empty">아직 완료 기록이 없어요.</div>` : recent.map(e=>`
-      <div class="arc-log-row">
-        <span class="arc-log-date">${fmtDate(e.ts)}</span>
-        <span class="arc-log-subject">${escapeHtml(e.subject||'미분류')}</span>
-        <span class="arc-log-text">${escapeHtml(e.text)}</span>
-        <span class="arc-log-rating">${e.rating?escapeHtml(RATING_LABELS[e.rating]||''):''}</span>
-      </div>`).join('');
-    return `<div class="fade-in">
-      <div class="page-head"><h1>아카이브</h1><button class="iconbtn" data-action="exportArchiveLog">${icon('external')} 원자료 내보내기</button></div>
-      <div class="empty" style="padding:0 0 14px;">지금까지 총 ${stats.totalAll}개 완료</div>
-      <div class="section">
-        <div class="section-head"><div class="section-title">과목별 현황</div></div>
-        ${subjectRows || `<div class="empty">아직 완료 기록이 없어요.</div>`}
-      </div>
-      <div class="section">
-        <div class="section-head"><div class="section-title">최근 완료 기록</div></div>
-        ${recentHtml}
-      </div>
-    </div>`;
   }
 
   /* ============ 완료 피드백 — 화면을 막지 않는 대화창 ============
@@ -2965,8 +1851,8 @@
         <button class="modal-close" data-action="skipCompletionFeedback" aria-label="후기 건너뛰기">${icon('close')}</button>
       </div>
       <div class="feedback-dock-body">
-        <div class="city-inspect-text" style="margin-bottom:4px;">${escapeHtml(it.text)}</div>
-        <div class="city-inspect-meta" style="margin-bottom:10px;">방금 끝낸 거, 얼마나 확실하게 알고 있었어요?</div>
+        <div class="feedback-item-text" style="margin-bottom:4px;">${escapeHtml(it.text)}</div>
+        <div class="feedback-item-meta" style="margin-bottom:10px;">방금 끝낸 거, 얼마나 확실하게 알고 있었어요?</div>
         <div class="feedback-hint">등급을 고른다고 바로 제출되지 않아요 — 아래에 설명까지 쓰고 제출을 눌러주세요.</div>
         <div class="feedback-ratings">${ratingBtns}</div>
         <div class="feedback-explain-label">방금 이해한 걸 네 언어로 설명해봐요</div>
@@ -2993,35 +1879,6 @@
   }
 
   /* ============ 액션: 과제 ============ */
-  function addAssignment(){
-    const title = document.getElementById('asgTitle').value.trim();
-    const date = document.getElementById('asgDate').value;
-    const tag = document.getElementById('asgTag').value.trim();
-    if(!title || !date){ return; }
-    state.data.assignments.push({id:genId(), title, dueDate:date, tag, done:false, createdAt:Date.now(), source:'manual'});
-    persist(); render();
-  }
-  function saveAssignmentEdit(id){
-    const a = state.data.assignments.find(x=>x.id===id); if(!a) return;
-    const t = document.getElementById('asgEditTitle');
-    const d = document.getElementById('asgEditDate');
-    const g = document.getElementById('asgEditTag');
-    const title = t ? t.value.trim() : '';
-    const date = d ? d.value : '';
-    if(!title || !date) return;          // 제목·기한은 비울 수 없음
-    a.title = title; a.dueDate = date; a.tag = g ? g.value.trim() : a.tag;
-    state.editingAssignment = null;
-    persist(); render();
-  }
-  function toggleAssignment(id){
-    const a = state.data.assignments.find(x=>x.id===id); if(!a) return;
-    a.done = !a.done; persist(); render();
-  }
-  function deleteAssignment(id){
-    state.data.assignments = state.data.assignments.filter(x=>x.id!==id);
-    persist(); render();
-  }
-
   /* ============ 액션: 설정 ============ */
   let templateCopyStatus = ''; // 방금 복사한 템플릿 id (버튼에 "복사됨!" 잠깐 표시용)
   function saveStudentName(){
@@ -3030,29 +1887,6 @@
     render();
   }
 
-  /* ============ 액션: 도시 ============ */
-  function openCityInspect(id){
-    state.cityInspectTarget = {id};
-    state.modal = 'cityInspect';
-    render();
-  }
-  function cityCompleteFromInspect(){
-    const item = findCityItem(state.cityInspectTarget);
-    if(!item) return;
-    const isCar = item.corner==='review';
-    const modalBody = document.querySelector('.modal-body');
-    if(modalBody){
-      modalBody.innerHTML = `<div class="city-fix-flourish ${isCar?'repair':'rest'}">
-        <span class="city-fix-icon">${icon(isCar?'truck':'person')}</span>
-        <div>${isCar?'수리차가 와서 고쳐주고 있어요...':'푹 쉬고 다시 기운을 차리고 있어요...'}</div>
-      </div>`;
-    }
-    setTimeout(()=>{
-      state.modal = null;
-      state.cityInspectTarget = null;
-      completeTask(item.id);
-    }, 700);
-  }
   /* ============ 내보내기/가져오기 ============ */
   function exportData(){
     const blob = new Blob([JSON.stringify(state.data,null,2)],{type:'application/json'});
@@ -3069,9 +1903,10 @@
         state.data = {
           tasks: parsed.tasks || [],
           completed: parsed.completed || [],
-          assignments: parsed.assignments || [],
           ddays: parsed.ddays || [],
-          boxes: parsed.boxes || []
+          boxes: parsed.boxes || [],
+          archiveLog: parsed.archiveLog || [],
+          examWeek: parsed.examWeek || {subjects:[]}
         };
         persist(); render();
       }catch(err){ alert('파일을 읽지 못했어요. JSON 형식이 맞는지 확인해주세요.'); }
@@ -3240,10 +2075,6 @@
       case 'restoreTask': restoreTask(el.dataset.id); break;
       case 'deletePermanent': deletePermanent(el.dataset.id); break;
       case 'openCompleted': state.modal='completed'; renderOverlaysOnly(); break;
-      case 'openCityInspect': openCityInspect(el.dataset.id); break;
-      case 'cityCompleteFromInspect': cityCompleteFromInspect(); break;
-      case 'goCityArchive': state.cityView='archive'; render(); break;
-      case 'goCityMain': state.cityView='main'; render(); break;
       case 'openQuickAdd': state.quickAddBoxKey = el.dataset.boxkey; state.quickAddCorner = 'review'; state.modal = 'quickAdd'; renderOverlaysOnly(); break;
       case 'setQuickAddCorner': state.quickAddCorner = el.dataset.corner; renderOverlaysOnly(); break;
       case 'quickAddSubmit': {
@@ -3256,13 +2087,11 @@
       case 'openNotifications': state.modal='notifications'; renderOverlaysOnly(); break;
       case 'closeModal': state.modal=null; renderOverlaysOnly(); break;
       case 'exportData': exportData(); break;
-      case 'exportArchiveLog': exportArchiveLog(); break;
       case 'importTrigger': document.getElementById('importFile').click(); break;
       case 'selectFeedbackRating': selectFeedbackRating(el.dataset.rating); break;
       case 'submitCompletionFeedback': if(!el.disabled) submitCompletionFeedback(); break;
       case 'skipCompletionFeedback': skipCompletionFeedback(); break;
       case 'undoLastCompletion': undoLastCompletion(); break;
-      case 'addAssignment': addAssignment(); break;
       case 'addDday': addDday(); break;
       case 'deleteDday': deleteDday(el.dataset.id); break;
       case 'toggleDdayHidden': toggleDdayHidden(el.dataset.id); break;
@@ -3270,31 +2099,19 @@
       case 'toggleBoxAdd': toggleBoxAdd(); break;
       case 'submitAddBox': submitAddBox(); break;
       case 'deleteBox': deleteBox(el.dataset.key); break;
-      case 'toggleAssignment': {
-        const id = el.dataset.id;
-        const a = state.data.assignments.find(x=>x.id===id);
-        const row = el.closest('.asg-row');
-        if(a && !a.done && row && !row.classList.contains('asg-complete-anim')){
-          row.classList.add('asg-complete-anim');
-          setTimeout(()=>toggleAssignment(id), 520);
-        } else {
-          toggleAssignment(id);
-        }
+      case 'toggleExamAdd': toggleExamAdd(); break;
+      case 'submitExamSubject': submitExamSubject(); break;
+      case 'deleteExamSubject': deleteExamSubject(el.dataset.id); break;
+      case 'toggleExamItem': toggleExamItem(el.dataset.subject, el.dataset.id); break;
+      case 'deleteExamItem': deleteExamItem(el.dataset.subject, el.dataset.id); break;
+      case 'addExamItemFromRow': {
+        const input = document.querySelector(`.exam-item-input[data-subject="${el.dataset.subject}"]`);
+        if(input) addExamItem(el.dataset.subject, input.value);
         break;
       }
-      case 'deleteAssignment': deleteAssignment(el.dataset.id); break;
-      case 'editAssignment': state.editingAssignment = el.dataset.id; render(); break;
-      case 'cancelAssignmentEdit': state.editingAssignment = null; render(); break;
-      case 'saveAssignmentEdit': saveAssignmentEdit(el.dataset.id); break;
       case 'editTask': state.editingTask = {id:el.dataset.id}; render(); break;
       case 'cancelTaskEdit': state.editingTask = null; render(); break;
       case 'saveTaskEdit': saveTaskEdit(el.dataset.id); break;
-      case 'setAssignmentPriority': {
-        const a = state.data.assignments.find(x=>x.id===el.dataset.id);
-        if(a){ a.priority = a.priority===el.dataset.val ? null : el.dataset.val; persist(); render(); }
-        break;
-      }
-      case 'setAsgSortMode': state.asgSortMode = el.dataset.mode; render(); break;
       case 'swStart': swStart(); break;
       case 'swPause': swPause(); break;
       case 'swReset': swReset(); break;
@@ -3349,6 +2166,8 @@
       addTask(e.target.value, e.target.dataset.boxkey, e.target.dataset.corner);
     } else if(e.target.id==='taskAddInput'){
       addTaskUnified();
+    } else if(e.target.classList.contains('exam-item-input')){
+      addExamItem(e.target.dataset.subject, e.target.value);
     }
   });
 
@@ -3366,16 +2185,6 @@
     }
   });
 
-  // 홈 2단 ↔ 1단 경계를 넘어갈 때만 다시 그림 (매 resize마다 그리면 낭비)
-  let lastWide = isWideScreen(), resizeTimer = null;
-  window.addEventListener('resize', function(){
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(()=>{
-      const w = isWideScreen();
-      if(w !== lastWide){ lastWide = w; render(); }
-    }, 180);
-  });
-
   document.getElementById('importFile').addEventListener('change', function(e){
     if(e.target.files && e.target.files[0]) importDataFromFile(e.target.files[0]);
     e.target.value = '';
@@ -3391,10 +2200,10 @@
       state.data = {
         tasks: saved.tasks || [],
         completed: saved.completed || [],
-        assignments: saved.assignments || [],
         ddays: saved.ddays || [],
         boxes: saved.boxes || [],
-        archiveLog: saved.archiveLog || []
+        archiveLog: saved.archiveLog || [],
+        examWeek: saved.examWeek || {subjects:[]}
       };
     }
     // 세션 확인은 비동기로 흘려보냄 — 네트워크가 느리거나 막혀도 첫 화면은 바로 그려짐.
